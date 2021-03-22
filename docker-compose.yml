@@ -39,12 +39,16 @@ services:
     depends_on:
       - es1
       - redis
-    env_file: docker/vue-storefront-api/default.env
     environment:
       VS_ENV: dev
       VIRTUAL_HOST: ${DOMAIN}
       LETSENCRYPT_HOST: ${DOMAIN}
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      VSF_DOMAIN: ${VSF_DOMAIN}
+      DEFAULT_STORE_DOMAIN: ${DEFAULT_STORE_DOMAIN}
+      DEFAULT_STORE_ES_INDEX: ${DEFAULT_STORE_ES_INDEX}
+      MAGENTO_USER_NAME: ${MAGENTO_USER_NAME}
+      MAGENTO_USER_PASSWORD: ${MAGENTO_USER_PASSWORD}
     volumes:
       - './config:/var/www/config'
       - './ecosystem.json:/var/www/ecosystem.json'

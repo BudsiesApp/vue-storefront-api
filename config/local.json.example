@@ -1,6 +1,6 @@
 {
   "server": {
-    "host": "localhost",
+    "host": "vsf-api-app",
     "port": 8080,
     "searchEngine": "elasticsearch",
     "useOutputCacheTagging": false,
@@ -9,7 +9,7 @@
     "availableCacheTags": ["P", "C", "T", "A", "product", "category", "attribute", "taxrule"],
     "invalidateCacheKey": "aeSu7aip",
     "invalidateCacheForwarding": false,
-    "invalidateCacheForwardUrl": "http://localhost:3000/invalidate?key=aeSu7aip&tag=",
+    "invalidateCacheForwardUrl": "https://${VSF_DOMAIN}/invalidate?key=aeSu7aip&tag=",
     "showErrorStack": false
   },
   "users": {
@@ -22,14 +22,14 @@
     "excludeDisabledProducts": false
   },
   "elasticsearch": {
-    "host": "localhost",
-    "index": "vue_storefront_catalog",
+    "host": "elasticsearch",
+    "index": "${DEFAULT_STORE_ES_INDEX}",
     "port": 9200,
     "protocol": "http",
     "requestTimeout": 5000,
     "min_score": 0.01,
     "indices": [
-      "vue_storefront_catalog",
+      "${DEFAULT_STORE_ES_INDEX}",
       "vue_storefront_catalog_de",
       "vue_storefront_catalog_it"
     ],
@@ -145,7 +145,7 @@
     "defaultStockId": 1
   },
   "storeViews": {
-    "multistore": true,
+    "multistore": false,
     "mapStoreUrlsFor": [
       "de",
       "it"
@@ -246,7 +246,7 @@
   "corsHeaders": [
     "Link"
   ],
-  "platform": "magento2",
+  "platform": "magento1",
   "registeredExtensions": [
     "mailchimp-subscribe",
     "example-magento-api",
@@ -295,14 +295,15 @@
     }
   },
   "magento1": {
-    "imgUrl": "http://magento-demo.local/media/catalog/product",
+    "url": "https://${DEFAULT_STORE_DOMAIN}",
+    "imgUrl": "https://${DEFAULT_STORE_DOMAIN}/media/catalog/product",
     "assetPath": "",
-    "magentoUserName": "",
-    "magentoUserPassword": "",
+    "magentoUserName": "${MAGENTO_USER_NAME}",
+    "magentoUserPassword": "${MAGENTO_USER_PASSWORD}",
     "httpUserName": "",
     "httpUserPassword": "",
     "api": {
-      "url": "http://magento-demo.local/vsbridge",
+      "url": "https://${DEFAULT_STORE_DOMAIN}/vsbridge",
       "consumerKey": "",
       "consumerSecret": "",
       "accessToken": "",
@@ -315,7 +316,9 @@
     "whitelist": {
       "allowedHosts": [
         ".*divante.pl",
-        ".*vuestorefront.io"
+        ".*vuestorefront.io",
+        "${DEFAULT_STORE_DOMAIN}",
+        "localhost"
       ]
     },
     "cache": {

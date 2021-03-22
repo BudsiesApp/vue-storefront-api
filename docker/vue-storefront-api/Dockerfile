@@ -13,6 +13,8 @@ RUN apk add --no-cache --virtual .build-deps ca-certificates wget python make g+
     yarn install --no-cache && \
     apk del .build-deps
 
+RUN apk add --update libintl && apk add --virtual build_deps gettext
+
 COPY docker/vue-storefront-api/vue-storefront-api.sh /usr/local/bin/
 
 CMD ["vue-storefront-api.sh"]
