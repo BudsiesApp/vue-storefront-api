@@ -40,7 +40,7 @@ services:
       - es1
       - redis
     environment:
-      VS_ENV: dev
+      VS_ENV: ${VS_ENV}
       VIRTUAL_HOST: ${DOMAIN}
       LETSENCRYPT_HOST: ${DOMAIN}
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
@@ -67,6 +67,7 @@ services:
       - reverseproxy
     expose:
       - "8080"
+
 networks:
   reverseproxy:
     external:
