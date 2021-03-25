@@ -254,7 +254,8 @@
     "mail-service",
     "example-processor",
     "example-custom-filter",
-    "elastic-stock"
+    "elastic-stock",
+    "custom-product"
   ],
   "extensions": {
     "mailchimp": {
