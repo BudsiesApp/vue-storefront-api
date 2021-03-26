@@ -32,7 +32,7 @@ services:
     ports:
       - '6379:6379'
 
-  vsf-api-app:
+  vsf-api-app-budsies:
     build:
       context: .
       dockerfile: docker/vue-storefront-api/Dockerfile
@@ -40,17 +40,18 @@ services:
       - es1
       - redis
     environment:
+      BIND_PORT: ${BUDSIES_PORT}
       VS_ENV: ${VS_ENV}
-      VIRTUAL_HOST: ${DOMAIN}
-      LETSENCRYPT_HOST: ${DOMAIN}
+      VIRTUAL_HOST: ${BUDSIES_DOMAIN}
+      LETSENCRYPT_HOST: ${BUDSIES_DOMAIN}
       LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
-      VSF_DOMAIN: ${VSF_DOMAIN}
-      DEFAULT_STORE_DOMAIN: ${DEFAULT_STORE_DOMAIN}
-      DEFAULT_STORE_ES_INDEX: ${DEFAULT_STORE_ES_INDEX}
+      VSF_DOMAIN: ${BUDSIES_VSF_DOMAIN}
+      DEFAULT_STORE_DOMAIN: ${BUDSIES_STORE_DOMAIN}
+      DEFAULT_STORE_ES_INDEX: ${BUDSIES_STORE_ES_INDEX}
       MAGENTO_USER_NAME: ${MAGENTO_USER_NAME}
       MAGENTO_USER_PASSWORD: ${MAGENTO_USER_PASSWORD}
     volumes:
-      - './config:/var/www/config'
+      #- './config:/var/www/config'
       - './ecosystem.json:/var/www/ecosystem.json'
       - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
@@ -66,7 +67,44 @@ services:
       - default
       - reverseproxy
     expose:
-      - "8080"
+      - ${BUDSIES_PORT}
+
+  vsf-api-app-petsies:
+    build:
+      context: .
+      dockerfile: docker/vue-storefront-api/Dockerfile
+    depends_on:
+      - es1
+      - redis
+    environment:
+      BIND_PORT: ${PETSIES_PORT}
+      VS_ENV: ${VS_ENV}
+      VIRTUAL_HOST: ${PETSIES_DOMAIN}
+      LETSENCRYPT_HOST: ${PETSIES_DOMAIN}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      VSF_DOMAIN: ${PETSIES_VSF_DOMAIN}
+      DEFAULT_STORE_DOMAIN: ${PETSIES_STORE_DOMAIN}
+      DEFAULT_STORE_ES_INDEX: ${PETSIES_STORE_ES_INDEX}
+      MAGENTO_USER_NAME: ${MAGENTO_USER_NAME}
+      MAGENTO_USER_PASSWORD: ${MAGENTO_USER_PASSWORD}
+    volumes:
+      #- './config:/var/www/config'
+      - './ecosystem.json:/var/www/ecosystem.json'
+      - './migrations:/var/www/migrations'
+      - './package.json:/var/www/package.json'
+      - './babel.config.js:/var/www/babel.config.js'
+      - './tsconfig.json:/var/www/tsconfig.json'
+      - './nodemon.json:/var/www/nodemon.json'
+      - './scripts:/var/www/scripts'
+      - './src:/var/www/src'
+      - './var:/var/www/var'
+    tmpfs:
+      - /var/www/dist
+    networks:
+      - default
+      - reverseproxy
+    expose:
+      - ${PETSIES_PORT}
 
 networks:
   reverseproxy:

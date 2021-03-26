@@ -17,4 +17,6 @@ RUN apk add --update libintl && apk add --virtual build_deps gettext
 
 COPY docker/vue-storefront-api/vue-storefront-api.sh /usr/local/bin/
 
+COPY config /var/www/config
+
 CMD ["vue-storefront-api.sh"]
