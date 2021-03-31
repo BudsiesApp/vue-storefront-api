@@ -246,6 +246,11 @@
   "corsHeaders": [
     "Link"
   ],
+  "storyblok": {
+    "previewToken": "${STORYBLOK_TOKEN}",
+    "hookSecret": "${STORYBLOK_HOOK_SECRET}",
+    "invalidate": "https://${VSF_DOMAIN}/invalidate?tag=storyblok&key=aeSu7aip"
+  },
   "platform": "magento1",
   "registeredExtensions": [
     "mailchimp-subscribe",
@@ -255,7 +260,8 @@
     "example-processor",
     "example-custom-filter",
     "elastic-stock",
-    "custom-product"
+    "custom-product",
+    "vsf-storyblok-extension"
   ],
   "extensions": {
     "mailchimp": {

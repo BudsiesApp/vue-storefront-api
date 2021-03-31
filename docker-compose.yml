@@ -50,6 +50,8 @@ services:
       DEFAULT_STORE_ES_INDEX: ${BUDSIES_STORE_ES_INDEX}
       MAGENTO_USER_NAME: ${MAGENTO_USER_NAME}
       MAGENTO_USER_PASSWORD: ${MAGENTO_USER_PASSWORD}
+      STORYBLOK_TOKEN: ${STORYBLOK_TOKEN}
+      STORYBLOK_HOOK_SECRET: ${STORYBLOK_HOOK_SECRET}
     volumes:
       #- './config:/var/www/config'
       - './ecosystem.json:/var/www/ecosystem.json'
@@ -87,6 +89,8 @@ services:
       DEFAULT_STORE_ES_INDEX: ${PETSIES_STORE_ES_INDEX}
       MAGENTO_USER_NAME: ${MAGENTO_USER_NAME}
       MAGENTO_USER_PASSWORD: ${MAGENTO_USER_PASSWORD}
+      STORYBLOK_TOKEN: ${STORYBLOK_TOKEN}
+      STORYBLOK_HOOK_SECRET: ${STORYBLOK_HOOK_SECRET}
     volumes:
       #- './config:/var/www/config'
       - './ecosystem.json:/var/www/ecosystem.json'
