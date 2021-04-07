@@ -1,7 +1,7 @@
 {
   "server": {
-    "host": "localhost",
-    "port": 8080,
+    "host": "0.0.0.0",
+    "port": "${BIND_PORT}",
     "searchEngine": "elasticsearch",
     "useOutputCacheTagging": false,
     "useOutputCache": false,
@@ -9,7 +9,7 @@
     "availableCacheTags": ["P", "C", "T", "A", "product", "category", "attribute", "taxrule"],
     "invalidateCacheKey": "aeSu7aip",
     "invalidateCacheForwarding": false,
-    "invalidateCacheForwardUrl": "http://localhost:3000/invalidate?key=aeSu7aip&tag=",
+    "invalidateCacheForwardUrl": "https://${VSF_DOMAIN}/invalidate?key=aeSu7aip&tag=",
     "showErrorStack": false
   },
   "users": {
@@ -22,16 +22,14 @@
     "excludeDisabledProducts": false
   },
   "elasticsearch": {
-    "host": "localhost",
-    "index": "vue_storefront_catalog",
+    "host": "elasticsearch",
+    "index": "vue_storefront_catalog_${DEFAULT_STORE_ID}",
     "port": 9200,
     "protocol": "http",
     "requestTimeout": 5000,
     "min_score": 0.01,
     "indices": [
-      "vue_storefront_catalog",
-      "vue_storefront_catalog_de",
-      "vue_storefront_catalog_it"
+      "vue_storefront_catalog_${DEFAULT_STORE_ID}"
     ],
     "indexTypes": [
       "product",
@@ -130,20 +128,59 @@
     "enabled": false
   },
   "redis": {
-    "host": "localhost",
+    "host": "redis",
     "port": 6379,
     "db": 0,
     "auth": false
   },
   "kue": {},
-  "availableStores": [],
+  "availableStores": [
+    "jp"
+  ],
   "msi": {
     "enabled": false,
     "defaultStockId": 1
   },
   "storeViews": {
     "multistore": false,
-    "mapStoreUrlsFor": []
+    "mapStoreUrlsFor": [
+      "jp"
+    ],
+    "jp": {
+      "storeCode": "jp",
+      "disabled": false,
+      "storeId": ${DEFAULT_STORE_ID},
+      "websiteId": ${DEFAULT_STORE_ID},
+      "name": "Japanese Store",
+      "url": "/jp",
+      "elasticsearch": {
+        "host": "localhost:8080/api/catalog",
+        "index": "vue_storefront_catalog_${DEFAULT_STORE_ID}"
+      },
+      "msi": {
+        "stockId": 2
+      },
+      "tax": {
+        "defaultCountry": "JP",
+        "defaultRegion": "",
+        "deprecatedPriceFieldsSupport": false,
+        "calculateServerSide": true,
+        "sourcePriceIncludesTax": false,
+        "finalPriceIncludesTax": true,
+        "userGroupId": null,
+        "useOnlyDefaultUserGroupId": false
+      },
+      "i18n": {
+        "fullCountryName": "Japan",
+        "fullLanguageName": "Japan",
+        "defaultLanguage": "JP",
+        "defaultCountry": "JP",
+        "defaultLocale": "ja-JP",
+        "currencyCode": "JPY",
+        "currencySign": "JPY",
+        "dateFormat": "HH:mm D-M-YYYY"
+      }
+    }
   },
   "authHashSecret": "__SECRET_CHANGE_ME__",
   "objHashSecret": "__SECRET_CHANGE_ME__",
@@ -170,7 +207,15 @@
   "corsHeaders": [
     "Link"
   ],
-  "platform": "magento2",
+  "storyblok": {
+    "previewToken": "${STORYBLOK_TOKEN}",
+    "hookSecret": "${STORYBLOK_HOOK_SECRET}",
+    "invalidate": "https://${VSF_DOMAIN}/invalidate?tag=storyblok&key=aeSu7aip",
+    "settings": {
+      "appendStoreCodeFromHeader": true
+    }
+  },
+  "platform": "magento1",
   "registeredExtensions": [
     "mailchimp-subscribe",
     "example-magento-api",
@@ -178,7 +223,9 @@
     "mail-service",
     "example-processor",
     "example-custom-filter",
-    "elastic-stock"
+    "elastic-stock",
+    "custom-product",
+    "vsf-storyblok-extension"
   ],
   "extensions": {
     "mailchimp": {
@@ -219,14 +266,15 @@
     }
   },
   "magento1": {
-    "imgUrl": "http://magento-demo.local/media/catalog/product",
+    "url": "https://${DEFAULT_STORE_DOMAIN}",
+    "imgUrl": "https://${DEFAULT_STORE_DOMAIN}/media/catalog/product",
     "assetPath": "",
-    "magentoUserName": "",
-    "magentoUserPassword": "",
+    "magentoUserName": "${MAGENTO_USER_NAME}",
+    "magentoUserPassword": "${MAGENTO_USER_PASSWORD}",
     "httpUserName": "",
     "httpUserPassword": "",
     "api": {
-      "url": "http://magento-demo.local/vsbridge",
+      "url": "https://${DEFAULT_STORE_DOMAIN}/vsbridge",
       "consumerKey": "",
       "consumerSecret": "",
       "accessToken": "",
@@ -239,7 +287,9 @@
     "whitelist": {
       "allowedHosts": [
         ".*divante.pl",
-        ".*vuestorefront.io"
+        ".*vuestorefront.io",
+        "${DEFAULT_STORE_DOMAIN}",
+        "localhost"
       ]
     },
     "cache": {

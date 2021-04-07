@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-envsubst < config/local.json.example > config/local.json
+envsubst < config/local.json.${DEFAULT_STORE}.example > config/local.json
 
 yarn install || exit $?
 
