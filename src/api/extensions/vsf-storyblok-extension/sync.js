@@ -8,12 +8,23 @@ function indexStories ({ db, stories = [] }) {
   })
 }
 
-async function syncStories ({ db, page = 1, perPage = 100 }) {
-  const { data: { stories }, total } = await storyblokClient.get('cdn/stories', {
+async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
+  let { data: { stories }, total } = await storyblokClient.get('cdn/stories', {
     page,
     per_page: perPage,
     resolve_links: 'url'
   })
+
+  for (let language of languages) {
+    const response = await storyblokClient.get('cdn/stories', {
+      page,
+      per_page: perPage,
+      resolve_links: 'url',
+      starts_with: language + '/*'
+    })
+
+    stories.push(...response.data.stories)
+  }
 
   const newStories = stories.map(story => ({
     ...story,
@@ -36,7 +47,8 @@ const fullSync = async (db, config) => {
   log('Syncing published stories!')
   await db.indices.delete({ ignore_unavailable: true, index: 'storyblok_stories' })
   await db.indices.create(createIndex(config))
-  await syncStories({ db, perPage: config.storyblok.perPage })
+  const languages = config.storeViews.multistore ? config.storeViews.mapStoreUrlsFor : [];
+  await syncStories({ db, perPage: config.storyblok.perPage, languages })
 }
 
 const handleHook = async (db, config, params) => {
@@ -77,6 +89,7 @@ const seedDatabase = async (db, config) => {
     log('Stories synced!')
   } catch (error) {
     log('Stories not synced!')
+    log(error)
   }
 }
 

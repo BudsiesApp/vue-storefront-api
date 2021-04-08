@@ -34,10 +34,10 @@ export const transformStory = ({ id, ...story } = {}) => {
   }
 }
 
-function mapStoryToBulkAction ({ story: { id } }) {
+function mapStoryToBulkAction ({ story: { id, full_slug } }) {
   return {
     index: {
-      _id: id,
+      _id: id + '_' + full_slug,
       _index: 'storyblok_stories',
       _type: 'story'
     }
