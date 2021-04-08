@@ -12,7 +12,9 @@ async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
   let { data: { stories }, total } = await storyblokClient.get('cdn/stories', {
     page,
     per_page: perPage,
-    resolve_links: 'url'
+    resolve_links: 'url',
+    resolve_relations: 'blockReference.reference',
+    excluding_slugs: 'blocks/*'
   })
 
   for (let language of languages) {
@@ -20,6 +22,8 @@ async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
       page,
       per_page: perPage,
       resolve_links: 'url',
+      resolve_relations: 'blockReference.reference',
+      excluding_slugs: 'blocks/*',
       starts_with: language + '/*'
     })
 
