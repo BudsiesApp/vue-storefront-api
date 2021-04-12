@@ -1,4 +1,5 @@
 import { storyblokClient } from './storyblok'
+import { storyblokManagementClient } from './storyblok'
 import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate } from './helpers'
 
 function indexStories ({ db, stories = [] }) {
@@ -97,4 +98,125 @@ const seedDatabase = async (db, config) => {
   }
 }
 
-export { syncStories, fullSync, handleHook, seedDatabase }
+const seedStoryblokDatasources = async (db, config) => {
+  try {
+    if (!config.storyblok.sync.enabled) {
+      log('Syncing of Storyblok Datasources is disabled!')
+      return
+    }
+
+    log('Syncing Storyblok Datasources!')
+
+    await db.ping()
+
+    const { body: { hits: { hits: products } } } = await db.search({
+      index: config.storyblok.sync.index,
+      type: 'product',
+      sort: 'name: asc',
+      body: {
+        "query": {
+          "constant_score": {
+            "filter": {
+              "bool": {
+                "must": [
+                  {"terms": {"visibility": [2,3,4]}},
+                  {"terms": {"status": [1]}}
+                ]
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const { body: { hits: { hits: categories } } } = await db.search({
+      index: config.storyblok.sync.index,
+      type: 'category',
+      sort: 'name: asc',
+      body: {
+        "query": {
+          "constant_score": {
+            "filter": {
+              "bool": {
+                "must": [
+                  {"term": {"is_active": true}}
+                ]
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const datasourcesResponse = await storyblokManagementClient.get(`spaces/${config.storyblok.spaceId}/datasources`)
+
+    let categoriesDatasourceId
+    let productsDatasourceId
+
+    for (const datasource of datasourcesResponse.data.datasources) {
+      if (datasource.slug === config.storyblok.sync.categoriesDatasourceSlug) {
+        categoriesDatasourceId = datasource.id
+      }
+      if (datasource.slug === config.storyblok.sync.productsDatasourceSlug) {
+        productsDatasourceId = datasource.id
+      }
+    }
+
+    if (!categoriesDatasourceId || !productsDatasourceId) {
+      throw new Error('Fail to retrieve datasources IDs')
+    }
+
+    await Promise.all([
+      storyblokManagementClient.delete(`spaces/${config.storyblok.spaceId}/datasources/${categoriesDatasourceId}`),
+      storyblokManagementClient.delete(`spaces/${config.storyblok.spaceId}/datasources/${productsDatasourceId}`)
+    ])
+
+    let newCategoriesDatasourceResponse = await storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasources`, {
+      datasource: { 
+        name: 'Categories', 
+        slug: config.storyblok.sync.categoriesDatasourceSlug 
+      }
+    })
+
+    let newProductsDatasourceResponse = await storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasources`, {
+      datasource: { 
+        name: 'Products', 
+        slug: config.storyblok.sync.productsDatasourceSlug 
+      }
+    })
+
+    let requests = [];
+
+    for (const category of categories) {
+      requests.push(
+        storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasource_entries`, {
+          datasource_entry: { 
+            name: category._source.name, 
+            value: category._source.slug,
+            datasource_id: newCategoriesDatasourceResponse.data.datasource.id
+          }
+        })
+      )
+    }
+
+    for (const product of products) {
+      requests.push(storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasource_entries`, {
+          datasource_entry: { 
+            name: product._source.name, 
+            value: product._source.slug,
+            datasource_id: newProductsDatasourceResponse.data.datasource.id
+          }
+        })
+      )
+    }
+
+    await Promise.all(requests);
+
+    log('Storyblok Datasources synced!')
+  } catch (error) {
+    log('Storyblok Datasources not synced!')
+    log(error)
+  }
+}
+
+export { syncStories, fullSync, handleHook, seedDatabase, seedStoryblokDatasources }
