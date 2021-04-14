@@ -23,15 +23,35 @@ export function getHitsAsStory (hits) {
   return story
 }
 
-export const transformStory = ({ id, ...story } = {}) => {
+function getHitsAsStories (hits) {
+  if (hits.total === 0) {
+    throw new Error('Missing stories')
+  }
+  const stories = hits.hits.map((hit) => hit._source)
+
+  for (const story of stories) {
+    if (typeof story.content === 'string') {
+      story.content = JSON.parse(story.content)
+    }
+  }
+
+  return stories
+}
+
+export const transformStory = (story, forIndexing = true) => {
   story.content = JSON.stringify(story.content)
   story.full_slug = story.full_slug.replace(/^\/|\/$/g, '')
-  return {
+  const result = {
     index: 'storyblok_stories',
     type: 'story', // XXX: Change to _doc once VSF supports Elasticsearch 6
-    id: id,
-    body: story
+    id: story.id + '_' + story.full_slug
   }
+
+  if (forIndexing) {
+    result.body = story
+  }
+
+  return result
 }
 
 function mapStoryToBulkAction ({ story: { id, full_slug } }) {
@@ -113,6 +133,26 @@ export const getStory = async (db, path) => {
       story: false
     }
   }
+}
+
+export const getStoriesMatchedToId = async (db, id) => {
+  const response = await db.search({
+    index: 'storyblok_stories',
+    type: 'story',
+    body: {
+      query: {
+        bool: {
+          must: {
+            match: {
+              'id': id
+            }
+          }
+        }
+      }
+    }
+  })
+  const hits = getHits(response)
+  return getHitsAsStories(hits)
 }
 
 export const validateEditor = (config, params) => {

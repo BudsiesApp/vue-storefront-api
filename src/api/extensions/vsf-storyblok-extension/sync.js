@@ -1,6 +1,6 @@
 import { storyblokClient } from './storyblok'
 import { storyblokManagementClient } from './storyblok'
-import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate } from './helpers'
+import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate, getStoriesMatchedToId } from './helpers'
 
 function indexStories ({ db, stories = [] }) {
   const bulkOps = createBulkOperations(stories)
@@ -62,24 +62,49 @@ const handleHook = async (db, config, params) => {
 
   switch (action) {
     case 'published':
-      const { data: { story } } = await storyblokClient.get(`cdn/stories/${id}`, {
+      const languages = config.storeViews.multistore ? config.storeViews.mapStoreUrlsFor : [];
+
+      let storiesToPublish = []
+
+      const response = await storyblokClient.get(`cdn/stories/${id}`, {
         cv,
-        resolve_links: 'url'
+        resolve_links: 'url',
+        resolve_relations: 'blockReference.reference'
       })
-      const publishedStory = transformStory(story)
 
-      await db.index(publishedStory)
-      log(`Published ${story.full_slug}`)
+      storiesToPublish.push(response.data.story)
+
+      for (let language of languages) {
+        const response = await storyblokClient.get(`cdn/stories/${id}`, {
+          cv,
+          resolve_links: 'url',
+          resolve_relations: 'blockReference.reference',
+          language: language
+        })
+    
+        storiesToPublish.push(response.data.story)
+      }
+
+      for (const storyToPublish of storiesToPublish) {
+        const publishedStory = transformStory(storyToPublish)
+        await db.index(publishedStory)
+        log(`Published ${storyToPublish.full_slug}`)
+      }
+
       break
-
     case 'unpublished':
-      const unpublishedStory = transformStory({ id })
-      await db.delete(unpublishedStory)
-      log(`Unpublished ${id}`)
-      break
+      const stories = await getStoriesMatchedToId(db, id)
 
+      for (const storyToUnpublish of stories) {
+        const unpublishedStory = transformStory(storyToUnpublish, false)
+        await db.delete(unpublishedStory)
+        log(`Unpublished ${storyToUnpublish.full_slug}`)
+      }
+      
+      break
     case 'branch_deployed':
       await fullSync(db, config)
+
       break
     default:
       break

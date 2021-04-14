@@ -47,8 +47,10 @@ module.exports = ({ config }) => {
       await handleHook(db, config, req.body)
       apiStatus(res)
     } catch (error) {
+      log('Hook failed!')
+      log(error.stack)
       apiStatus(res, {
-        error: 'Webhook failed'
+        error: 'Webhook failed!'
       }, 403)
     }
   })
