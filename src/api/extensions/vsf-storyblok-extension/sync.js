@@ -217,7 +217,7 @@ const seedStoryblokDatasources = async (db, config) => {
         storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasource_entries`, {
           datasource_entry: { 
             name: category._source.name, 
-            value: category._source.slug,
+            value: category._source.id,
             datasource_id: newCategoriesDatasourceResponse.data.datasource.id
           }
         })
@@ -228,7 +228,7 @@ const seedStoryblokDatasources = async (db, config) => {
       requests.push(storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasource_entries`, {
           datasource_entry: { 
             name: product._source.name, 
-            value: product._source.slug,
+            value: product._source.id,
             datasource_id: newProductsDatasourceResponse.data.datasource.id
           }
         })
