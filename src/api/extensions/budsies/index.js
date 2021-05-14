@@ -48,7 +48,7 @@ module.exports = ({ config, db }) => {
       module.getExtraPhotosAddons = function () {
         const customerToken = getToken(req);
 
-        const url = `printedProduct/extraPhotosAddons?token=${customerToken}&productId=${req.params.productId}`;
+        const url = `printedProducts/extraPhotosAddons?token=${customerToken}&productId=${req.params.productId}`;
 
         return restClient.get(url, req.body).then((data) => {
             return getResponse(data);
