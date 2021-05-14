@@ -48,7 +48,7 @@ module.exports = ({ config, db }) => {
       module.addPhrasePillowToCart = function () {
         const customerToken = getToken(req);
 
-        return restClient.post(`/phrasePillows/cartItems?token=${customerToken}`, req.body).then((data) => {
+        return restClient.post(`phrasePillows/cartItems?token=${customerToken}`, req.body).then((data) => {
             return getResponse(data);
         });
       }
