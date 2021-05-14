@@ -48,7 +48,7 @@ module.exports = ({ config, db }) => {
       module.getPrintedProductDesigns = function () {
         const customerToken = getToken(req);
 
-        const url = `printedProduct/designs?token=${customerToken}&productId=${req.params.productId}`;
+        const url = `printedProducts/designs?token=${customerToken}&productId=${req.params.productId}`;
 
         return restClient.get(url, req.body).then((data) => {
             return getResponse(data);
