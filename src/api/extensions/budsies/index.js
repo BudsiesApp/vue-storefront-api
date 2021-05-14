@@ -37,7 +37,33 @@ module.exports = ({ config, db }) => {
     }).catch(err => {
       apiStatus(res, err, 500);
     });
-  })
+  });
+
+  budsiesApi.get('/printed-products/designs/:productId', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getPrintedProductDesigns = function () {
+        const customerToken = getToken(req);
+
+        const url = `printedProduct/designs?token=${customerToken}&productId=${req.params.productId}`;
+
+        return restClient.get(url, req.body).then((data) => {
+            return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getPrintedProductDesigns().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
 
   return budsiesApi;
 }
