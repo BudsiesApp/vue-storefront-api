@@ -39,7 +39,7 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/printed-products/extra-photos-addons/:productId', (req, res) => {
+  budsiesApi.get('/printed-products/extra-photos-addons', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
@@ -48,7 +48,13 @@ module.exports = ({ config, db }) => {
       module.getExtraPhotosAddons = function () {
         const customerToken = getToken(req);
 
-        const url = `printedProducts/extraPhotosAddons?token=${customerToken}&productId=${req.params.productId}`;
+        let url = `printedProducts/extraPhotosAddons?token=${customerToken}`;
+
+        const productId = req.query.productId;
+
+        if (productId !== undefined) {
+          url += `&productId=${productId}`;
+        }
 
         return restClient.get(url).then((data) => {
             return getResponse(data);
