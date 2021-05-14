@@ -24,7 +24,7 @@ module.exports = ({ config, db }) => {
       module.addPrintedProductToCart = function () {
         const customerToken = getToken(req);
 
-        return restClient.post(`printedProducts/create?token=${customerToken}`, req.body).then((data) => {
+        return restClient.post(`printedProducts/cartItems?token=${customerToken}`, req.body).then((data) => {
             return getResponse(data);
         });
       }
