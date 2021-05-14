@@ -50,7 +50,7 @@ module.exports = ({ config, db }) => {
 
         const url = `printedProducts/designs?token=${customerToken}&productId=${req.params.productId}`;
 
-        return restClient.get(url, req.body).then((data) => {
+        return restClient.get(url).then((data) => {
             return getResponse(data);
         });
       }
