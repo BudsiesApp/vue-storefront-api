@@ -65,5 +65,125 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/phrase-pillows/design-options', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getPhrasePillowsDesignOptions = function () {
+        const customerToken = getToken(req);
+
+        let url = `phrasePillows/designOptions?token=${customerToken}`;
+
+        const type = req.query.type;
+
+        if (type !== undefined) {
+          url += `&type=${type}`
+        }
+
+        return restClient.get(url).then((data) => {
+            return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getPhrasePillowsDesignOptions().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  })
+
+  budsiesApi.post('/phrase-pillows/cart-items', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.addPhrasePillowToCart = function () {
+        const customerToken = getToken(req);
+
+        return restClient.post(`phrasePillows/cartItems?token=${customerToken}`, req.body).then((data) => {
+            return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.addPhrasePillowToCart().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.get('/printed-products/designs', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getPrintedProductDesigns = function () {
+        const customerToken = getToken(req);
+
+        let url = `printedProducts/designs?token=${customerToken}`;
+
+        const productId = req.query.productId;
+
+        if (productId !== undefined) {
+          url += `&productId=${productId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+            return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getPrintedProductDesigns().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.get('/printed-products/extra-photos-addons', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getExtraPhotosAddons = function () {
+        const customerToken = getToken(req);
+
+        let url = `printedProducts/extraPhotosAddons?token=${customerToken}`;
+
+        const productId = req.query.productId;
+
+        if (productId !== undefined) {
+          url += `&productId=${productId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+            return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getExtraPhotosAddons().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
