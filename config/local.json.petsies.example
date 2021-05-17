@@ -232,7 +232,7 @@
     "example-processor",
     "example-custom-filter",
     "elastic-stock",
-    "custom-product",
+    "budsies",
     "vsf-storyblok-extension"
   ],
   "extensions": {
