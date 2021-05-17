@@ -39,6 +39,30 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.post('/phrase-pillows/cart-items', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.addPhrasePillowToCart = function () {
+        const customerToken = getToken(req);
+
+        return restClient.post(`phrasePillows/cartItems?token=${customerToken}`, req.body).then((data) => {
+            return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.addPhrasePillowToCart().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   budsiesApi.get('/printed-products/designs', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
