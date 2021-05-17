@@ -39,6 +39,32 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/phrase-pillows/size-options', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getPhrasePillowsSizeOptions = function () {
+        const customerToken = getToken(req);
+
+        const url = `phrasePillows/sizeOptions?token=${customerToken}`;
+
+        return restClient.get(url).then((data) => {
+            return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getPhrasePillowsSizeOptions().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   budsiesApi.get('/phrase-pillows/design-options', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
