@@ -185,16 +185,16 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.post('/forevers', (req, res) => {
+  budsiesApi.post('/plushies', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.createForeversPlushie = function () {
+      module.createPlushie = function () {
         const customerToken = getToken(req);
 
-        return restClient.post(`forevers?token=${customerToken}`, req.body).then((data) => {
+        return restClient.post(`plushies?token=${customerToken}`, req.body).then((data) => {
           return getResponse(data);
         });
       }
@@ -202,7 +202,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.createForeversPlushie().then((result) => {
+    client.budsies.createPlushie().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
