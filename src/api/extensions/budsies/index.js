@@ -185,5 +185,37 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/plushies/breeds', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getExtraPhotosAddons = function () {
+        const customerToken = getToken(req);
+
+        let url = `plushies/dogBreeds?token=${customerToken}`;
+
+        const term = req.query.term;
+
+        if (term !== undefined) {
+          url += `&term=${term}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getExtraPhotosAddons().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
