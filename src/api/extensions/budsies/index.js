@@ -191,7 +191,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getExtraPhotosAddons = function () {
+      module.getDogBreeds = function () {
         const customerToken = getToken(req);
 
         let url = `plushies/dogBreeds?token=${customerToken}`;
@@ -210,7 +210,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getExtraPhotosAddons().then((result) => {
+    client.budsies.getDogBreeds().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
@@ -223,7 +223,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getShortCodes = function () {
+      module.getPlushiesUpgrades = function () {
         const customerToken = getToken(req);
 
         let url = `plushies/upgrades?token=${customerToken}`;
@@ -242,7 +242,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getShortCodes().then((result) => {
+    client.budsies.getPlushiesUpgrades().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
@@ -255,7 +255,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getShortCodes = function () {
+      module.getPlushiesBodyParts = function () {
         const customerToken = getToken(req);
 
         let url = `plushies/bodyParts?token=${customerToken}`;
@@ -274,7 +274,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getShortCodes().then((result) => {
+    client.budsies.getPlushiesBodyParts().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
