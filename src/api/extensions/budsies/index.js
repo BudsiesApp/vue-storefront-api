@@ -39,7 +39,7 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/phrase-pillows/size-options', (req, res) => {
+  budsiesApi.get('/pillows/size-options', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
@@ -48,7 +48,7 @@ module.exports = ({ config, db }) => {
       module.getPhrasePillowsSizeOptions = function () {
         const customerToken = getToken(req);
 
-        const url = `phrasePillows/sizeOptions?token=${customerToken}`;
+        const url = `pillows/sizeOptions?token=${customerToken}`;
 
         return restClient.get(url).then((data) => {
             return getResponse(data);
@@ -211,6 +211,62 @@ module.exports = ({ config, db }) => {
     });
 
     client.budsies.getShortCodes().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.get('/plushies/body-parts', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getShortCodes = function () {
+        const customerToken = getToken(req);
+
+        let url = `plushies/bodyParts?token=${customerToken}`;
+
+        const productId = req.query.productId;
+
+        if (productId !== undefined) {
+          url += `&productId=${productId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getShortCodes().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.post('/plushies', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.createPlushie = function () {
+        const customerToken = getToken(req);
+
+        return restClient.post(`plushies?token=${customerToken}`, req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.createPlushie().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
