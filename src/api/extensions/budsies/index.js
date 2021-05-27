@@ -39,7 +39,7 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/phrase-pillows/size-options', (req, res) => {
+  budsiesApi.get('/pillows/size-options', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
@@ -48,7 +48,7 @@ module.exports = ({ config, db }) => {
       module.getPhrasePillowsSizeOptions = function () {
         const customerToken = getToken(req);
 
-        const url = `phrasePillows/sizeOptions?token=${customerToken}`;
+        const url = `pillows/sizeOptions?token=${customerToken}`;
 
         return restClient.get(url).then((data) => {
             return getResponse(data);
