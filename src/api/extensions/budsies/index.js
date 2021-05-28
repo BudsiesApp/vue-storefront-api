@@ -305,7 +305,7 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/plushies/rushUpgrades', (req, res) => {
+  budsiesApi.get('/plushies/rush-upgrades', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
