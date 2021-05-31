@@ -338,7 +338,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getShortCodes = function () {
+      module.getBodyPartsPlushieValues = function () {
         const customerToken = getToken(req);
 
         let url = `plushies/bodyPartsPlushieValues?token=${customerToken}`;
@@ -357,7 +357,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getShortCodes().then((result) => {
+    client.budsies.getBodyPartsPlushieValues().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
