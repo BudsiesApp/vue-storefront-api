@@ -223,7 +223,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getShortCodes = function () {
+      module.getUpgrades = function () {
         const customerToken = getToken(req);
 
         let url = `plushies/upgrades?token=${customerToken}`;
@@ -242,7 +242,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getShortCodes().then((result) => {
+    client.budsies.getUpgrades().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
@@ -255,7 +255,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getShortCodes = function () {
+      module.getBodyParts = function () {
         const customerToken = getToken(req);
 
         let url = `plushies/bodyParts?token=${customerToken}`;
@@ -274,7 +274,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getShortCodes().then((result) => {
+    client.budsies.getBodyParts().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
