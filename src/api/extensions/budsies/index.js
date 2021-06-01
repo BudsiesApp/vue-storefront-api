@@ -185,6 +185,38 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/plushies/short-codes', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getShortCodes = function () {
+        const customerToken = getToken(req);
+
+        let url = `plushies/shortCodes?token=${customerToken}`;
+
+        const plushieId = req.query.plushieId;
+
+        if (plushieId !== undefined) {
+          url += `&plushieId=${plushieId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getShortCodes().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   budsiesApi.get('/plushies/breeds', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
@@ -299,6 +331,33 @@ module.exports = ({ config, db }) => {
     });
 
     client.budsies.createPlushie().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.get('/plushies/:plushieId', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getPlushies = function () {
+        const customerToken = getToken(req);
+
+        const plushieId = req.params.plushieId;
+        let url = `plushies/${plushieId}?token=${customerToken}`;
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getPlushies().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
