@@ -191,7 +191,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getExtraPhotosAddons = function () {
+      module.getDogBreeds = function () {
         const customerToken = getToken(req);
 
         let url = `plushies/dogBreeds?token=${customerToken}`;
@@ -210,7 +210,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getExtraPhotosAddons().then((result) => {
+    client.budsies.getDogBreeds().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
