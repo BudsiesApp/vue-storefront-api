@@ -314,7 +314,7 @@ module.exports = ({ config, db }) => {
       module.getSelectedUpgrades = function () {
         const customerToken = getToken(req);
 
-        let url = `plushies/upgradesValues?token=${customerToken}`;
+        let url = `plushies/upgradesPlushieValues?token=${customerToken}`;
 
         const plushieId = req.query.plushieId;
 
