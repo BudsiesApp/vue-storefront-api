@@ -223,7 +223,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getExtraPhotosAddons = function () {
+      module.getDogBreeds = function () {
         const customerToken = getToken(req);
 
         let url = `plushies/dogBreeds?token=${customerToken}`;
@@ -242,7 +242,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getExtraPhotosAddons().then((result) => {
+    client.budsies.getDogBreeds().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
@@ -255,7 +255,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getShortCodes = function () {
+      module.getUpgrades = function () {
         const customerToken = getToken(req);
 
         let url = `plushies/upgrades?token=${customerToken}`;
@@ -274,7 +274,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getShortCodes().then((result) => {
+    client.budsies.getUpgrades().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
@@ -287,7 +287,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getShortCodes = function () {
+      module.getBodyParts = function () {
         const customerToken = getToken(req);
 
         let url = `plushies/bodyParts?token=${customerToken}`;
@@ -306,7 +306,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getShortCodes().then((result) => {
+    client.budsies.getBodyParts().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
@@ -331,6 +331,38 @@ module.exports = ({ config, db }) => {
     });
 
     client.budsies.createPlushie().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.get('/plushies/body-parts-plushie-values', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getBodyPartsPlushieValues = function () {
+        const customerToken = getToken(req);
+
+        let url = `plushies/bodyPartsPlushieValues?token=${customerToken}`;
+
+        const plushieId = req.query.plushieId;
+
+        if (plushieId !== undefined) {
+          url += `&plushieId=${plushieId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getBodyPartsPlushieValues().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
