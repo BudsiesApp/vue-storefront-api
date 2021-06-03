@@ -185,6 +185,38 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/plushies/short-codes', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getShortCodes = function () {
+        const customerToken = getToken(req);
+
+        let url = `plushies/shortCodes?token=${customerToken}`;
+
+        const plushieId = req.query.plushieId;
+
+        if (plushieId !== undefined) {
+          url += `&plushieId=${plushieId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getShortCodes().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   budsiesApi.get('/plushies/breeds', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
@@ -337,6 +369,38 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/plushies/images', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getPlushieImages = function () {
+        const customerToken = getToken(req);
+
+        let url = `plushies/images?token=${customerToken}`;
+
+        const plushieId = req.query.plushieId;
+
+        if (plushieId !== undefined) {
+          url += `&plushieId=${plushieId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getPlushieImages().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   budsiesApi.get('/plushies/:plushieId', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
@@ -358,6 +422,33 @@ module.exports = ({ config, db }) => {
     });
 
     client.budsies.getPlushies().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.post('/carts/email-update-requests', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.addPrintedProductToCart = function () {
+        const params = new URLSearchParams({
+          cartId: req.query.cartId,
+          token: getToken(req),
+        });
+
+        return restClient.post(`carts/emailUpdateRequests?${params.toString()}`, req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.addPrintedProductToCart().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
