@@ -255,7 +255,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getUpgrades = function () {
+      module.getPlushiesUpgrades = function () {
         const customerToken = getToken(req);
 
         let url = `plushies/upgrades?token=${customerToken}`;
@@ -274,7 +274,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getUpgrades().then((result) => {
+    client.budsies.getPlushiesUpgrades().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
@@ -287,7 +287,7 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getBodyParts = function () {
+      module.getPlushiesBodyParts = function () {
         const customerToken = getToken(req);
 
         let url = `plushies/bodyParts?token=${customerToken}`;
@@ -306,7 +306,39 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getBodyParts().then((result) => {
+    client.budsies.getPlushiesBodyParts().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.get('/plushies/rush-upgrades', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getPlushiesRushUpgrades = function () {
+        const customerToken = getToken(req);
+
+        let url = `plushies/rushUpgrades?token=${customerToken}`;
+
+        const productId = req.query.productId;
+
+        if (productId !== undefined) {
+          url += `&productId=${productId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getPlushiesRushUpgrades().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
