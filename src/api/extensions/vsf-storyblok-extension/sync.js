@@ -14,7 +14,7 @@ async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
     page,
     per_page: perPage,
     resolve_links: 'url',
-    resolve_relations: 'blockReference.reference',
+    resolve_relations: 'block_reference.reference',
     excluding_slugs: 'blocks/*'
   })
 
@@ -23,7 +23,7 @@ async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
       page,
       per_page: perPage,
       resolve_links: 'url',
-      resolve_relations: 'blockReference.reference',
+      resolve_relations: 'block_reference.reference',
       excluding_slugs: 'blocks/*',
       starts_with: language + '/*'
     })
@@ -69,7 +69,7 @@ const handleHook = async (db, config, params) => {
       const response = await storyblokClient.get(`cdn/stories/${id}`, {
         cv,
         resolve_links: 'url',
-        resolve_relations: 'blockReference.reference'
+        resolve_relations: 'block_reference.reference'
       })
 
       storiesToPublish.push(response.data.story)
@@ -78,7 +78,7 @@ const handleHook = async (db, config, params) => {
         const response = await storyblokClient.get(`cdn/stories/${id}`, {
           cv,
           resolve_links: 'url',
-          resolve_relations: 'blockReference.reference',
+          resolve_relations: 'block_reference.reference',
           language: language
         })
     
