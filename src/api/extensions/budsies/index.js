@@ -519,5 +519,29 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.post('/dongler-book-requests', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendDonglerBookRequest = function () {
+        const customerToken = getToken(req);
+
+        return restClient.post(`dongler-book/emails/save/?token=${customerToken}`, req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.sendDonglerBookRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
