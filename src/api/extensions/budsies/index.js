@@ -528,7 +528,7 @@ module.exports = ({ config, db }) => {
       module.sendDonglerBookRequest = function () {
         const customerToken = getToken(req);
 
-        return restClient.post(`dongler-book/emails/save/?token=${customerToken}`, req.body).then((data) => {
+        return restClient.post(`donglerBooks/requests/?token=${customerToken}`, req.body).then((data) => {
           return getResponse(data);
         });
       }
