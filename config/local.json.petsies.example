@@ -275,7 +275,7 @@
   },
   "magento1": {
     "url": "https://${DEFAULT_STORE_DOMAIN}",
-    "imgUrl": "https://${DEFAULT_STORE_DOMAIN}/media/catalog/product",
+    "imgUrl": "https://${DEFAULT_STORE_DOMAIN}/media",
     "assetPath": "",
     "magentoUserName": "${MAGENTO_USER_NAME}",
     "magentoUserPassword": "${MAGENTO_USER_PASSWORD}",
