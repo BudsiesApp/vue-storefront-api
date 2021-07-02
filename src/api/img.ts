@@ -48,5 +48,5 @@ export default ({ config, db }) =>
     return res
       .type(imageAction.mimeType)
       .set({ 'Cache-Control': `max-age=${imageAction.maxAgeForResponse}` })
-      .send(imageBuffer);
+      .send(imageAction.mimeType === 'image/svg+xml' ? imageBuffer.toString() : imageBuffer);
   });
