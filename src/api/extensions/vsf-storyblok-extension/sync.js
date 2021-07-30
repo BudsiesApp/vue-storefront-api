@@ -61,7 +61,7 @@ const handleHook = async (db, config, params) => {
   const { story_id: id, action } = params
 
   switch (action) {
-    case 'published':
+    case 'published': {
       const languages = config.storeViews.multistore ? config.storeViews.mapStoreUrlsFor : [];
 
       let storiesToPublish = []
@@ -92,7 +92,8 @@ const handleHook = async (db, config, params) => {
       }
 
       break
-    case 'unpublished':
+    }
+    case 'unpublished': {
       const stories = await getStoriesMatchedToId(db, id)
 
       for (const storyToUnpublish of stories) {
@@ -102,7 +103,8 @@ const handleHook = async (db, config, params) => {
       }
       
       break
-    case 'deleted':
+    }
+    case 'deleted': {
       const stories = await getStoriesMatchedToId(db, id)
 
       for (const storyToUnpublish of stories) {
@@ -112,13 +114,16 @@ const handleHook = async (db, config, params) => {
       }
       
       break
-    case 'branch_deployed':
+    }
+    case 'branch_deployed': {
       await fullSync(db, config)
 
       break
-    default:
+    }
+    default: {
       log(`WARNING!!! Unknown action ${action} ${id}`)
       break
+    }
   }
   await cacheInvalidate(config.storyblok)
 }
