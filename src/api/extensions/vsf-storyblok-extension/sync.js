@@ -102,11 +102,22 @@ const handleHook = async (db, config, params) => {
       }
       
       break
+    case 'deleted':
+      const stories = await getStoriesMatchedToId(db, id)
+
+      for (const storyToUnpublish of stories) {
+        const unpublishedStory = transformStory(storyToUnpublish, false)
+        await db.delete(unpublishedStory)
+        log(`Deleted ${storyToUnpublish.full_slug}`)
+      }
+      
+      break
     case 'branch_deployed':
       await fullSync(db, config)
 
       break
     default:
+      log(`WARNING!!! Unknown action ${action} ${id}`)
       break
   }
   await cacheInvalidate(config.storyblok)
