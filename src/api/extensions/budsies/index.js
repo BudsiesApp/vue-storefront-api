@@ -543,5 +543,37 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/promotion-platform/campaigns', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getPromotionPlatformCampaign = function () {
+        const customerToken = getToken(req);
+
+        let url = `promotionPlatform/campaigns?token=${customerToken}`;
+
+        const campaignToken = req.query.campaignToken;
+
+        if (campaignToken !== undefined) {
+          url += `&campaignToken=${campaignToken}`;
+        }
+
+        return restClient.get(url).then((data) => {
+            return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getPromotionPlatformCampaign().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
