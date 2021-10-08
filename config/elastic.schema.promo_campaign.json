@@ -1,0 +1,6 @@
+{
+   "properties": {
+       "id": {"type": "long"},
+       "name": {"type": "text"}
+    }
+}
