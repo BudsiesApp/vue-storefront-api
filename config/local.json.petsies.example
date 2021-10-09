@@ -38,7 +38,8 @@
       "cms_page",
       "attribute",
       "taxrule",
-      "review"
+      "review",
+      "promo_campaign"
     ],
     "apiVersion": "5.6",
     "useRequestFilter": false,
@@ -220,7 +221,8 @@
       "enabled": false,
       "index": "vue_storefront_catalog_${DEFAULT_STORE_ID}",
       "categoriesDatasourceSlug": "categories",
-      "productsDatasourceSlug": "products"
+      "productsDatasourceSlug": "products",
+      "promoCampaignsDatasourceSlug": "promo-campaigns"
     }
   },
   "platform": "magento1",
