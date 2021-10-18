@@ -581,5 +581,29 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.post('/carts/recovery-requests', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendCartRecoveryRequest = function () {
+        const customerToken = getToken(req);
+
+        return restClient.post(`carts/recoveryRequests/?token=${customerToken}`, req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.sendCartRecoveryRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }

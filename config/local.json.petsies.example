@@ -233,7 +233,8 @@
     "example-custom-filter",
     "elastic-stock",
     "budsies",
-    "vsf-storyblok-extension"
+    "vsf-storyblok-extension",
+    "braintree"
   ],
   "extensions": {
     "mailchimp": {
@@ -260,6 +261,12 @@
     },
     "example-custom-filter": {
       "catalogFilter": [ "SampleFilter" ]
+    },
+    "braintree": {
+      "mode": "sandbox",
+      "merchantId": "same-as-magento",
+      "publicKey": "same-as-magento",
+      "privateKey": "same-as-magento"
     }
   },
   "magento2": {
