@@ -81,7 +81,7 @@ const handleHook = async (db, config, params) => {
           resolve_relations: 'block_reference.reference',
           language: language
         })
-    
+
         storiesToPublish.push(response.data.story)
       }
 
@@ -101,7 +101,7 @@ const handleHook = async (db, config, params) => {
         await db.delete(unpublishedStory)
         log(`Unpublished ${storyToUnpublish.full_slug}`)
       }
-      
+
       break
     }
     case 'deleted': {
@@ -112,7 +112,7 @@ const handleHook = async (db, config, params) => {
         await db.delete(unpublishedStory)
         log(`Deleted ${storyToUnpublish.full_slug}`)
       }
-      
+
       break
     }
     case 'branch_deployed': {
@@ -189,10 +189,22 @@ const seedStoryblokDatasources = async (db, config) => {
       }
     });
 
+    const { body: { hits: { hits: promoCampaigns } } } = await db.search({
+      index: config.storyblok.sync.index,
+      type: 'promo_campaign',
+      sort: 'name: asc',
+      body: {
+        "query": {}
+      }
+    });
+
+    log(promoCampaigns.length)
+
     const datasourcesResponse = await storyblokManagementClient.get(`spaces/${config.storyblok.spaceId}/datasources`)
 
     let categoriesDatasourceId
     let productsDatasourceId
+    let promoCampaignsDatasourceId
 
     for (const datasource of datasourcesResponse.data.datasources) {
       if (datasource.slug === config.storyblok.sync.categoriesDatasourceSlug) {
@@ -201,28 +213,39 @@ const seedStoryblokDatasources = async (db, config) => {
       if (datasource.slug === config.storyblok.sync.productsDatasourceSlug) {
         productsDatasourceId = datasource.id
       }
+      if (datasource.slug === config.storyblok.sync.promoCampaignsDatasourceSlug) {
+        promoCampaignsDatasourceId = datasource.id
+      }
     }
 
-    if (!categoriesDatasourceId || !productsDatasourceId) {
+    if (!categoriesDatasourceId || !productsDatasourceId || !promoCampaignsDatasourceId) {
       throw new Error('Fail to retrieve datasources IDs')
     }
 
     await Promise.all([
       storyblokManagementClient.delete(`spaces/${config.storyblok.spaceId}/datasources/${categoriesDatasourceId}`),
-      storyblokManagementClient.delete(`spaces/${config.storyblok.spaceId}/datasources/${productsDatasourceId}`)
+      storyblokManagementClient.delete(`spaces/${config.storyblok.spaceId}/datasources/${productsDatasourceId}`),
+      storyblokManagementClient.delete(`spaces/${config.storyblok.spaceId}/datasources/${promoCampaignsDatasourceId}`)
     ])
 
     let newCategoriesDatasourceResponse = await storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasources`, {
-      datasource: { 
-        name: 'Categories', 
-        slug: config.storyblok.sync.categoriesDatasourceSlug 
+      datasource: {
+        name: 'Categories',
+        slug: config.storyblok.sync.categoriesDatasourceSlug
       }
     })
 
     let newProductsDatasourceResponse = await storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasources`, {
-      datasource: { 
-        name: 'Products', 
-        slug: config.storyblok.sync.productsDatasourceSlug 
+      datasource: {
+        name: 'Products',
+        slug: config.storyblok.sync.productsDatasourceSlug
+      }
+    })
+
+    let newPromoCampaignsDatasourceResponse = await storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasources`, {
+      datasource: {
+        name: 'Promo Campaigns',
+        slug: config.storyblok.sync.promoCampaignsDatasourceSlug
       }
     })
 
@@ -231,8 +254,8 @@ const seedStoryblokDatasources = async (db, config) => {
     for (const category of categories) {
       requests.push(
         storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasource_entries`, {
-          datasource_entry: { 
-            name: category._source.name, 
+          datasource_entry: {
+            name: category._source.name,
             value: category._source.id,
             datasource_id: newCategoriesDatasourceResponse.data.datasource.id
           }
@@ -242,10 +265,21 @@ const seedStoryblokDatasources = async (db, config) => {
 
     for (const product of products) {
       requests.push(storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasource_entries`, {
-          datasource_entry: { 
-            name: product._source.name, 
+          datasource_entry: {
+            name: product._source.name,
             value: product._source.id,
             datasource_id: newProductsDatasourceResponse.data.datasource.id
+          }
+        })
+      )
+    }
+
+    for (const promoCampaign of promoCampaigns) {
+      requests.push(storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasource_entries`, {
+          datasource_entry: {
+            name: promoCampaign._source.name,
+            value: promoCampaign._source.id,
+            datasource_id: newPromoCampaignsDatasourceResponse.data.datasource.id
           }
         })
       )
