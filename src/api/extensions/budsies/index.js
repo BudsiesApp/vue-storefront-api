@@ -560,6 +560,12 @@ module.exports = ({ config, db }) => {
           url += `&campaignToken=${campaignToken}`;
         }
 
+        const data = req.query.data;
+
+        if (data !== undefined) {
+            url += `&data=${data}`;
+        }
+
         return restClient.get(url).then((data) => {
             return getResponse(data);
         });
