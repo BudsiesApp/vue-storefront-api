@@ -599,7 +599,7 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/stores/rating', (req, res) => {
+  budsiesApi.get('/stores/ratings', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
@@ -608,7 +608,7 @@ module.exports = ({ config, db }) => {
       module.getStoreRating = function () {
         const customerToken = getToken(req);
 
-        let url = `stores/rating?token=${customerToken}`;
+        let url = `stores/ratings?token=${customerToken}`;
 
         const storeId = req.query.storeId;
 
