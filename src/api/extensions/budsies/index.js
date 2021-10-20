@@ -605,5 +605,37 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/stores/ratings', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getStoreRating = function () {
+        const customerToken = getToken(req);
+
+        let url = `stores/ratings?token=${customerToken}`;
+
+        const storeId = req.query.storeId;
+
+        if (storeId !== undefined) {
+          url += `&storeId=${storeId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getStoreRating().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
