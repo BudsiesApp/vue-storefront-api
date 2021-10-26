@@ -637,5 +637,37 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/giftcards/templates', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getGiftcardsTemplates = function () {
+        const customerToken = getToken(req);
+
+        let url = `giftcards/templates?token=${customerToken}`;
+
+        const storeId = req.query.storeId;
+
+        if (storeId !== undefined) {
+          url += `&storeId=${storeId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getGiftcardsTemplates().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
