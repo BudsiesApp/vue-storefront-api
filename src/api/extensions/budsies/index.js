@@ -588,9 +588,13 @@ module.exports = ({ config, db }) => {
       let module = {};
 
       module.sendCartRecoveryRequest = function () {
-        const customerToken = getToken(req);
+        const params = new URLSearchParams({
+          recoveryId: req.query.recoveryId,
+          recoveryCode: req.query.recoveryCode,
+          token: getToken(req),
+        });
 
-        return restClient.post(`carts/recoveryRequests/?token=${customerToken}`, req.body).then((data) => {
+        return restClient.post(`carts/recoveryRequests?${params.toString()}`, req.body).then((data) => {
           return getResponse(data);
         });
       }
