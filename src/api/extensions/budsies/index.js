@@ -673,5 +673,101 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.post('/giftcards/apply', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendGiftcardsApplyRequest = function () {
+        const customerToken = getToken(req);
+
+        let url = `giftcards/apply?token=${customerToken}`;
+
+        const cartId = req.query.cartId;
+
+        if (cartId !== undefined) {
+          url += `&cartId=${cartId}`;
+        }
+
+        return restClient.post(url, req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.sendGiftcardsApplyRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.post('/giftcards/remove', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendGiftcardsRemoveRequest = function () {
+        const customerToken = getToken(req);
+
+        let url = `giftcards/remove?token=${customerToken}`;
+
+        const cartId = req.query.cartId;
+
+        if (cartId !== undefined) {
+          url += `&cartId=${cartId}`;
+        }
+
+        return restClient.post(url, req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.sendGiftcardsRemoveRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.post('/giftcards/change-value', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendGiftcardsChangeValueRequest = function () {
+        const customerToken = getToken(req);
+
+        let url = `giftcards/changeValue?token=${customerToken}`;
+
+        const cartId = req.query.cartId;
+
+        if (cartId !== undefined) {
+          url += `&cartId=${cartId}`;
+        }
+
+        return restClient.post(url, req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.sendGiftcardsChangeValueRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
