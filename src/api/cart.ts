@@ -39,7 +39,12 @@ export default ({ config, db }) => {
     if (!req.body.cartItem) {
       return apiStatus(res, 'No cartItem element provided within the request body', 500)
     }
-    cartProxy.update(token, req.query.cartId ? req.query.cartId : null, req.body.cartItem).then((result) => {
+    cartProxy.update(
+      token, 
+      req.query.cartId ? req.query.cartId : null, 
+      req.body.cartItem,
+      req.query.campaignToken ?? undefined
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -141,7 +146,12 @@ export default ({ config, db }) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
     res.setHeader('Cache-Control', 'no-cache, no-store');
-    cartProxy.totals(token, req.query.cartId ? req.query.cartId : null, req.body).then((result) => {
+    cartProxy.totals(
+      token, 
+      req.query.cartId ? req.query.cartId : null, 
+      req.body,
+      req.query.campaignToken ?? undefined
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -197,7 +207,12 @@ export default ({ config, db }) => {
     if (!req.body.addressInformation) {
       return apiStatus(res, 'No address element provided within the request body', 500)
     }
-    cartProxy.setShippingInformation(token, req.query.cartId ? req.query.cartId : null, req.body).then((result) => {
+    cartProxy.setShippingInformation(
+      token, 
+      req.query.cartId ? req.query.cartId : null, 
+      req.body,
+      req.query.campaignToken ?? undefined
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);

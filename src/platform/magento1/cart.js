@@ -10,8 +10,8 @@ class CartProxy extends AbstractCartProxy {
   create (customerToken) {
     return this.api.cart.create(customerToken);
   }
-  update (customerToken, cartId, cartItem) {
-    return this.api.cart.update(customerToken, cartId, cartItem);
+  update (customerToken, cartId, cartItem, campaignToken = undefined) {
+    return this.api.cart.update(customerToken, cartId, cartItem, campaignToken);
   }
   delete (customerToken, cartId, cartItem) {
     return this.api.cart.delete(customerToken, cartId, cartItem);
@@ -19,8 +19,8 @@ class CartProxy extends AbstractCartProxy {
   pull (customerToken, cartId, params) {
     return this.api.cart.pull(customerToken, cartId, params);
   }
-  totals (customerToken, cartId, params) {
-    return this.api.cart.totals(customerToken, cartId, params);
+  totals (customerToken, cartId, params, campaignToken = undefined) {
+    return this.api.cart.totals(customerToken, cartId, campaignToken);
   }
   getShippingMethods (customerToken, cartId, address) {
     return this.api.cart.shippingMethods(customerToken, cartId, address);
@@ -28,8 +28,8 @@ class CartProxy extends AbstractCartProxy {
   getPaymentMethods (customerToken, cartId) {
     return this.api.cart.paymentMethods(customerToken, cartId);
   }
-  setShippingInformation (customerToken, cartId, address) {
-    return this.api.cart.shippingInformation(customerToken, cartId, address);
+  setShippingInformation (customerToken, cartId, address, campaignToken = undefined) {
+    return this.api.cart.shippingInformation(customerToken, cartId, address, campaignToken);
   }
   collectTotals (customerToken, cartId, shippingMethod) {
     return this.api.cart.collectTotals(customerToken, cartId, shippingMethod);
