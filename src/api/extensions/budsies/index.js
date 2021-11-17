@@ -769,5 +769,37 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/giftcards/pull', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendGiftcardsPullRequest = function () {
+        const customerToken = getToken(req);
+
+        let url = `giftcards/pull?token=${customerToken}`;
+
+        const cartId = req.query.cartId;
+
+        if (cartId !== undefined) {
+          url += `&cartId=${cartId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.sendGiftcardsPullRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
