@@ -18,7 +18,10 @@ export default ({ config, db }) => {
   cartApi.post('/create', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
-    cartProxy.create(token).then((result) => {
+    cartProxy.create(
+      token,
+      req.query.campaignToken ?? undefined
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);

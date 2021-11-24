@@ -7,8 +7,8 @@ class CartProxy extends AbstractCartProxy {
     super(config, req)
     this.api = Magento1Client(multiStoreConfig(config.magento1.api, req));
   }
-  create (customerToken) {
-    return this.api.cart.create(customerToken);
+  create (customerToken, campaignToken = undefined) {
+    return this.api.cart.create(customerToken, campaignToken);
   }
   update (customerToken, cartId, cartItem) {
     return this.api.cart.update(customerToken, cartId, cartItem);

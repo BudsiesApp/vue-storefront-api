@@ -566,6 +566,12 @@ module.exports = ({ config, db }) => {
             url += `&data=${data}`;
         }
 
+        const cartId = req.query.cartId;
+
+        if (cartId !== undefined) {
+          url += `&cartId=${cartId}`;
+        }
+
         return restClient.get(url).then((data) => {
             return getResponse(data);
         });
