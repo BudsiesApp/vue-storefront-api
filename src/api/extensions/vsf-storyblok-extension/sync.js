@@ -155,13 +155,13 @@ const seedStoryblokDatasources = async (db, config) => {
       type: 'product',
       sort: 'name: asc',
       body: {
+        "size" : 1000,
         "query": {
           "constant_score": {
             "filter": {
               "bool": {
                 "must": [
-                  {"terms": {"visibility": [2,3,4]}},
-                  {"terms": {"status": [1]}}
+                  {"terms": {"visibility": [2,3,4]}}
                 ]
               }
             }
@@ -175,6 +175,7 @@ const seedStoryblokDatasources = async (db, config) => {
       type: 'category',
       sort: 'name: asc',
       body: {
+        "size" : 1000,
         "query": {
           "constant_score": {
             "filter": {
@@ -194,11 +195,14 @@ const seedStoryblokDatasources = async (db, config) => {
       type: 'promo_campaign',
       sort: 'name: asc',
       body: {
+        "size" : 1000,
         "query": {}
       }
     });
 
-    log(promoCampaigns.length)
+    log('Products count: ' + products.length)
+    log('Categories count: ' + categories.length)
+    log('Promo campaigns count: ' + promoCampaigns.length)
 
     const datasourcesResponse = await storyblokManagementClient.get(`spaces/${config.storyblok.spaceId}/datasources`)
 
