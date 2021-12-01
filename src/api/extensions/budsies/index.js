@@ -807,5 +807,69 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/affirm/is-payment-method-available', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendAffirmIsPaymentMethodAvailableRequest = function () {
+        const customerToken = getToken(req);
+
+        let url = `affirm/isPaymentMethodAvailable?token=${customerToken}`;
+
+        const cartId = req.query.cartId;
+
+        if (cartId !== undefined) {
+          url += `&cartId=${cartId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.sendAffirmIsPaymentMethodAvailableRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.get('/affirm/get-checkout-object', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendAffirmGetCheckoutObjectRequest = function () {
+        const customerToken = getToken(req);
+
+        let url = `affirm/getCheckoutObject?token=${customerToken}`;
+
+        const cartId = req.query.cartId;
+
+        if (cartId !== undefined) {
+          url += `&cartId=${cartId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.sendAffirmGetCheckoutObjectRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
