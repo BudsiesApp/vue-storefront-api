@@ -25,7 +25,8 @@ export function getHitsAsStory (hits) {
 
 function getHitsAsStories (hits) {
   if (hits.total === 0) {
-    throw new Error('Missing stories')
+    log('Missing stories')
+    return []
   }
   const stories = hits.hits.map((hit) => hit._source)
 
@@ -145,6 +146,27 @@ export const getStoriesMatchedToId = async (db, id) => {
           must: {
             match: {
               'id': id
+            }
+          }
+        }
+      }
+    }
+  })
+  const hits = getHits(response)
+  return getHitsAsStories(hits)
+}
+
+export const getStoriesWithIdReference = async (db, id) => {
+  const response = await db.search({
+    index: 'storyblok_stories',
+    type: 'story',
+    size: 1000,
+    body: {
+      query: {
+        constant_score: {
+          filter: {
+            match_phrase: {
+              'content' : `"id": ${id}`
             }
           }
         }
