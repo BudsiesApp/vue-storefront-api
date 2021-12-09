@@ -1,6 +1,6 @@
 import { storyblokClient } from './storyblok'
 import { storyblokManagementClient } from './storyblok'
-import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate, getStoriesMatchedToId } from './helpers'
+import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate, getStoriesMatchedToId, getStoriesWithIdReference } from './helpers'
 
 function indexStories ({ db, stories = [] }) {
   const bulkOps = createBulkOperations(stories)
@@ -60,10 +60,64 @@ const handleHook = async (db, config, params) => {
   const cv = Date.now() // bust cache
   const { story_id: id, action } = params
 
+  if (action === 'branch_deployed') {
+    await fullSync(db, config)
+    await cacheInvalidate(config.storyblok)
+    return
+  }
+
+  log(`Handle hook for ${action} story ${id}`)
+
+  await handleActionForStory(db, config, id, action, cv)
+  await handleActionForBlock(db, id, action, cv)
+
+  await cacheInvalidate(config.storyblok)
+}
+
+const handleActionForBlock = async (db, id, action, cv) => {
+  const size = 10
+
+  switch (action) {
+    case 'deleted':
+    case 'unpublished':
+      break
+    case 'published': {
+      let storiesToIndex = await getStoriesWithIdReference(db, id)
+
+      while (storiesToIndex.length > 0) {
+        const batchStories = storiesToIndex.splice(0, size)
+        const batchSlugs = batchStories.map(story => story.full_slug)
+
+        const response = await storyblokClient.get('cdn/stories', {
+          cv,
+          per_page: size,
+          resolve_links: 'url',
+          resolve_relations: 'block_reference.reference',
+          by_slugs: batchSlugs.join()
+        })
+
+        for (const storyToReindex of response.data.stories) {
+          const transformedStory = transformStory(storyToReindex)
+
+          await db.index(transformedStory)
+
+          log(`Reindex related story ${storyToReindex.full_slug}`)
+        }
+      }
+
+      break
+    }
+    default: {
+      log(`WARNING!!! Unknown action ${action} ${id}`)
+
+      break
+    }
+  }
+}
+
+const handleActionForStory = async (db, config, id, action, cv) => {
   switch (action) {
     case 'published': {
-      const languages = config.storeViews.multistore ? config.storeViews.mapStoreUrlsFor : [];
-
       let storiesToPublish = []
 
       const response = await storyblokClient.get(`cdn/stories/${id}`, {
@@ -72,7 +126,11 @@ const handleHook = async (db, config, params) => {
         resolve_relations: 'block_reference.reference'
       })
 
-      storiesToPublish.push(response.data.story)
+      if (response.data.story && response.data.story.full_slug.indexOf('blocks/') === -1) {
+        storiesToPublish.push(response.data.story)
+      }
+
+      const languages = config.storeViews.multistore ? config.storeViews.mapStoreUrlsFor : [];
 
       for (let language of languages) {
         const response = await storyblokClient.get(`cdn/stories/${id}`, {
@@ -82,50 +140,41 @@ const handleHook = async (db, config, params) => {
           language: language
         })
 
-        storiesToPublish.push(response.data.story)
+        if (response.data.story && response.data.story.full_slug.indexOf('blocks/') === -1) {
+          storiesToPublish.push(response.data.story)
+        }
       }
 
       for (const storyToPublish of storiesToPublish) {
         const publishedStory = transformStory(storyToPublish)
+
         await db.index(publishedStory)
-        log(`Published ${storyToPublish.full_slug}`)
+
+        log(`Reindex story ${storyToPublish.full_slug}`)
       }
 
       break
     }
-    case 'unpublished': {
-      const stories = await getStoriesMatchedToId(db, id)
-
-      for (const storyToUnpublish of stories) {
-        const unpublishedStory = transformStory(storyToUnpublish, false)
-        await db.delete(unpublishedStory)
-        log(`Unpublished ${storyToUnpublish.full_slug}`)
-      }
-
-      break
-    }
+    case 'unpublished':
     case 'deleted': {
       const stories = await getStoriesMatchedToId(db, id)
 
-      for (const storyToUnpublish of stories) {
-        const unpublishedStory = transformStory(storyToUnpublish, false)
-        await db.delete(unpublishedStory)
-        log(`Deleted ${storyToUnpublish.full_slug}`)
-      }
+      for (const storyToDelete of stories) {
+        const deletedStory = transformStory(storyToDelete, false)
 
-      break
-    }
-    case 'branch_deployed': {
-      await fullSync(db, config)
+        await db.delete(deletedStory)
+
+        log(`Delete story ${storyToDelete.full_slug}`)
+      }
 
       break
     }
     default: {
       log(`WARNING!!! Unknown action ${action} ${id}`)
+
       break
     }
   }
-  await cacheInvalidate(config.storyblok)
 }
 
 const seedDatabase = async (db, config) => {
