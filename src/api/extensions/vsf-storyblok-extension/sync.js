@@ -68,6 +68,16 @@ const handleHook = async (db, config, params) => {
 
   log(`Handle hook for ${action} story ${id}`)
 
+  try {
+    const response = await storyblokManagementClient.get(`spaces/${config.storyblok.spaceId}/stories/${id}`)
+
+    if (response.data.story && response.data.story.is_folder) {
+      await fullSync(db, config)
+      await cacheInvalidate(config.storyblok)
+      return
+    }
+  } catch (e) {}
+
   await handleActionForStory(db, config, id, action, cv)
   await handleActionForBlock(db, id, action, cv)
 
