@@ -14,8 +14,7 @@ async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
     page,
     per_page: perPage,
     resolve_links: 'url',
-    resolve_relations: 'block_reference.reference',
-    excluding_slugs: 'blocks/*'
+    resolve_relations: 'block_reference.reference'
   })
 
   for (let language of languages) {
@@ -24,7 +23,6 @@ async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
       per_page: perPage,
       resolve_links: 'url',
       resolve_relations: 'block_reference.reference',
-      excluding_slugs: 'blocks/*',
       starts_with: language + '/*'
     })
 
