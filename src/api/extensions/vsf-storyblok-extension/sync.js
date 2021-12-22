@@ -14,8 +14,7 @@ async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
     page,
     per_page: perPage,
     resolve_links: 'url',
-    resolve_relations: 'block_reference.reference',
-    excluding_slugs: 'blocks/*'
+    resolve_relations: 'block_reference.reference'
   })
 
   for (let language of languages) {
@@ -24,7 +23,6 @@ async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
       per_page: perPage,
       resolve_links: 'url',
       resolve_relations: 'block_reference.reference',
-      excluding_slugs: 'blocks/*',
       starts_with: language + '/*'
     })
 
@@ -79,12 +77,12 @@ const handleHook = async (db, config, params) => {
   } catch (e) {}
 
   await handleActionForStory(db, config, id, action, cv)
-  await handleActionForBlock(db, id, action, cv)
+  await handleActionForRelatedStories(db, id, action, cv)
 
   await cacheInvalidate(config.storyblok)
 }
 
-const handleActionForBlock = async (db, id, action, cv) => {
+const handleActionForRelatedStories = async (db, id, action, cv) => {
   const size = 10
 
   switch (action) {
@@ -136,9 +134,7 @@ const handleActionForStory = async (db, config, id, action, cv) => {
         resolve_relations: 'block_reference.reference'
       })
 
-      if (response.data.story && response.data.story.full_slug.indexOf('blocks/') === -1) {
-        storiesToPublish.push(response.data.story)
-      }
+      storiesToPublish.push(response.data.story)
 
       const languages = config.storeViews.multistore ? config.storeViews.mapStoreUrlsFor : [];
 
@@ -150,9 +146,7 @@ const handleActionForStory = async (db, config, id, action, cv) => {
           language: language
         })
 
-        if (response.data.story && response.data.story.full_slug.indexOf('blocks/') === -1) {
-          storiesToPublish.push(response.data.story)
-        }
+        storiesToPublish.push(response.data.story)
       }
 
       for (const storyToPublish of storiesToPublish) {
