@@ -5,9 +5,10 @@ import Base64 from 'crypto-js/enc-base64'
 import { URL } from 'url'
 import { parseString } from 'xml2js'
 import uuidv1 from 'uuid/v1'
-import CollapseLib from './lib/collapse-dict'
 
 const ALGORITHM = 'HmacSHA256'
+
+const flatten = require('flat');
 
 const calculateStringToSignV2 = (parameters, method, { hostname, pathname }) => {
   const sorted = {}
@@ -140,7 +141,7 @@ module.exports = ({ config }) => {
       return
     }
 
-    orderReferenceAttributes = CollapseLib.collapseDict({ OrderReferenceAttributes: orderReferenceAttributes })
+    orderReferenceAttributes = flatten({ OrderReferenceAttributes: orderReferenceAttributes })
 
     const apiVersion = '2013-01-01'
     const method = 'POST'
@@ -277,7 +278,7 @@ module.exports = ({ config }) => {
       return
     }
 
-    AuthorizationAmount = CollapseLib.collapseDict({ AuthorizationAmount: AuthorizationAmount })
+    AuthorizationAmount = flatten({ AuthorizationAmount: AuthorizationAmount })
 
     const apiVersion = '2013-01-01'
     const method = 'POST'
