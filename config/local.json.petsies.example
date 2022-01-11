@@ -236,7 +236,8 @@
     "elastic-stock",
     "budsies",
     "vsf-storyblok-extension",
-    "braintree"
+    "braintree",
+    "amazon-pay"
   ],
   "extensions": {
     "mailchimp": {
@@ -265,10 +266,17 @@
       "catalogFilter": [ "SampleFilter" ]
     },
     "braintree": {
-      "mode": "sandbox",
-      "merchantId": "same-as-magento",
-      "publicKey": "same-as-magento",
-      "privateKey": "same-as-magento"
+      "mode": "${BRAINTREE_MODE}",
+      "merchantId": "${BRAINTREE_MERCHANT_ID}",
+      "publicKey": "${BRAINTREE_PUBLIC_KEY}",
+      "privateKey": "${BRAINTREE_PRIVATE_KEY}"
+    },
+    "amazonPay": {
+      "sandbox": ${AMAZONPAY_SANDBOX},
+      "accessKey": "${AMAZONPAY_ACCESS_KEY}",
+      "secretKey": "${AMAZONPAY_SECRET_KEY}",
+      "sellerId": "${AMAZONPAY_SELLER_ID}",
+      "endpoint": "${AMAZONPAY_ENDPOINT}"
     }
   },
   "magento2": {
