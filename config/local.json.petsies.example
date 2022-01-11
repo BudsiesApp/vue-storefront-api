@@ -266,13 +266,13 @@
       "catalogFilter": [ "SampleFilter" ]
     },
     "braintree": {
-      "mode": "sandbox",
+      "mode": "${BRAINTREE_MODE}",
       "merchantId": "${BRAINTREE_MERCHANT_ID}",
       "publicKey": "${BRAINTREE_PUBLIC_KEY}",
       "privateKey": "${BRAINTREE_PRIVATE_KEY}"
     },
     "amazonPay": {
-      "sandbox": true,
+      "sandbox": ${AMAZONPAY_SANDBOX},
       "accessKey": "${AMAZONPAY_ACCESS_KEY}",
       "secretKey": "${AMAZONPAY_SECRET_KEY}",
       "sellerId": "${AMAZONPAY_SELLER_ID}",
