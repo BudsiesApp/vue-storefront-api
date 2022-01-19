@@ -237,7 +237,8 @@
     "budsies",
     "vsf-storyblok-extension",
     "braintree",
-    "amazon-pay"
+    "amazon-pay",
+    "url-rewrite"
   ],
   "extensions": {
     "mailchimp": {
@@ -277,6 +278,9 @@
       "secretKey": "${AMAZONPAY_SECRET_KEY}",
       "sellerId": "${AMAZONPAY_SELLER_ID}",
       "endpoint": "${AMAZONPAY_ENDPOINT}"
+    },
+    "urlRewrite": {
+      "enabled": true
     }
   },
   "magento2": {
