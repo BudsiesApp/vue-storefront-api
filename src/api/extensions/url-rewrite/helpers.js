@@ -26,12 +26,8 @@ export const getUrlRewriteByRequestPath = async (db, config, requestPath) => {
       size: 1,
       body: {
         query: {
-          bool: {
-            must: {
-              match: {
-                'request_path': requestPath
-              }
-            }
+          term: {
+            'request_path': requestPath
           }
         }
       }
