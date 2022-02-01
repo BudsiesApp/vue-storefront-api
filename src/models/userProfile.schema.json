@@ -73,7 +73,7 @@
                                 "minLength": 3
                             },
                             "company": {
-                                "type": "string",
+                                "type": ["string", "null"],
                                 "minLength": 1
                             },
                             "vat_id": {
