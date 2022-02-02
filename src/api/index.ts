@@ -9,6 +9,7 @@ import cart from './cart';
 import product from './product';
 import sync from './sync';
 import url from './url';
+import amazonPay from '@vue-storefront-api/amazon-pay';
 
 export default ({ config, db }) => {
   let api = Router();
@@ -64,6 +65,8 @@ export default ({ config, db }) => {
       console.log('Extension ' + ext + ' registered under /ext/' + ext + ' base URL')
     }
   }
+
+  api.use('/ext/amazon-pay', amazonPay({ config }));
 
   return api;
 }

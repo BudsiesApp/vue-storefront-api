@@ -237,7 +237,6 @@
     "budsies",
     "vsf-storyblok-extension",
     "braintree",
-    "amazon-pay",
     "url-rewrite"
   ],
   "extensions": {
