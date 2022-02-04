@@ -5,9 +5,9 @@ import { multiStoreConfig } from '../../../platform/magento1/util';
 const Magento1Client = require('magento1-vsbridge-client').Magento1Client
 
 module.exports = ({ config, db }) => {
-  function getResponse(data){
-    if(data.code === 200){
-        return data.result;
+  function getResponse (data) {
+    if (data.code === 200) {
+      return data.result;
     }
 
     return false;
@@ -25,7 +25,7 @@ module.exports = ({ config, db }) => {
         const customerToken = getToken(req);
 
         return restClient.post(`printedProducts/cartItems?token=${customerToken}`, req.body).then((data) => {
-            return getResponse(data);
+          return getResponse(data);
         });
       }
 
@@ -51,7 +51,7 @@ module.exports = ({ config, db }) => {
         const url = `pillows/sizeOptions?token=${customerToken}`;
 
         return restClient.get(url).then((data) => {
-            return getResponse(data);
+          return getResponse(data);
         });
       }
 
@@ -83,7 +83,7 @@ module.exports = ({ config, db }) => {
         }
 
         return restClient.get(url).then((data) => {
-            return getResponse(data);
+          return getResponse(data);
         });
       }
 
@@ -107,7 +107,7 @@ module.exports = ({ config, db }) => {
         const customerToken = getToken(req);
 
         return restClient.post(`phrasePillows/cartItems?token=${customerToken}`, req.body).then((data) => {
-            return getResponse(data);
+          return getResponse(data);
         });
       }
 
@@ -139,7 +139,7 @@ module.exports = ({ config, db }) => {
         }
 
         return restClient.get(url).then((data) => {
-            return getResponse(data);
+          return getResponse(data);
         });
       }
 
@@ -171,7 +171,7 @@ module.exports = ({ config, db }) => {
         }
 
         return restClient.get(url).then((data) => {
-            return getResponse(data);
+          return getResponse(data);
         });
       }
 
@@ -501,7 +501,7 @@ module.exports = ({ config, db }) => {
       module.addPrintedProductToCart = function () {
         const params = new URLSearchParams({
           cartId: req.query.cartId,
-          token: getToken(req),
+          token: getToken(req)
         });
 
         return restClient.post(`carts/emailUpdateRequests?${params.toString()}`, req.body).then((data) => {
@@ -563,7 +563,7 @@ module.exports = ({ config, db }) => {
         const data = req.query.data;
 
         if (data !== undefined) {
-            url += `&data=${data}`;
+          url += `&data=${data}`;
         }
 
         const cartId = req.query.cartId;
@@ -573,7 +573,7 @@ module.exports = ({ config, db }) => {
         }
 
         return restClient.get(url).then((data) => {
-            return getResponse(data);
+          return getResponse(data);
         });
       }
 
@@ -597,7 +597,7 @@ module.exports = ({ config, db }) => {
         const params = new URLSearchParams({
           recoveryId: req.query.recoveryId,
           recoveryCode: req.query.recoveryCode,
-          token: getToken(req),
+          token: getToken(req)
         });
 
         return restClient.post(`carts/recoveryRequests?${params.toString()}`, req.body).then((data) => {
