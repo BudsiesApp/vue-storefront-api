@@ -20,7 +20,7 @@ export default ({ config, db }) => {
     const token = getToken(req)
     cartProxy.create(
       token,
-      req.query.campaignToken ?? undefined
+      req.query.campaignToken ? req.query.campaignToken : undefined
     ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {

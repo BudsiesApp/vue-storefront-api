@@ -18,7 +18,7 @@ function getHitsAsRewrite (hits) {
 
 export const getUrlRewriteByRequestPath = async (db, config, requestPath) => {
   const indexName = config.elasticsearch.index;
-  
+
   try {
     const response = await db.search({
       index: indexName,

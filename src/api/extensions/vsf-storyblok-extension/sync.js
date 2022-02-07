@@ -208,13 +208,13 @@ const seedStoryblokDatasources = async (db, config) => {
       type: 'product',
       sort: 'name: asc',
       body: {
-        "size" : 1000,
-        "query": {
-          "constant_score": {
-            "filter": {
-              "bool": {
-                "must": [
-                  {"terms": {"visibility": [2,3,4]}}
+        'size': 1000,
+        'query': {
+          'constant_score': {
+            'filter': {
+              'bool': {
+                'must': [
+                  {'terms': {'visibility': [2, 3, 4]}}
                 ]
               }
             }
@@ -228,13 +228,13 @@ const seedStoryblokDatasources = async (db, config) => {
       type: 'category',
       sort: 'name: asc',
       body: {
-        "size" : 1000,
-        "query": {
-          "constant_score": {
-            "filter": {
-              "bool": {
-                "must": [
-                  {"term": {"is_active": true}}
+        'size': 1000,
+        'query': {
+          'constant_score': {
+            'filter': {
+              'bool': {
+                'must': [
+                  {'term': {'is_active': true}}
                 ]
               }
             }
@@ -248,8 +248,8 @@ const seedStoryblokDatasources = async (db, config) => {
       type: 'promo_campaign',
       sort: 'name: asc',
       body: {
-        "size" : 1000,
-        "query": {}
+        'size': 1000,
+        'query': {}
       }
     });
 
@@ -322,23 +322,23 @@ const seedStoryblokDatasources = async (db, config) => {
 
     for (const product of products) {
       requests.push(storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasource_entries`, {
-          datasource_entry: {
-            name: product._source.name,
-            value: product._source.id,
-            datasource_id: newProductsDatasourceResponse.data.datasource.id
-          }
-        })
+        datasource_entry: {
+          name: product._source.name,
+          value: product._source.id,
+          datasource_id: newProductsDatasourceResponse.data.datasource.id
+        }
+      })
       )
     }
 
     for (const promoCampaign of promoCampaigns) {
       requests.push(storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasource_entries`, {
-          datasource_entry: {
-            name: promoCampaign._source.name,
-            value: promoCampaign._source.id,
-            datasource_id: newPromoCampaignsDatasourceResponse.data.datasource.id
-          }
-        })
+        datasource_entry: {
+          name: promoCampaign._source.name,
+          value: promoCampaign._source.id,
+          datasource_id: newPromoCampaignsDatasourceResponse.data.datasource.id
+        }
+      })
       )
     }
 

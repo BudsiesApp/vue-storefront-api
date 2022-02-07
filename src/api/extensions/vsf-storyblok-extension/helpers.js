@@ -166,7 +166,7 @@ export const getStoriesWithIdReference = async (db, id) => {
         constant_score: {
           filter: {
             match_phrase: {
-              'content' : `"id": ${id}`
+              'content': `"id": ${id}`
             }
           }
         }
