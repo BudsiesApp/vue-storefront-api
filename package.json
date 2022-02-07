@@ -95,7 +95,8 @@
     "syswide-cas": "latest",
     "tsconfig-paths": "^3.9.0",
     "vsf-utilities": "^1.0.2",
-    "winston": "^2.4.2"
+    "winston": "^2.4.2",
+    "@vue-storefront-api/amazon-pay": "https://gitpkg.now.sh/BudsiesApp/vsf-amazon-pay/API/amazon-pay?d9f6fcd224938bbcb7472306946d2a947c3ae5e6"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
