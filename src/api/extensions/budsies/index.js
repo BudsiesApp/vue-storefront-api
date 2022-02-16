@@ -871,5 +871,31 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.post('/newsletter/subscriptions', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendNewsletterSubscriptionsRequest = function () {
+        const customerToken = getToken(req);
+
+        let url = `newsletter/subscriptions?token=${customerToken}`;
+
+        return restClient.post(url, req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.sendNewsletterSubscriptionsRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
