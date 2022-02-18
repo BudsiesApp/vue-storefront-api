@@ -121,6 +121,7 @@ services:
       - './scripts:/var/www/scripts'
       - './src:/var/www/src'
       - './var:/var/www/var'
+      - './tmp:/tmp/vue-storefront-api'
     tmpfs:
       - /var/www/dist
     networks:
