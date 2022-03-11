@@ -930,7 +930,7 @@ module.exports = ({ config, db }) => {
       let module = {};
 
       module.sendShareCustomerStoriesRequest = function () {
-        let url = `share/customer-stories`;
+        let url = `share/customerStories`;
 
         return restClient.post(url, req.body).then((data) => {
           return getResponse(data);
