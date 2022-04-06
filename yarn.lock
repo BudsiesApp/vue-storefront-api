@@ -4531,9 +4531,9 @@ lru-cache@^5.0.0:
     request "^2.88.0"
     sha1 "^1.1.1"
 
-magento1-vsbridge-client@BudsiesApp/magento1-vsbridge-client#a72c411eb51548ed824cf76bd3319852ef7bd596:
+magento1-vsbridge-client@BudsiesApp/magento1-vsbridge-client#c44b64bedfe12f09528ec511481cba331c319fad:
   version "0.1.0"
-  resolved "https://codeload.github.com/BudsiesApp/magento1-vsbridge-client/tar.gz/a72c411eb51548ed824cf76bd3319852ef7bd596"
+  resolved "https://codeload.github.com/BudsiesApp/magento1-vsbridge-client/tar.gz/c44b64bedfe12f09528ec511481cba331c319fad"
   dependencies:
     oauth-1.0a "^1.0.1"
     request "^2.72.0"
