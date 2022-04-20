@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.12.4] - 2021.01.15
 
+### Added
+- Added webp support for local image action - @gibkigonzo (#409)
+
 ### Fixed
 
 - Responsing with error instead of throwing for broken /api/catalog paths - @Fifciu
