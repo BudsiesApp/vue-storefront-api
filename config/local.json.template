@@ -1,15 +1,15 @@
 {
   "server": {
     "host": "0.0.0.0",
-    "port": "${BIND_PORT}",
+    "port": "8080",
     "searchEngine": "elasticsearch",
     "useOutputCacheTagging": false,
     "useOutputCache": false,
     "outputCacheDefaultTtl": 86400,
     "availableCacheTags": ["P", "C", "T", "A", "product", "category", "attribute", "taxrule"],
-    "invalidateCacheKey": "aeSu7aip",
+    "invalidateCacheKey": "${CACHE_INVALIDATION_KEY}",
     "invalidateCacheForwarding": false,
-    "invalidateCacheForwardUrl": "https://${VSF_DOMAIN}/invalidate?key=aeSu7aip&tag=",
+    "invalidateCacheForwardUrl": "https://${VSF_DOMAIN}/invalidate?key=${CACHE_INVALIDATION_KEY}&tag=",
     "showErrorStack": false
   },
   "users": {
@@ -22,10 +22,10 @@
     "excludeDisabledProducts": false
   },
   "elasticsearch": {
-    "host": "elasticsearch",
+    "host": "${ELASTICSEARCH_HOST}",
     "index": "vue_storefront_catalog_${DEFAULT_STORE_ID}",
-    "port": 9200,
-    "protocol": "http",
+    "port": ${ELASTICSEARCH_PORT},
+    "protocol": "${ELASTICSEARCH_PROTOCOL}",
     "requestTimeout": 5000,
     "min_score": 0.01,
     "indices": [
@@ -34,8 +34,6 @@
     "indexTypes": [
       "product",
       "category",
-      "cms_block",
-      "cms_page",
       "attribute",
       "taxrule",
       "review",
@@ -135,61 +133,22 @@
     "auth": false
   },
   "kue": {},
-  "availableStores": [
-    "jp"
-  ],
+  "availableStores": [],
   "msi": {
     "enabled": false,
-    "defaultStockId": 1
+    "defaultStockId": "${DEFAULT_STORE_ID}"
   },
   "storeViews": {
     "multistore": false,
-    "mapStoreUrlsFor": [
-      "jp"
-    ],
-    "jp": {
-      "storeCode": "jp",
-      "disabled": false,
-      "storeId": ${DEFAULT_STORE_ID},
-      "websiteId": ${DEFAULT_STORE_ID},
-      "name": "Japanese Store",
-      "url": "/jp",
-      "elasticsearch": {
-        "host": "localhost:8080/api/catalog",
-        "index": "vue_storefront_catalog_${DEFAULT_STORE_ID}"
-      },
-      "msi": {
-        "stockId": 2
-      },
-      "tax": {
-        "defaultCountry": "JP",
-        "defaultRegion": "",
-        "deprecatedPriceFieldsSupport": false,
-        "calculateServerSide": true,
-        "sourcePriceIncludesTax": false,
-        "finalPriceIncludesTax": true,
-        "userGroupId": null,
-        "useOnlyDefaultUserGroupId": false
-      },
-      "i18n": {
-        "fullCountryName": "Japan",
-        "fullLanguageName": "Japan",
-        "defaultLanguage": "JP",
-        "defaultCountry": "JP",
-        "defaultLocale": "ja-JP",
-        "currencyCode": "JPY",
-        "currencySign": "JPY",
-        "dateFormat": "HH:mm D-M-YYYY"
-      }
-    }
+    "mapStoreUrlsFor": []
   },
-  "authHashSecret": "__SECRET_CHANGE_ME__",
-  "objHashSecret": "__SECRET_CHANGE_ME__",
+  "authHashSecret": "${AUTH_HASH_SECRET}",
+  "objHashSecret": "${OBJ_HASH_SECRET}",
   "cart": {
     "setConfigurableProductOptions": false
   },
   "tax": {
-    "defaultCountry": "PL",
+    "defaultCountry": "US",
     "defaultRegion": "",
     "calculateServerSide": true,
     "alwaysSyncPlatformPricesOver": false,
@@ -212,13 +171,13 @@
     "previewToken": "${STORYBLOK_TOKEN}",
     "managementToken": "${STORYBLOK_MANAGEMENT_TOKEN}",
     "hookSecret": "${STORYBLOK_HOOK_SECRET}",
-    "invalidate": "https://${VSF_DOMAIN}/invalidate?tag=storyblok&key=aeSu7aip",
+    "invalidate": "https://${VSF_DOMAIN}/invalidate?tag=storyblok&key=${CACHE_INVALIDATION_KEY}",
     "spaceId": "${STORYBLOK_SPACE_ID}",
     "settings": {
       "appendStoreCodeFromHeader": true
     },
     "sync": {
-      "enabled": false,
+      "enabled": ${STORYBLOK_SYNC_DATASOURCES},
       "index": "vue_storefront_catalog_${DEFAULT_STORE_ID}",
       "categoriesDatasourceSlug": "categories",
       "productsDatasourceSlug": "products",
@@ -227,12 +186,6 @@
   },
   "platform": "magento1",
   "registeredExtensions": [
-    "mailchimp-subscribe",
-    "example-magento-api",
-    "cms-data",
-    "mail-service",
-    "example-processor",
-    "example-custom-filter",
     "elastic-stock",
     "budsies",
     "vsf-storyblok-extension",
@@ -240,31 +193,6 @@
     "url-rewrite"
   ],
   "extensions": {
-    "mailchimp": {
-      "listId": "e06875a7e1",
-      "apiKey": "a9a3318ea7d30f5c5596bd4a78ae0985-us3",
-      "apiUrl": "https://us3.api.mailchimp.com/3.0",
-      "userStatus": "subscribed"
-    },
-    "mailService": {
-      "transport": {
-        "host": "smtp.gmail.com",
-        "port": 465,
-        "secure": true,
-        "user": "vuestorefront",
-        "pass": "vuestorefront.io"
-      },
-      "targetAddressWhitelist": ["contributors@vuestorefront.io"],
-      "secretString": "__THIS_IS_SO_SECRET__"
-    },
-    "example-processor": {
-      "resultProcessors": {
-        "product": "my-product-processor"
-      }
-    },
-    "example-custom-filter": {
-      "catalogFilter": [ "SampleFilter" ]
-    },
     "braintree": {
       "mode": "${BRAINTREE_MODE}",
       "merchantId": "${BRAINTREE_MERCHANT_ID}",
@@ -282,27 +210,16 @@
       "enabled": true
     }
   },
-  "magento2": {
-    "imgUrl": "http://demo-magento2.vuestorefront.io/media/catalog/product",
-    "assetPath": "/../var/magento2-sample-data/pub/media",
-    "api": {
-      "url": "http://demo-magento2.vuestorefront.io/rest",
-      "consumerKey": "byv3730rhoulpopcq64don8ukb8lf2gq",
-      "consumerSecret": "u9q4fcobv7vfx9td80oupa6uhexc27rb",
-      "accessToken": "040xx3qy7s0j28o3q0exrfop579cy20m",
-      "accessTokenSecret": "7qunl3p505rubmr7u1ijt7odyialnih9"
-    }
-  },
   "magento1": {
-    "url": "https://${DEFAULT_STORE_DOMAIN}",
-    "imgUrl": "https://${DEFAULT_STORE_DOMAIN}/media",
+    "url": "https://${MAGENTO_DOMAIN}",
+    "imgUrl": "https://${MAGENTO_DOMAIN}/media",
     "assetPath": "",
     "magentoUserName": "${MAGENTO_USER_NAME}",
     "magentoUserPassword": "${MAGENTO_USER_PASSWORD}",
     "httpUserName": "",
     "httpUserPassword": "",
     "api": {
-      "url": "https://${DEFAULT_STORE_DOMAIN}/vsbridge",
+      "url": "https://${MAGENTO_DOMAIN}/vsbridge",
       "consumerKey": "",
       "consumerSecret": "",
       "accessToken": "",
@@ -314,9 +231,7 @@
     "imageSizeLimit": 1024,
     "whitelist": {
       "allowedHosts": [
-        ".*divante.pl",
-        ".*vuestorefront.io",
-        "${DEFAULT_STORE_DOMAIN}",
+        "${MAGENTO_DOMAIN}",
         "localhost"
       ]
     },
@@ -377,7 +292,7 @@
     "map": {
       "includeFields": ["url_path", "identifier", "id", "slug", "sku", "type_id"],
       "searchedFields": ["url_path", "identifier"],
-      "searchedEntities": ["product", "category", "cms_page"]
+      "searchedEntities": ["product", "category"]
     }
   }
 }

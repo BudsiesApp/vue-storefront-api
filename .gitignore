@@ -19,3 +19,4 @@ var/magento2-sample-data/
 !/docker/elasticsearch7/data/.gitkeep
 
 .env
+tmp/*
