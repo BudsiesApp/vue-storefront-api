@@ -45,6 +45,10 @@ services:
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
       - ELASTICSEARCH_PROTOCOL=http
+
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
       
       - AUTH_HASH_SECRET
       - OBJ_HASH_SECRET
@@ -112,6 +116,10 @@ services:
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
       - ELASTICSEARCH_PROTOCOL=http
+
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
       
       - AUTH_HASH_SECRET
       - OBJ_HASH_SECRET
