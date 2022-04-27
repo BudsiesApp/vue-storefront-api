@@ -14,7 +14,7 @@
     "build:code": "tsc --build",
     "build:copy:graphql": "cpx src/**/*.graphqls dist/src",
     "build:copy:schema": "cpx 'src/**/*.schema*.json' dist/src",
-    "start": "pm2-runtime start ecosystem.json $PM2_ARGS",
+    "start": "pm2 start ecosystem.json $PM2_ARGS",
     "db": "cross-env TS_NODE_PROJECT=\"tsconfig-build.json\" && ts-node -r tsconfig-paths/register scripts/db.js",
     "cache": "cross-env TS_NODE_PROJECT=\"tsconfig-build.json\" && ts-node -r tsconfig-paths/register ./scripts/cache",
     "mage2vs": "cross-env TS_NODE_PROJECT=\"tsconfig-build.json\" && ts-node -r tsconfig-paths/register scripts/mage2vs.js",
