@@ -206,9 +206,11 @@ const seedStoryblokDatasources = async (db, config) => {
     const { body: { hits: { hits: products } } } = await db.search({
       index: config.storyblok.sync.index,
       type: 'product',
-      sort: 'name: asc',
       body: {
         'size': 1000,
+        'sort': [
+          {'name.keyword': 'asc'}
+        ],
         'query': {
           'constant_score': {
             'filter': {
@@ -226,9 +228,11 @@ const seedStoryblokDatasources = async (db, config) => {
     const { body: { hits: { hits: categories } } } = await db.search({
       index: config.storyblok.sync.index,
       type: 'category',
-      sort: 'name: asc',
       body: {
         'size': 1000,
+        'sort': [
+          {'name.keyword': 'asc'}
+        ],
         'query': {
           'constant_score': {
             'filter': {
@@ -246,9 +250,11 @@ const seedStoryblokDatasources = async (db, config) => {
     const { body: { hits: { hits: promoCampaigns } } } = await db.search({
       index: config.storyblok.sync.index,
       type: 'promo_campaign',
-      sort: 'name: asc',
       body: {
         'size': 1000,
+        'sort': [
+          {'name.keyword': 'asc'}
+        ],
         'query': {}
       }
     });
