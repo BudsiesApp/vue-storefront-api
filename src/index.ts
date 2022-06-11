@@ -7,6 +7,7 @@ import middleware from './middleware';
 import { loadAdditionalCertificates } from './helpers/loadAdditionalCertificates'
 import api from './api';
 import config from 'config';
+import healthCheck from './api/health-check';
 import img from './api/img';
 import invalidateCache from './api/invalidate'
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
@@ -46,6 +47,7 @@ initializeDb(db => {
   });
   app.post('/invalidate', invalidateCache)
   app.get('/invalidate', invalidateCache)
+  app.get('/healthcheck', healthCheck)
 
   const port = process.env.PORT || config.get('server.port')
   const host = process.env.HOST || config.get('server.host')
