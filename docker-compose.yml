@@ -50,7 +50,6 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_DB=0
-      - REDIS_CACHE_TTL_SECONDS
       
       - AUTH_HASH_SECRET
       - OBJ_HASH_SECRET
@@ -123,7 +122,6 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_DB=0
-      - REDIS_CACHE_TTL_SECONDS
       
       - AUTH_HASH_SECRET
       - OBJ_HASH_SECRET

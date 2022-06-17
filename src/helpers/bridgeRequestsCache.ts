@@ -1,5 +1,3 @@
-import config from 'config';
-
 export default ({ db }) => ({
 
   set (key: string, value: any): Promise<void> {
@@ -8,7 +6,19 @@ export default ({ db }) => ({
 
       redisClient.set(
         key,
-        (config as any).redis.ttlSeconds,
+        JSON.stringify(value),
+        () => resolve()
+      );
+    });
+  },
+
+  setWithTtl (key: string, value: any, ttl?: number): Promise<void> {
+    return new Promise((resolve) => {
+      const redisClient = db.getRedisClient();
+
+      redisClient.setex(
+        key,
+        ttl,
         JSON.stringify(value),
         () => resolve()
       );
