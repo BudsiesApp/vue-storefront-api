@@ -939,7 +939,7 @@ module.exports = ({ config, db }) => {
         const responseData = getResponse(data);
 
         if (responseData) {
-          await bridgeRequestsCache.setWithTtl(backendSettingsRequestCacheKey, responseData, 60);
+          await bridgeRequestsCache.setWithTtl(backendSettingsRequestCacheKey, responseData, 300);
         } else {
           await bridgeRequestsCache.del(backendSettingsRequestCacheKey);
         }
