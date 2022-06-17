@@ -1,8 +1,11 @@
+import bridgeRequestsCache from '../../../helpers/bridgeRequestsCache';
 import { apiStatus, getToken } from '../../../lib/util';
 import { Router } from 'express';
 import { multiStoreConfig } from '../../../platform/magento1/util';
 
 const Magento1Client = require('magento1-vsbridge-client').Magento1Client
+
+const backendSettingsRequestCacheKey = 'backend_settings';
 
 module.exports = ({ config, db }) => {
   function getResponse (data) {
@@ -924,9 +927,25 @@ module.exports = ({ config, db }) => {
       module.getSettings = function () {
         let url = 'settings/retrieve';
 
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
+        return bridgeRequestsCache.get(backendSettingsRequestCacheKey)
+          .then((cachedData) => {
+            if (cachedData) {
+              return cachedData;
+            }
+
+            return restClient.get(url)
+              .then((data) => {
+                const responseData = getResponse(data);
+
+                if (responseData) {
+                  bridgeRequestsCache.set(backendSettingsRequestCacheKey, responseData);
+                } else {
+                  bridgeRequestsCache.del(backendSettingsRequestCacheKey);
+                }
+
+                return responseData;
+              });
+          })
       }
 
       return module;

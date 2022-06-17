@@ -130,7 +130,8 @@
     "host": "${REDIS_HOST}",
     "port": ${REDIS_PORT},
     "db": ${REDIS_DB},
-    "auth": false
+    "auth": false,
+    "ttlSeconds": ${REDIS_CACHE_TTL_SECONDS}
   },
   "kue": {},
   "availableStores": [],

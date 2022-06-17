@@ -6046,12 +6046,7 @@ redis-tag-cache@^1.2.1:
   dependencies:
     ioredis "^4.0.0"
 
-redis@^0.12.1:
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/redis/-/redis-0.12.1.tgz#64df76ad0fc8acebaebd2a0645e8a48fac49185e"
-  integrity sha1-ZN92rQ/IrOuuvSoGReikj6xJGF4=
-
-redis@~2.6.0-2:
+redis@2.6.5, redis@~2.6.0-2:
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/redis/-/redis-2.6.5.tgz#87c1eff4a489f94b70871f3d08b6988f23a95687"
   integrity sha1-h8Hv9KSJ+Utwhx89CLaYjyOpVoc=
@@ -6059,6 +6054,11 @@ redis@~2.6.0-2:
     double-ended-queue "^2.1.0-0"
     redis-commands "^1.2.0"
     redis-parser "^2.0.0"
+
+redis@^0.12.1:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/redis/-/redis-0.12.1.tgz#64df76ad0fc8acebaebd2a0645e8a48fac49185e"
+  integrity sha1-ZN92rQ/IrOuuvSoGReikj6xJGF4=
 
 reds@^0.2.5:
   version "0.2.5"
