@@ -1,4 +1,4 @@
-import bridgeRequestsCache from '../../../helpers/bridgeRequestsCache';
+import BridgeRequestsCache from '../../../helpers/bridgeRequestsCache';
 import { apiStatus, getToken } from '../../../lib/util';
 import { Router } from 'express';
 import { multiStoreConfig } from '../../../platform/magento1/util';
@@ -17,6 +17,7 @@ module.exports = ({ config, db }) => {
   }
 
   let budsiesApi = Router();
+  let bridgeRequestsCache = BridgeRequestsCache(db)
 
   budsiesApi.post('/printed-products/cart-items', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
@@ -924,28 +925,26 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getSettings = function () {
+      module.getSettings = async function () {
         let url = 'settings/retrieve';
 
-        return bridgeRequestsCache.get(backendSettingsRequestCacheKey)
-          .then((cachedData) => {
-            if (cachedData) {
-              return cachedData;
-            }
+        const cachedData = await bridgeRequestsCache.get(backendSettingsRequestCacheKey);
 
-            return restClient.get(url)
-              .then((data) => {
-                const responseData = getResponse(data);
+        if (cachedData) {
+          return cachedData;
+        }
 
-                if (responseData) {
+        const data = await restClient.get(url);
+
+        const responseData = getResponse(data);
+
+        if (responseData) {
                   bridgeRequestsCache.set(backendSettingsRequestCacheKey, responseData);
-                } else {
-                  bridgeRequestsCache.del(backendSettingsRequestCacheKey);
-                }
+        } else {
+          bridgeRequestsCache.del(backendSettingsRequestCacheKey);
+        }
 
-                return responseData;
-              });
-          })
+        return responseData;
       }
 
       return module;

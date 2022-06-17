@@ -1,12 +1,12 @@
 import config from 'config';
-import * as redis from '../lib/redis';
 
-const redisClient = redis.getClient(config);
+export default ({ db }) => ({
 
-const bridgeRequestsCache = {
-  set (key, value): Promise<void> {
+  set (key: string, value: any): Promise<void> {
     return new Promise((resolve) => {
-      redisClient.setex(
+      const redisClient = db.getRedisClient();
+
+      redisClient.set(
         key,
         (config as any).redis.ttlSeconds,
         JSON.stringify(value),
@@ -14,8 +14,11 @@ const bridgeRequestsCache = {
       );
     });
   },
+
   get (key): Promise<any> {
     return new Promise((resolve) => {
+      const redisClient = db.getRedisClient();
+
       redisClient.get(key, (err, cachedData) => {
         if (err) {
           throw new Error(err);
@@ -25,11 +28,12 @@ const bridgeRequestsCache = {
       });
     });
   },
+
   del (key): Promise<void> {
     return new Promise((resolve) => {
+      const redisClient = db.getRedisClient();
+
       redisClient.del(key, () => resolve());
     })
-  }
-}
-
-export default bridgeRequestsCache;
+  } 
+})
