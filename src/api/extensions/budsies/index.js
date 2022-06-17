@@ -17,7 +17,7 @@ module.exports = ({ config, db }) => {
   }
 
   let budsiesApi = Router();
-  let bridgeRequestsCache = BridgeRequestsCache(db)
+  let bridgeRequestsCache = BridgeRequestsCache({ db })
 
   budsiesApi.post('/printed-products/cart-items', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
@@ -939,9 +939,9 @@ module.exports = ({ config, db }) => {
         const responseData = getResponse(data);
 
         if (responseData) {
-          bridgeRequestsCache.setWithTtl(backendSettingsRequestCacheKey, responseData, 60);
+          await bridgeRequestsCache.setWithTtl(backendSettingsRequestCacheKey, responseData, 60);
         } else {
-          bridgeRequestsCache.del(backendSettingsRequestCacheKey);
+          await bridgeRequestsCache.del(backendSettingsRequestCacheKey);
         }
 
         return responseData;
