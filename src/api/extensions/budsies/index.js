@@ -869,7 +869,7 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.post('/newsletter/mailchimpSubscriptions', (req, res) => {
+  budsiesApi.post('/newsletter/mailing-list-subscriptions', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
@@ -878,7 +878,7 @@ module.exports = ({ config, db }) => {
       module.sendMailchimpSubscriptionsRequest = function () {
         const customerToken = getToken(req);
 
-        let url = `newsletter/mailchimpSubscriptions?token=${customerToken}`;
+        let url = `newsletter/mailingListSubscriptions?token=${customerToken}`;
 
         return restClient.post(url, req.body).then((data) => {
           return getResponse(data);
