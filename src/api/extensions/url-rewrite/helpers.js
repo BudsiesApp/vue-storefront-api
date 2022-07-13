@@ -27,7 +27,7 @@ export const getUrlRewriteByRequestPath = async (db, config, requestPath) => {
       body: {
         query: {
           term: {
-            'request_path': requestPath
+            'request_path': requestPath.toLowerCase()
           }
         }
       }
