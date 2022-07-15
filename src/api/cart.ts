@@ -1,6 +1,10 @@
-import { apiStatus, apiError, getToken } from '../lib/util';
 import { Router } from 'express';
+
+import { apiStatus, apiError, getToken } from '../lib/util';
 import PlatformFactory from '../platform/factory';
+import { multiStoreConfig } from '../platform/magento1/util';
+
+const Magento1Client = require('magento1-vsbridge-client').Magento1Client
 
 export default ({ config, db }) => {
   let cartApi = Router();
@@ -221,6 +225,33 @@ export default ({ config, db }) => {
       return apiStatus(res, 'No shipping and payment methods element provided within the request body', 500)
     }
     cartProxy.collectTotals(token, req.query.cartId ? req.query.cartId : null, req.body.methods).then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiError(res, err);
+    })
+  })
+
+  cartApi.post('/merge-guest-and-customer', (req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store');
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('cart', (restClient) => {
+      let module: any = {};
+
+      module.mergeGuestAndCustomer = function () {
+        const customerToken = getToken(req);
+
+        return restClient
+          .post(`cart/mergeGuestAndCustomer?token=${customerToken}&cartId=${req.query.cartId}`)
+          .then((data) => {
+            return data.code === 200 ? data.result : false;
+          })
+      }
+
+      return module;
+    });
+
+    client.cart.mergeGuestAndCustomer().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
