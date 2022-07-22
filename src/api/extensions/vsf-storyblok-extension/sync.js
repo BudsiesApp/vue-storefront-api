@@ -9,6 +9,22 @@ function indexStories ({ db, stories = [] }) {
   })
 }
 
+async function indexStory ({ db, story }) {
+  const transformedStory = transformStory(story)
+
+  await db.index(transformedStory)
+
+  log(`Story ${story.full_slug} was indexed`)
+}
+
+async function deleteStory ({ db, story }) {
+  const transformedStory = transformStory(story, false)
+
+  await db.delete(transformedStory)
+
+  log(`Story ${story.full_slug} was deleted`)
+}
+
 async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
   let { data: { stories }, total } = await storyblokClient.get('cdn/stories', {
     page,
@@ -105,11 +121,9 @@ const handleActionForRelatedStories = async (db, id, action, cv) => {
         })
 
         for (const storyToReindex of response.data.stories) {
-          const transformedStory = transformStory(storyToReindex)
+          log(`Try to reindex story ${storyToReindex.full_slug} with ${id} ID reference`)
 
-          await db.index(transformedStory)
-
-          log(`Reindex related story ${storyToReindex.full_slug}`)
+          await indexStory({ db, story: storyToReindex })
         }
       }
 
@@ -149,12 +163,18 @@ const handleActionForStory = async (db, config, id, action, cv) => {
         storiesToPublish.push(response.data.story)
       }
 
+      let storiesToDelete = await getStoriesMatchedToId(db, id)
+
+      for (const storyToDelete of storiesToDelete) {
+        log(`Try to delete old copy of story ${storyToDelete.full_slug}`)
+
+        await deleteStory({ db, story: storyToDelete })
+      }
+
       for (const storyToPublish of storiesToPublish) {
-        const publishedStory = transformStory(storyToPublish)
+        log(`Try to reindex story ${storyToPublish.full_slug}`)
 
-        await db.index(publishedStory)
-
-        log(`Reindex story ${storyToPublish.full_slug}`)
+        await indexStory({ db, story: storyToPublish })
       }
 
       break
@@ -164,11 +184,9 @@ const handleActionForStory = async (db, config, id, action, cv) => {
       const stories = await getStoriesMatchedToId(db, id)
 
       for (const storyToDelete of stories) {
-        const deletedStory = transformStory(storyToDelete, false)
+        log(`Try to delete story ${storyToDelete.full_slug}`)
 
-        await db.delete(deletedStory)
-
-        log(`Delete story ${storyToDelete.full_slug}`)
+        await deleteStory({ db, story: storyToDelete });
       }
 
       break
