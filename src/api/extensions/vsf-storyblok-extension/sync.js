@@ -9,20 +9,20 @@ function indexStories ({ db, stories = [] }) {
   })
 }
 
-function indexStory ({ db, story }) {
+async function indexStory ({ db, story }) {
   const transformedStory = transformStory(story)
 
   await db.index(transformedStory)
 
-  log(`Story ${storyToPublish.full_slug} was indexed`)
+  log(`Story ${story.full_slug} was indexed`)
 }
 
-function deleteStory ({ db, story }) {
-  const transformedStory = transformStory(story)
+async function deleteStory ({ db, story }) {
+  const transformedStory = transformStory(story, false)
 
   await db.delete(transformedStory)
 
-  log(`Story ${storyToPublish.full_slug} was deleted`)
+  log(`Story ${story.full_slug} was deleted`)
 }
 
 async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
@@ -123,7 +123,7 @@ const handleActionForRelatedStories = async (db, id, action, cv) => {
         for (const storyToReindex of response.data.stories) {
           log(`Try to reindex story ${storyToReindex.full_slug} with ${id} ID reference`)
 
-          indexStory({ db, story: storyToReindex })
+          await indexStory({ db, story: storyToReindex })
         }
       }
 
@@ -166,15 +166,15 @@ const handleActionForStory = async (db, config, id, action, cv) => {
       let storiesToDelete = await getStoriesMatchedToId(db, id)
 
       for (const storyToDelete of storiesToDelete) {
-        log(`Try to delete old copy of story ${storyToPublish.full_slug}`)
+        log(`Try to delete old copy of story ${storyToDelete.full_slug}`)
 
-        deleteStory({ db, story: storyToDelete });
+        await deleteStory({ db, story: storyToDelete })
       }
 
       for (const storyToPublish of storiesToPublish) {
         log(`Try to reindex story ${storyToPublish.full_slug}`)
 
-        indexStory({ db, story: storyToPublish })
+        await indexStory({ db, story: storyToPublish })
       }
 
       break
@@ -184,9 +184,9 @@ const handleActionForStory = async (db, config, id, action, cv) => {
       const stories = await getStoriesMatchedToId(db, id)
 
       for (const storyToDelete of stories) {
-        log(`Try to delete story ${storyToPublish.full_slug}`)
+        log(`Try to delete story ${storyToDelete.full_slug}`)
 
-        deleteStory({ db, story: storyToDelete });
+        await deleteStory({ db, story: storyToDelete });
       }
 
       break
