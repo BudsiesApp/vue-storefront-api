@@ -228,7 +228,7 @@
   },
   "imageable": {
     "maxListeners": 512,
-    "imageSizeLimit": 1024,
+    "imageSizeLimit": 1674,
     "whitelist": {
       "allowedHosts": [
         "${MAGENTO_DOMAIN}",
