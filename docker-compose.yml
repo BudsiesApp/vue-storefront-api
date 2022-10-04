@@ -64,7 +64,7 @@ services:
       
       - STORYBLOK_TOKEN
       - STORYBLOK_MANAGEMENT_TOKEN
-      - STORYBLOK_SPACE_ID
+      - STORYBLOK_SPACE_ID=${BUDSIES_STORYBLOK_SPACE_ID}
       - STORYBLOK_HOOK_SECRET
       - STORYBLOK_SYNC_DATASOURCES
       
@@ -136,7 +136,7 @@ services:
       
       - STORYBLOK_TOKEN
       - STORYBLOK_MANAGEMENT_TOKEN
-      - STORYBLOK_SPACE_ID
+      - STORYBLOK_SPACE_ID=${PETSIES_STORYBLOK_SPACE_ID}
       - STORYBLOK_HOOK_SECRET
       - STORYBLOK_SYNC_DATASOURCES
       
@@ -175,6 +175,78 @@ services:
       - reverseproxy
     expose:
       - 8080
+
+  app-bulkorders:
+    build:
+      context: .
+      dockerfile: docker/vue-storefront-api/Dockerfile
+    depends_on:
+      - es1
+      - redis
+    environment:
+      - VS_ENV
+      - PM2_ARGS=--no-daemon
+
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
+      - ELASTICSEARCH_PROTOCOL=http
+
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      
+      - AUTH_HASH_SECRET
+      - OBJ_HASH_SECRET
+      - CACHE_INVALIDATION_KEY
+
+      - VSF_DOMAIN=${BULKORDERS_VSF_DOMAIN}
+
+      - MAGENTO_DOMAIN=${BULKORDERS_MAGENTO_DOMAIN}
+      - MAGENTO_USER_NAME
+      - MAGENTO_USER_PASSWORD
+      - DEFAULT_STORE_ID=${BULKORDERS_STORE_ID}
+      
+      - STORYBLOK_TOKEN
+      - STORYBLOK_MANAGEMENT_TOKEN
+      - STORYBLOK_SPACE_ID=${BULKORDERS_STORYBLOK_SPACE_ID}
+      - STORYBLOK_HOOK_SECRET
+      - STORYBLOK_SYNC_DATASOURCES
+      
+      - AMAZONPAY_SANDBOX
+      - AMAZONPAY_ACCESS_KEY
+      - AMAZONPAY_SECRET_KEY
+      - AMAZONPAY_SELLER_ID
+      - AMAZONPAY_ENDPOINT
+      
+      - BRAINTREE_MODE
+      - BRAINTREE_MERCHANT_ID
+      - BRAINTREE_PUBLIC_KEY
+      - BRAINTREE_PRIVATE_KEY
+
+      - VIRTUAL_HOST=${BULKORDERS_DOMAIN}
+      - LETSENCRYPT_HOST=${BULKORDERS_DOMAIN}
+      - LETSENCRYPT_EMAIL
+      
+    volumes:
+      - './config/local.json.template:/var/www/config/local.json.template'
+      - './ecosystem.json:/var/www/ecosystem.json'
+      - './migrations:/var/www/migrations'
+      - './package.json:/var/www/package.json'
+      - './yarn.lock:/var/www/yarn.lock'
+      - './babel.config.js:/var/www/babel.config.js'
+      - './tsconfig.json:/var/www/tsconfig.json'
+      - './nodemon.json:/var/www/nodemon.json'
+      - './scripts:/var/www/scripts'
+      - './src:/var/www/src'
+      - './var:/var/www/var'
+      - './tmp:/tmp/vue-storefront-api'
+    tmpfs:
+      - /var/www/dist
+    networks:
+      - default
+      - reverseproxy
+    expose:
+      - 8080    
 
 networks:
   reverseproxy:
