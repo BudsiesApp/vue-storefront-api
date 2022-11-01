@@ -1160,5 +1160,57 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.post('/bulk-orders/create', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.createBulkOrder = function () {
+        return restClient.post('bulkOrders/create', req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.createBulkOrder().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.get('/bulk-orders/status', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getBulkOrderStatus = function () {
+        let url = 'bulkOrders/status';
+
+        const bulkOrderId = req.query.bulkOrderId;
+
+        if (bulkOrderId !== undefined) {
+          url += `?bulkOrderId=${bulkOrderId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getBulkOrderStatus().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
