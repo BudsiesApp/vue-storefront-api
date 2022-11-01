@@ -1136,5 +1136,29 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/bulk-orders/client-types', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getBulkOrderClientTypes = function () {
+        let url = 'bulkOrders/clientTypes';
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getBulkOrderClientTypes().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
