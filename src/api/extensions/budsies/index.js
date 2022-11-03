@@ -1212,5 +1212,81 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/bulk-orders/quotes', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getBulkOrderQuotes = function () {
+        let url = 'bulkOrders/quotes';
+
+        const bulkOrderId = req.query.bulkOrderId;
+
+        if (bulkOrderId !== undefined) {
+          url += `?bulkOrderId=${bulkOrderId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getBulkOrderQuotes().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.post('/bulk-orders/quote-choose', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.chooseBulkOrderQuote = function () {
+        const customerToken = getToken(req);
+
+        return restClient.post(`bulkOrders/quoteChoose?token=${customerToken}`, req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.chooseBulkOrderQuote().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.post('/bulk-orders/question', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.createBulkOrderQuestion = function () {
+        return restClient.post('bulkOrders/question', req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.createBulkOrderQuestion().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
