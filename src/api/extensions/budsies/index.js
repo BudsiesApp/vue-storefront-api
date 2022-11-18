@@ -1182,14 +1182,14 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/bulk-orders/status', (req, res) => {
+  budsiesApi.get('/bulk-orders/info', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getBulkOrderStatus = function () {
-        let url = 'bulkOrders/status';
+      module.getBulkOrderInfo = function () {
+        let url = 'bulkOrders/info';
 
         const bulkOrderId = req.query.bulkOrderId;
 
@@ -1205,7 +1205,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getBulkOrderStatus().then((result) => {
+    client.budsies.getBulkOrderInfo().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
