@@ -1249,9 +1249,14 @@ module.exports = ({ config, db }) => {
       let module = {};
 
       module.chooseBulkOrderQuote = function () {
-        const customerToken = getToken(req);
+        const params = new URLSearchParams({
+          token: getToken(req),
+          cartId: req.query.cartId
+        });
 
-        return restClient.post(`bulkOrders/quoteChoose?token=${customerToken}`, req.body).then((data) => {
+        const url = `bulkOrders/quoteChoose?${params.toString()}`;
+
+        return restClient.post(url, req.body).then((data) => {
           return getResponse(data);
         });
       }
