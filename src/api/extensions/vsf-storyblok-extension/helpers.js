@@ -39,11 +39,11 @@ function getHitsAsStories (hits) {
   return stories
 }
 
-export const transformStory = (story, forIndexing = true) => {
+export const transformStory = (index, story, forIndexing = true) => {
   story.content = JSON.stringify(story.content)
   story.full_slug = story.full_slug.replace(/^\/|\/$/g, '')
   const result = {
-    index: 'storyblok_stories',
+    index: index,
     type: 'story', // XXX: Change to _doc once VSF supports Elasticsearch 6
     id: story.id + '_' + story.full_slug
   }
@@ -55,19 +55,19 @@ export const transformStory = (story, forIndexing = true) => {
   return result
 }
 
-function mapStoryToBulkAction ({ story: { id, full_slug } }) {
+function mapStoryToBulkAction ({ index, story: { id, full_slug } }) {
   return {
     index: {
       _id: id + '_' + full_slug,
-      _index: 'storyblok_stories',
+      _index: index,
       _type: 'story'
     }
   }
 }
 
-export function createBulkOperations (stories = []) {
+export function createBulkOperations (index, stories = []) {
   return stories.reduce((accumulator, story) => {
-    accumulator.push(mapStoryToBulkAction({ story }))
+    accumulator.push(mapStoryToBulkAction({ index, story }))
     accumulator.push({
       ...story,
       content: JSON.stringify(story.content)
@@ -78,7 +78,7 @@ export function createBulkOperations (stories = []) {
 
 export function createIndex (config) {
   return {
-    index: 'storyblok_stories',
+    index: config.storyblok.storiesIndex,
     body: {
       index: {
         mapping: {
@@ -91,9 +91,9 @@ export function createIndex (config) {
   }
 }
 
-export function queryByPath (path) {
+export function queryByPath (index, path) {
   return {
-    index: 'storyblok_stories',
+    index: index,
     type: 'story',
     body: {
       query: {
@@ -123,9 +123,9 @@ export const cacheInvalidate = async (config) => {
   }
 }
 
-export const getStory = async (db, path) => {
+export const getStory = async (db, index, path) => {
   try {
-    const response = await db.search(queryByPath(path))
+    const response = await db.search(queryByPath(index, path))
     const hits = getHits(response)
     const story = getHitsAsStory(hits)
     return story
@@ -136,9 +136,9 @@ export const getStory = async (db, path) => {
   }
 }
 
-export const getStoriesMatchedToId = async (db, id) => {
+export const getStoriesMatchedToId = async (db, index, id) => {
   const response = await db.search({
-    index: 'storyblok_stories',
+    index: index,
     type: 'story',
     body: {
       query: {
@@ -156,9 +156,9 @@ export const getStoriesMatchedToId = async (db, id) => {
   return getHitsAsStories(hits)
 }
 
-export const getStoriesWithIdReference = async (db, id) => {
+export const getStoriesWithIdReference = async (db, index, id) => {
   const response = await db.search({
-    index: 'storyblok_stories',
+    index: index,
     type: 'story',
     size: 1000,
     body: {

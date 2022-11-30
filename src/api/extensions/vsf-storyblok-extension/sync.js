@@ -2,30 +2,30 @@ import { storyblokClient } from './storyblok'
 import { storyblokManagementClient } from './storyblok'
 import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate, getStoriesMatchedToId, getStoriesWithIdReference } from './helpers'
 
-function indexStories ({ db, stories = [] }) {
-  const bulkOps = createBulkOperations(stories)
+function indexStories ({ db, config, stories = [] }) {
+  const bulkOps = createBulkOperations(config.storyblok.storiesIndex, stories)
   return db.bulk({
     body: bulkOps
   })
 }
 
-async function indexStory ({ db, story }) {
-  const transformedStory = transformStory(story)
+async function indexStory ({ db, config, story }) {
+  const transformedStory = transformStory(config.storyblok.storiesIndex, story)
 
   await db.index(transformedStory)
 
   log(`Story ${story.full_slug} was indexed`)
 }
 
-async function deleteStory ({ db, story }) {
-  const transformedStory = transformStory(story, false)
+async function deleteStory ({ db, config, story }) {
+  const transformedStory = transformStory(config.storyblok.storiesIndex, story, false)
 
   await db.delete(transformedStory)
 
   log(`Story ${story.full_slug} was deleted`)
 }
 
-async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
+async function syncStories ({ db, config, page = 1, perPage = 100, languages = [] }) {
   let { data: { stories }, total } = await storyblokClient.get('cdn/stories', {
     page,
     per_page: perPage,
@@ -50,13 +50,13 @@ async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
     full_slug: story.full_slug.replace(/^\/|\/$/g, '')
   }))
 
-  const promise = indexStories({ db, stories: newStories })
+  const promise = indexStories({ db, config, stories: newStories })
 
   const lastPage = Math.ceil((total / perPage))
 
   if (page < lastPage) {
     page += 1
-    return syncStories({ db, page, perPage })
+    return syncStories({ db, config, page, perPage })
   }
 
   return promise
@@ -64,10 +64,10 @@ async function syncStories ({ db, page = 1, perPage = 100, languages = [] }) {
 
 const fullSync = async (db, config) => {
   log('Syncing published stories!')
-  await db.indices.delete({ ignore_unavailable: true, index: 'storyblok_stories' })
+  await db.indices.delete({ ignore_unavailable: true, index: config.storyblok.storiesIndex })
   await db.indices.create(createIndex(config))
   const languages = config.storeViews.multistore ? config.storeViews.mapStoreUrlsFor : [];
-  await syncStories({ db, perPage: config.storyblok.perPage, languages })
+  await syncStories({ db, config, perPage: config.storyblok.perPage, languages })
 }
 
 const handleHook = async (db, config, params) => {
@@ -93,12 +93,12 @@ const handleHook = async (db, config, params) => {
   } catch (e) {}
 
   await handleActionForStory(db, config, id, action, cv)
-  await handleActionForRelatedStories(db, id, action, cv)
+  await handleActionForRelatedStories(db, config, id, action, cv)
 
   await cacheInvalidate(config.storyblok)
 }
 
-const handleActionForRelatedStories = async (db, id, action, cv) => {
+const handleActionForRelatedStories = async (db, config, id, action, cv) => {
   const size = 10
 
   switch (action) {
@@ -106,7 +106,7 @@ const handleActionForRelatedStories = async (db, id, action, cv) => {
     case 'unpublished':
       break
     case 'published': {
-      let storiesToIndex = await getStoriesWithIdReference(db, id)
+      let storiesToIndex = await getStoriesWithIdReference(db, config.storyblok.storiesIndex, id)
 
       while (storiesToIndex.length > 0) {
         const batchStories = storiesToIndex.splice(0, size)
@@ -123,7 +123,7 @@ const handleActionForRelatedStories = async (db, id, action, cv) => {
         for (const storyToReindex of response.data.stories) {
           log(`Try to reindex story ${storyToReindex.full_slug} with ${id} ID reference`)
 
-          await indexStory({ db, story: storyToReindex })
+          await indexStory({ db, config, story: storyToReindex })
         }
       }
 
@@ -163,30 +163,30 @@ const handleActionForStory = async (db, config, id, action, cv) => {
         storiesToPublish.push(response.data.story)
       }
 
-      let storiesToDelete = await getStoriesMatchedToId(db, id)
+      let storiesToDelete = await getStoriesMatchedToId(db, config.storyblok.storiesIndex, id)
 
       for (const storyToDelete of storiesToDelete) {
         log(`Try to delete old copy of story ${storyToDelete.full_slug}`)
 
-        await deleteStory({ db, story: storyToDelete })
+        await deleteStory({ db, config, story: storyToDelete })
       }
 
       for (const storyToPublish of storiesToPublish) {
         log(`Try to reindex story ${storyToPublish.full_slug}`)
 
-        await indexStory({ db, story: storyToPublish })
+        await indexStory({ db, config, story: storyToPublish })
       }
 
       break
     }
     case 'unpublished':
     case 'deleted': {
-      const stories = await getStoriesMatchedToId(db, id)
+      const stories = await getStoriesMatchedToId(db, config.storyblok.storiesIndex, id)
 
       for (const storyToDelete of stories) {
         log(`Try to delete story ${storyToDelete.full_slug}`)
 
-        await deleteStory({ db, story: storyToDelete });
+        await deleteStory({ db, config, story: storyToDelete });
       }
 
       break

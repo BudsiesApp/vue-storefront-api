@@ -168,6 +168,7 @@
     "Link"
   ],
   "storyblok": {
+    "storiesIndex": "storyblok_stories_${DEFAULT_STORE_ID}",
     "previewToken": "${STORYBLOK_TOKEN}",
     "managementToken": "${STORYBLOK_MANAGEMENT_TOKEN}",
     "hookSecret": "${STORYBLOK_HOOK_SECRET}",
