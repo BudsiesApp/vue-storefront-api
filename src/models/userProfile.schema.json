@@ -26,7 +26,6 @@
                     "type": "integer"
                 },
                 "addresses": {
-                    "maxItems": 2,
                     "items": {
                         "required": [
                             "firstname",
@@ -46,11 +45,11 @@
                                 "pattern": "[a-zA-Z]+"
                             },
                             "street": {
-                                "minItems": 2,
-                                "items": {
+                                "minItems": 1,
+                                "items": [{
                                     "type": "string",
                                     "minLength": 1
-                                }
+                                }]
                             },
                             "city": {
                                 "type": "string"
@@ -69,7 +68,7 @@
                                 "pattern": "[A-Z]+"
                             },
                             "postcode": {
-                                "type": "string",
+                                "type": ["string", "number"],
                                 "minLength": 3
                             },
                             "company": {
@@ -81,7 +80,7 @@
                                 "minLength": 3
                             },
                             "telephone": {
-                                "type": "string"
+                                "type": ["string", "number"]
                             },
                             "default_billing": {
                                 "type": "boolean"
