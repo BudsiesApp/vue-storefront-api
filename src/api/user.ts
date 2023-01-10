@@ -265,7 +265,7 @@ export default ({config, db}) => {
     const token = getToken(req)
     const userAgent = req.headers['user-agent']
 
-    userProxy.changePassword(userAgent, { token, body: req.body }).then((result) => {
+    userProxy.changePassword({ token, body: req.body }, userAgent).then((result) => {
       apiStatus(res, result, 200)
     }).catch(err => {
       apiStatus(res, err, 500)
