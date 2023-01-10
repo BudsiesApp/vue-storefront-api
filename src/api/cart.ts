@@ -22,8 +22,11 @@ export default ({ config, db }) => {
   cartApi.post('/create', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
+    const userAgent = req.headers['user-agent'];
+
     cartProxy.create(
       token,
+      userAgent,
       req.query.campaignToken ? req.query.campaignToken : undefined
     ).then((result) => {
       apiStatus(res, result, 200);
@@ -43,10 +46,19 @@ export default ({ config, db }) => {
   cartApi.post('/update', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
+    const userAgent = req.headers['user-agent']
+
     if (!req.body.cartItem) {
       return apiStatus(res, 'No cartItem element provided within the request body', 500)
     }
-    cartProxy.update(token, req.query.cartId ? req.query.cartId : null, req.body.cartItem).then((result) => {
+    cartProxy.update(
+      token,
+      req.query.cartId
+        ? req.query.cartId
+        : null,
+      req.body.cartItem,
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -62,10 +74,19 @@ export default ({ config, db }) => {
   cartApi.post('/apply-coupon', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
+    const userAgent = req.headers['user-agent']
+
     if (!req.query.coupon) {
       return apiStatus(res, 'No coupon code provided', 500)
     }
-    cartProxy.applyCoupon(token, req.query.cartId ? req.query.cartId : null, req.query.coupon).then((result) => {
+    cartProxy.applyCoupon(
+      token,
+      req.query.cartId
+        ? req.query.cartId
+        : null,
+      req.query.coupon,
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -80,7 +101,16 @@ export default ({ config, db }) => {
   cartApi.post('/delete-coupon', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
-    cartProxy.deleteCoupon(token, req.query.cartId ? req.query.cartId : null).then((result) => {
+    const userAgent = req.headers['user-agent']
+
+    cartProxy.deleteCoupon(
+      token,
+      req.query.cartId
+        ? req.query.cartId
+        : null,
+      userAgent
+
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -95,7 +125,15 @@ export default ({ config, db }) => {
   cartApi.get('/coupon', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
-    cartProxy.getCoupon(token, req.query.cartId ? req.query.cartId : null).then((result) => {
+    const userAgent = req.headers['user-agent']
+
+    cartProxy.getCoupon(
+      token,
+      req.query.cartId
+        ? req.query.cartId
+        : null,
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -113,10 +151,19 @@ export default ({ config, db }) => {
   cartApi.post('/delete', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
+    const userAgent = req.headers['user-agent']
+
     if (!req.body.cartItem) {
       return apiStatus(res, 'No cartItem element provided within the request body', 500)
     }
-    cartProxy.delete(token, req.query.cartId ? req.query.cartId : null, req.body.cartItem).then((result) => {
+    cartProxy.delete(
+      token,
+      req.query.cartId
+        ? req.query.cartId
+        : null,
+      req.body.cartItem,
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -131,8 +178,17 @@ export default ({ config, db }) => {
   cartApi.get('/pull', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
+    const userAgent = req.headers['user-agent']
+
     res.setHeader('Cache-Control', 'no-cache, no-store');
-    cartProxy.pull(token, req.query.cartId ? req.query.cartId : null, req.body).then((result) => {
+    cartProxy.pull(
+      token,
+      req.query.cartId
+        ? req.query.cartId
+        : null,
+      req.body,
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -147,8 +203,17 @@ export default ({ config, db }) => {
   cartApi.get('/totals', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
+    const userAgent = req.headers['user-agent']
+
     res.setHeader('Cache-Control', 'no-cache, no-store');
-    cartProxy.totals(token, req.query.cartId ? req.query.cartId : null, req.body).then((result) => {
+    cartProxy.totals(
+      token,
+      req.query.cartId
+        ? req.query.cartId
+        : null,
+      req.body,
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -164,11 +229,20 @@ export default ({ config, db }) => {
   cartApi.post('/shipping-methods', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
+    const userAgent = req.headers['user-agent']
+
     res.setHeader('Cache-Control', 'no-cache, no-store');
     if (!req.body.address) {
       return apiStatus(res, 'No address element provided within the request body', 500)
     }
-    cartProxy.getShippingMethods(token, req.query.cartId ? req.query.cartId : null, req.body.address).then((result) => {
+    cartProxy.getShippingMethods(
+      token,
+      req.query.cartId
+        ? req.query.cartId
+        : null,
+      req.body.address,
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -183,8 +257,16 @@ export default ({ config, db }) => {
   cartApi.get('/payment-methods', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
+    const userAgent = req.headers['user-agent']
+
     res.setHeader('Cache-Control', 'no-cache, no-store');
-    cartProxy.getPaymentMethods(token, req.query.cartId ? req.query.cartId : null).then((result) => {
+    cartProxy.getPaymentMethods(
+      token,
+      req.query.cartId
+        ? req.query.cartId
+        : null,
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -200,11 +282,20 @@ export default ({ config, db }) => {
   cartApi.post('/shipping-information', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
+    const userAgent = req.headers['user-agent']
+
     res.setHeader('Cache-Control', 'no-cache, no-store');
     if (!req.body.addressInformation) {
       return apiStatus(res, 'No address element provided within the request body', 500)
     }
-    cartProxy.setShippingInformation(token, req.query.cartId ? req.query.cartId : null, req.body).then((result) => {
+    cartProxy.setShippingInformation(
+      token,
+      req.query.cartId
+        ? req.query.cartId
+        : null,
+      req.body,
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -220,11 +311,20 @@ export default ({ config, db }) => {
   cartApi.post('/collect-totals', (req, res) => {
     const cartProxy = _getProxy(req)
     const token = getToken(req)
+    const userAgent = req.headers['user-agent']
+
     res.setHeader('Cache-Control', 'no-cache, no-store');
     if (!req.body.methods) {
       return apiStatus(res, 'No shipping and payment methods element provided within the request body', 500)
     }
-    cartProxy.collectTotals(token, req.query.cartId ? req.query.cartId : null, req.body.methods).then((result) => {
+    cartProxy.collectTotals(
+      token,
+      req.query.cartId
+        ? req.query.cartId
+        : null,
+      req.body.methods,
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -240,9 +340,14 @@ export default ({ config, db }) => {
 
       module.mergeGuestAndCustomer = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent']
 
         return restClient
-          .post(`cart/mergeGuestAndCustomer?token=${customerToken}&cartId=${req.query.cartId}`)
+          .post(
+            `cart/mergeGuestAndCustomer?token=${customerToken}&cartId=${req.query.cartId}`,
+            undefined,
+            userAgent
+          )
           .then((data) => {
             return data.code === 200 ? data.result : false;
           })

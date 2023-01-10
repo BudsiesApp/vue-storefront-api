@@ -20,15 +20,19 @@ export default ({ config, db }) => {
    */
   api.get('/check/:sku', (req, res) => {
     const stockProxy = _getProxy(req)
+    const userAgent = req.headers['user-agent']
 
     if (!req.params.sku) {
       return apiStatus(res, 'sku parameter is required', 500);
     }
 
-    stockProxy.check({
-      sku: req.params.sku,
-      stockId: config.msi.enabled ? (req.params.stockId ? req.params.stockId : _getStockId(req.params.storeCode)) : null
-    }).then((result) => {
+    stockProxy.check(
+      {
+        sku: req.params.sku,
+        stockId: config.msi.enabled ? (req.params.stockId ? req.params.stockId : _getStockId(req.params.storeCode)) : null
+      },
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
@@ -40,15 +44,19 @@ export default ({ config, db }) => {
    */
   api.get('/check', (req, res) => {
     const stockProxy = _getProxy(req)
+    const userAgent = req.headers['user-agent']
 
     if (!req.query.sku) {
       return apiStatus(res, 'sku parameter is required', 500);
     }
 
-    stockProxy.check({
-      sku: req.query.sku,
-      stockId: config.msi.enabled ? (req.query.stockId ? req.query.stockId : _getStockId(req.query.storeCode)) : null
-    }).then((result) => {
+    stockProxy.check(
+      {
+        sku: req.query.sku,
+        stockId: config.msi.enabled ? (req.query.stockId ? req.query.stockId : _getStockId(req.query.storeCode)) : null
+      },
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
@@ -60,6 +68,7 @@ export default ({ config, db }) => {
    */
   api.get('/list', (req, res) => {
     const stockProxy = _getProxy(req)
+    const userAgent = req.headers['user-agent']
 
     if (!req.query.skus) {
       return apiStatus(res, 'skus parameter is required', 500);
@@ -68,7 +77,13 @@ export default ({ config, db }) => {
     const skuArray = (req.query.skus as string).split(',')
     const promisesList = []
     for (const sku of skuArray) {
-      promisesList.push(stockProxy.check({sku: sku, stockId: config.msi.enabled ? _getStockId(req.query.storeCode) : null}))
+      promisesList.push(stockProxy.check(
+        {
+          sku: sku,
+          stockId: config.msi.enabled ? _getStockId(req.query.storeCode) : null
+        },
+        userAgent
+      ))
     }
     Promise.all(promisesList).then((results) => {
       apiStatus(res, results, 200);

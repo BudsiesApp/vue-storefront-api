@@ -7,35 +7,35 @@ class UserProxy extends AbstractUserProxy {
     super(config, req)
     this.api = Magento1Client(multiStoreConfig(config.magento1.api, req));
   }
-  register (userData) {
-    return this.api.user.create(userData)
+  register (userData, userAgent) {
+    return this.api.user.create(userData, userAgent)
   }
-  login (userData) {
-    return this.api.user.login(userData)
+  login (userData, userAgent) {
+    return this.api.user.login(userData, userAgent)
   }
-  me (customerToken) {
-    return this.api.user.me(customerToken)
+  me (customerToken, userAgent) {
+    return this.api.user.me(customerToken, userAgent)
   }
-  orderHistory (customerToken, page, pageSize) {
-    return this.api.user.orderHistory(customerToken, page, pageSize)
+  orderHistory (customerToken, page, pageSize, userAgent) {
+    return this.api.user.orderHistory(customerToken, page, pageSize, userAgent)
   }
-  creditValue (customerToken) {
-    return this.api.user.creditValue(customerToken)
+  creditValue (customerToken, userAgent) {
+    return this.api.user.creditValue(customerToken, userAgent)
   }
-  refillCredit (customerToken, creditCode) {
-    return this.api.user.refillCredit(customerToken, creditCode)
+  refillCredit (customerToken, creditCode, userAgent) {
+    return this.api.user.refillCredit(customerToken, creditCode, userAgent)
   }
-  resetPassword (emailData) {
-    return this.api.user.resetPassword(emailData)
+  resetPassword (emailData, userAgent) {
+    return this.api.user.resetPassword(emailData, userAgent)
   }
-  update (userData) {
-    return this.api.user.update(userData)
+  update (userData, userAgent) {
+    return this.api.user.update(userData, userAgent)
   }
-  changePassword (passwordData) {
-    return this.api.user.changePassword(passwordData)
+  changePassword (passwordData, userAgent) {
+    return this.api.user.changePassword(passwordData, userAgent)
   }
-  resetPasswordUsingResetToken (resetData) {
-    return this.api.user.resetPasswordUsingResetToken(resetData)
+  resetPasswordUsingResetToken (resetData, userAgent) {
+    return this.api.user.resetPasswordUsingResetToken(resetData, userAgent)
   }
 }
 

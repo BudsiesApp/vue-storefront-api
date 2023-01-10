@@ -50,6 +50,7 @@ export default ({config, db}) => {
     const ajv = new Ajv();
     const userRegisterSchema = require('../models/userRegister.schema.json')
     let userRegisterSchemaExtension = {};
+    const userAgent = req.headers['user-agent']
     if (fs.existsSync(path.resolve(__dirname, '../models/userRegister.schema.extension.json'))) {
       userRegisterSchemaExtension = require('../models/userRegister.schema.extension.json');
     }
@@ -62,7 +63,7 @@ export default ({config, db}) => {
 
     const userProxy = _getProxy(req)
 
-    userProxy.register(req.body).then((result) => {
+    userProxy.register(req.body, userAgent).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -74,8 +75,9 @@ export default ({config, db}) => {
    */
   userApi.post('/login', (req, res) => {
     const userProxy = _getProxy(req)
+    const userAgent = req.headers['user-agent']
 
-    userProxy.login(req.body).then((result) => {
+    userProxy.login(req.body, userAgent).then((result) => {
       /**
       * Second request for more user info
       */
@@ -90,6 +92,7 @@ export default ({config, db}) => {
    */
   userApi.post('/refresh', (req, res) => {
     const userProxy = _getProxy(req)
+    const userAgent = req.headers['user-agent']
 
     if (!req.body || !req.body.refreshToken) {
       return apiStatus(res, 'No refresh token provided', 500);
@@ -101,7 +104,7 @@ export default ({config, db}) => {
         return apiStatus(res, 'Invalid refresh token provided', 500);
       }
 
-      userProxy.login(decodedToken).then((result) => {
+      userProxy.login(decodedToken, userAgent).then((result) => {
         apiStatus(res, result, 200, {refreshToken: encryptToken(jwt.encode(decodedToken, config.authHashSecret ? config.authHashSecret : config.objHashSecret), config.authHashSecret ? config.authHashSecret : config.objHashSecret)});
       }).catch(err => {
         apiError(res, err);
@@ -116,12 +119,20 @@ export default ({config, db}) => {
    */
   userApi.post('/resetPassword', (req, res) => {
     const userProxy = _getProxy(req)
+    const userAgent = req.headers['user-agent']
 
     if (!req.body.email) {
       return apiStatus(res, 'Invalid e-mail provided!', 500)
     }
 
-    userProxy.resetPassword({ email: req.body.email, template: 'email_reset', websiteId: 1 }).then((result) => {
+    userProxy.resetPassword(
+      {
+        email: req.body.email,
+        template: 'email_reset',
+        websiteId: 1
+      },
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -133,6 +144,7 @@ export default ({config, db}) => {
    */
   userApi.post('/reset-password', (req, res) => {
     const userProxy = _getProxy(req)
+    const userAgent = req.headers['user-agent']
     const { storeCode } = req.query
     const websiteId = storeCode ? config.storeViews[storeCode as string].websiteId : undefined
 
@@ -140,7 +152,14 @@ export default ({config, db}) => {
       return apiStatus(res, 'Invalid e-mail provided!', 500)
     }
 
-    userProxy.resetPassword({ email: req.body.email, template: 'email_reset', websiteId }).then((result) => {
+    userProxy.resetPassword(
+      {
+        email: req.body.email,
+        template: 'email_reset',
+        websiteId
+      },
+      userAgent
+    ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
@@ -153,7 +172,9 @@ export default ({config, db}) => {
   userApi.get('/me', (req, res) => {
     const userProxy = _getProxy(req)
     const token = getToken(req)
-    userProxy.me(token).then((result) => {
+    const userAgent = req.headers['user-agent']
+
+    userProxy.me(token, userAgent).then((result) => {
       addUserGroupToken(config, result)
       apiStatus(res, result, 200);
     }).catch(err => {
@@ -167,10 +188,13 @@ export default ({config, db}) => {
   userApi.get('/order-history', (req, res) => {
     const userProxy = _getProxy(req)
     const token = getToken(req)
+    const userAgent = req.headers['user-agent']
+
     userProxy.orderHistory(
       token,
       req.query.pageSize || 20,
-      req.query.currentPage || 1
+      req.query.currentPage || 1,
+      userAgent
     ).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
@@ -184,6 +208,8 @@ export default ({config, db}) => {
   userApi.post('/me', async (req, res) => {
     const ajv = new Ajv();
     const userProfileSchema = require('../models/userProfileUpdate.schema.json')
+    const userAgent = req.headers['user-agent']
+
     let userProfileSchemaExtension = {};
     if (fs.existsSync(path.resolve(__dirname, '../models/userProfileUpdate.schema.extension.json'))) {
       userProfileSchemaExtension = require('../models/userProfileUpdate.schema.extension.json');
@@ -212,15 +238,18 @@ export default ({config, db}) => {
         return apiStatus(res, validationMessage, 403)
       }
 
-      const result = await userProxy.update({
-        token,
-        body: {
-          customer: {
-            ...customer,
-            website_id
+      const result = await userProxy.update(
+        {
+          token,
+          body: {
+            customer: {
+              ...customer,
+              website_id
+            }
           }
-        }
-      })
+        },
+        userAgent
+      )
       addUserGroupToken(config, result)
       apiStatus(res, result, 200)
     } catch (err) {
@@ -234,7 +263,9 @@ export default ({config, db}) => {
   userApi.post('/changePassword', (req, res) => {
     const userProxy = _getProxy(req)
     const token = getToken(req)
-    userProxy.changePassword({ token, body: req.body }).then((result) => {
+    const userAgent = req.headers['user-agent']
+
+    userProxy.changePassword(userAgent, { token, body: req.body }).then((result) => {
       apiStatus(res, result, 200)
     }).catch(err => {
       apiStatus(res, err, 500)
@@ -247,7 +278,9 @@ export default ({config, db}) => {
   userApi.post('/change-password', (req, res) => {
     const userProxy = _getProxy(req)
     const token = getToken(req)
-    userProxy.changePassword({token, body: req.body}).then((result) => {
+    const userAgent = req.headers['user-agent']
+
+    userProxy.changePassword({token, body: req.body}, userAgent).then((result) => {
       apiStatus(res, result, 200)
     }).catch(err => {
       apiStatus(res, err, 500)
@@ -269,8 +302,10 @@ export default ({config, db}) => {
     }
 
     const userProxy = _getProxy(req);
+    const userAgent = req.headers['user-agent']
+
     userProxy
-      .resetPasswordUsingResetToken(req.body)
+      .resetPasswordUsingResetToken(req.body, userAgent)
       .then(result => {
         apiStatus(res, result, 200);
       })

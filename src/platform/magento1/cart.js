@@ -7,41 +7,41 @@ class CartProxy extends AbstractCartProxy {
     super(config, req)
     this.api = Magento1Client(multiStoreConfig(config.magento1.api, req));
   }
-  create (customerToken, campaignToken = undefined) {
-    return this.api.cart.create(customerToken, campaignToken);
+  create (customerToken, userAgent, campaignToken = undefined) {
+    return this.api.cart.create(customerToken, userAgent, campaignToken);
   }
-  update (customerToken, cartId, cartItem) {
-    return this.api.cart.update(customerToken, cartId, cartItem);
+  update (customerToken, cartId, cartItem, userAgent) {
+    return this.api.cart.update(customerToken, cartId, cartItem, userAgent);
   }
-  delete (customerToken, cartId, cartItem) {
-    return this.api.cart.delete(customerToken, cartId, cartItem);
+  delete (customerToken, cartId, cartItem, userAgent) {
+    return this.api.cart.delete(customerToken, cartId, cartItem, userAgent);
   }
-  pull (customerToken, cartId, params) {
-    return this.api.cart.pull(customerToken, cartId, params);
+  pull (customerToken, cartId, params, userAgent) {
+    return this.api.cart.pull(customerToken, cartId, params, userAgent);
   }
-  totals (customerToken, cartId, params) {
-    return this.api.cart.totals(customerToken, cartId, params);
+  totals (customerToken, cartId, params, userAgent) {
+    return this.api.cart.totals(customerToken, cartId, params, userAgent);
   }
-  getShippingMethods (customerToken, cartId, address) {
-    return this.api.cart.shippingMethods(customerToken, cartId, address);
+  getShippingMethods (customerToken, cartId, address, userAgent) {
+    return this.api.cart.shippingMethods(customerToken, cartId, address, userAgent);
   }
-  getPaymentMethods (customerToken, cartId) {
-    return this.api.cart.paymentMethods(customerToken, cartId);
+  getPaymentMethods (customerToken, cartId, userAgent) {
+    return this.api.cart.paymentMethods(customerToken, cartId, userAgent);
   }
-  setShippingInformation (customerToken, cartId, address) {
-    return this.api.cart.shippingInformation(customerToken, cartId, address);
+  setShippingInformation (customerToken, cartId, address, userAgent) {
+    return this.api.cart.shippingInformation(customerToken, cartId, address, userAgent);
   }
-  collectTotals (customerToken, cartId, shippingMethod) {
-    return this.api.cart.collectTotals(customerToken, cartId, shippingMethod);
+  collectTotals (customerToken, cartId, shippingMethod, userAgent) {
+    return this.api.cart.collectTotals(customerToken, cartId, shippingMethod, userAgent);
   }
-  applyCoupon (customerToken, cartId, coupon) {
-    return this.api.cart.applyCoupon(customerToken, cartId, coupon);
+  applyCoupon (customerToken, cartId, coupon, userAgent) {
+    return this.api.cart.applyCoupon(customerToken, cartId, coupon, userAgent);
   }
-  deleteCoupon (customerToken, cartId) {
-    return this.api.cart.deleteCoupon(customerToken, cartId);
+  deleteCoupon (customerToken, cartId, userAgent) {
+    return this.api.cart.deleteCoupon(customerToken, cartId, userAgent);
   }
-  getCoupon (customerToken, cartId) {
-    return this.api.cart.getCoupon(customerToken, cartId);
+  getCoupon (customerToken, cartId, userAgent) {
+    return this.api.cart.getCoupon(customerToken, cartId, userAgent);
   }
 }
 

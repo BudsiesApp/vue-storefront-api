@@ -7,17 +7,17 @@ class AddressProxy extends AbstractAddressProxy {
     super(config, req)
     this.api = Magento1Client(multiStoreConfig(config.magento1.api, req));
   }
-  list (customerToken) {
-    return this.api.address.list(customerToken)
+  list (customerToken, userAgent) {
+    return this.api.address.list(customerToken, userAgent)
   }
-  update (customerToken, addressData) {
-    return this.api.address.update(customerToken, addressData);
+  update (customerToken, addressData, userAgent) {
+    return this.api.address.update(customerToken, addressData, userAgent);
   }
-  get (customerToken, addressId) {
-    return this.api.address.get(customerToken, addressId)
+  get (customerToken, addressId, userAgent) {
+    return this.api.address.get(customerToken, addressId, userAgent)
   }
-  delete (customerToken, addressData) {
-    return this.api.address.delete(customerToken, addressData)
+  delete (customerToken, addressData, userAgent) {
+    return this.api.address.delete(customerToken, addressData, userAgent)
   }
 }
 

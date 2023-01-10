@@ -27,8 +27,13 @@ module.exports = ({ config, db }) => {
 
       module.addPrintedProductToCart = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
-        return restClient.post(`printedProducts/cartItems?token=${customerToken}`, req.body).then((data) => {
+        return restClient.post(
+          `printedProducts/cartItems?token=${customerToken}`,
+          req.body,
+          userAgent
+        ).then((data) => {
           return getResponse(data);
         });
       }
@@ -51,10 +56,11 @@ module.exports = ({ config, db }) => {
 
       module.getPhrasePillowsSizeOptions = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         const url = `pillows/sizeOptions?token=${customerToken}`;
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -77,6 +83,7 @@ module.exports = ({ config, db }) => {
 
       module.getPhrasePillowsDesignOptions = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `phrasePillows/designOptions?token=${customerToken}`;
 
@@ -86,7 +93,7 @@ module.exports = ({ config, db }) => {
           url += `&type=${type}`
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -109,8 +116,13 @@ module.exports = ({ config, db }) => {
 
       module.addPhrasePillowToCart = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
-        return restClient.post(`phrasePillows/cartItems?token=${customerToken}`, req.body).then((data) => {
+        return restClient.post(
+          `phrasePillows/cartItems?token=${customerToken}`,
+          req.body,
+          userAgent
+        ).then((data) => {
           return getResponse(data);
         });
       }
@@ -133,6 +145,7 @@ module.exports = ({ config, db }) => {
 
       module.getPrintedProductDesigns = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `printedProducts/designs?token=${customerToken}`;
 
@@ -142,7 +155,7 @@ module.exports = ({ config, db }) => {
           url += `&productId=${productId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -165,6 +178,7 @@ module.exports = ({ config, db }) => {
 
       module.getExtraPhotosAddons = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `printedProducts/extraPhotosAddons?token=${customerToken}`;
 
@@ -174,7 +188,7 @@ module.exports = ({ config, db }) => {
           url += `&productId=${productId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -197,6 +211,7 @@ module.exports = ({ config, db }) => {
 
       module.getShortCodes = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `plushies/shortCodes?token=${customerToken}`;
 
@@ -206,7 +221,7 @@ module.exports = ({ config, db }) => {
           url += `&plushieId=${plushieId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -229,6 +244,7 @@ module.exports = ({ config, db }) => {
 
       module.getDogBreeds = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `plushies/dogBreeds?token=${customerToken}`;
 
@@ -238,7 +254,7 @@ module.exports = ({ config, db }) => {
           url += `&term=${term}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -261,6 +277,7 @@ module.exports = ({ config, db }) => {
 
       module.getPlushiesUpgrades = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `plushies/upgrades?token=${customerToken}`;
 
@@ -270,7 +287,7 @@ module.exports = ({ config, db }) => {
           url += `&productId=${productId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -293,6 +310,7 @@ module.exports = ({ config, db }) => {
 
       module.getPlushiesBodyParts = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `plushies/bodyParts?token=${customerToken}`;
 
@@ -302,7 +320,7 @@ module.exports = ({ config, db }) => {
           url += `&productId=${productId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -325,6 +343,7 @@ module.exports = ({ config, db }) => {
 
       module.getPlushiesRushUpgrades = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `plushies/rushUpgrades?token=${customerToken}`;
 
@@ -334,7 +353,7 @@ module.exports = ({ config, db }) => {
           url += `&productId=${productId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -357,8 +376,13 @@ module.exports = ({ config, db }) => {
 
       module.createPlushie = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
-        return restClient.post(`plushies?token=${customerToken}`, req.body).then((data) => {
+        return restClient.post(
+          `plushies?token=${customerToken}`,
+          req.body,
+          userAgent
+        ).then((data) => {
           return getResponse(data);
         });
       }
@@ -381,6 +405,7 @@ module.exports = ({ config, db }) => {
 
       module.getBodyPartsPlushieValues = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `plushies/bodyPartsPlushieValues?token=${customerToken}`;
 
@@ -390,7 +415,7 @@ module.exports = ({ config, db }) => {
           url += `&plushieId=${plushieId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -413,6 +438,7 @@ module.exports = ({ config, db }) => {
 
       module.getPlushieImages = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `plushies/images?token=${customerToken}`;
 
@@ -422,7 +448,7 @@ module.exports = ({ config, db }) => {
           url += `&plushieId=${plushieId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -445,6 +471,7 @@ module.exports = ({ config, db }) => {
 
       module.getSelectedUpgrades = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `plushies/upgradesPlushieValues?token=${customerToken}`;
 
@@ -454,7 +481,7 @@ module.exports = ({ config, db }) => {
           url += `&plushieId=${plushieId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -477,11 +504,12 @@ module.exports = ({ config, db }) => {
 
       module.getPlushies = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         const plushieId = req.params.plushieId;
         let url = `plushies/${plushieId}?token=${customerToken}`;
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -507,8 +535,9 @@ module.exports = ({ config, db }) => {
           cartId: req.query.cartId,
           token: getToken(req)
         });
+        const userAgent = req.headers['user-agent'];
 
-        return restClient.post(`carts/emailUpdateRequests?${params.toString()}`, req.body).then((data) => {
+        return restClient.post(`carts/emailUpdateRequests?${params.toString()}`, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -531,8 +560,9 @@ module.exports = ({ config, db }) => {
 
       module.sendDonglerBookRequest = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
-        return restClient.post(`donglerBooks/requests/?token=${customerToken}`, req.body).then((data) => {
+        return restClient.post(`donglerBooks/requests/?token=${customerToken}`, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -555,6 +585,7 @@ module.exports = ({ config, db }) => {
 
       module.getPromotionPlatformCampaign = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `promotionPlatform/campaigns?token=${customerToken}`;
 
@@ -576,7 +607,7 @@ module.exports = ({ config, db }) => {
           url += `&cartId=${cartId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -603,8 +634,9 @@ module.exports = ({ config, db }) => {
           recoveryCode: req.query.recoveryCode,
           token: getToken(req)
         });
+        const userAgent = req.headers['user-agent'];
 
-        return restClient.post(`carts/recoveryRequests?${params.toString()}`, req.body).then((data) => {
+        return restClient.post(`carts/recoveryRequests?${params.toString()}`, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -627,6 +659,7 @@ module.exports = ({ config, db }) => {
 
       module.getStoreRating = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `stores/ratings?token=${customerToken}`;
 
@@ -636,7 +669,7 @@ module.exports = ({ config, db }) => {
           url += `&storeId=${storeId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -659,6 +692,7 @@ module.exports = ({ config, db }) => {
 
       module.getGiftcardsTemplates = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `giftcards/templates?token=${customerToken}`;
 
@@ -668,7 +702,7 @@ module.exports = ({ config, db }) => {
           url += `&storeId=${storeId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -691,6 +725,7 @@ module.exports = ({ config, db }) => {
 
       module.sendGiftcardsApplyRequest = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `giftcards/apply?token=${customerToken}`;
 
@@ -700,7 +735,7 @@ module.exports = ({ config, db }) => {
           url += `&cartId=${cartId}`;
         }
 
-        return restClient.post(url, req.body).then((data) => {
+        return restClient.post(url, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -723,6 +758,7 @@ module.exports = ({ config, db }) => {
 
       module.sendGiftcardsRemoveRequest = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `giftcards/remove?token=${customerToken}`;
 
@@ -732,7 +768,7 @@ module.exports = ({ config, db }) => {
           url += `&cartId=${cartId}`;
         }
 
-        return restClient.post(url, req.body).then((data) => {
+        return restClient.post(url, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -755,6 +791,7 @@ module.exports = ({ config, db }) => {
 
       module.sendGiftcardsChangeValueRequest = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `giftcards/changeValue?token=${customerToken}`;
 
@@ -764,7 +801,7 @@ module.exports = ({ config, db }) => {
           url += `&cartId=${cartId}`;
         }
 
-        return restClient.post(url, req.body).then((data) => {
+        return restClient.post(url, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -787,6 +824,7 @@ module.exports = ({ config, db }) => {
 
       module.sendGiftcardsPullRequest = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `giftcards/pull?token=${customerToken}`;
 
@@ -796,7 +834,7 @@ module.exports = ({ config, db }) => {
           url += `&cartId=${cartId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -819,6 +857,7 @@ module.exports = ({ config, db }) => {
 
       module.sendAffirmGetCheckoutObjectRequest = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `affirm/getCheckoutObject?token=${customerToken}`;
 
@@ -828,7 +867,7 @@ module.exports = ({ config, db }) => {
           url += `&cartId=${cartId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -851,10 +890,11 @@ module.exports = ({ config, db }) => {
 
       module.sendNewsletterSubscriptionsRequest = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `newsletter/subscriptions?token=${customerToken}`;
 
-        return restClient.post(url, req.body).then((data) => {
+        return restClient.post(url, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -877,10 +917,11 @@ module.exports = ({ config, db }) => {
 
       module.sendMailchimpSubscriptionsRequest = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `mailingList/subscriptions?token=${customerToken}`;
 
-        return restClient.post(url, req.body).then((data) => {
+        return restClient.post(url, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -903,10 +944,11 @@ module.exports = ({ config, db }) => {
 
       module.sendShareArtistsRequest = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `share/artists?token=${customerToken}`;
 
-        return restClient.post(url, req.body).then((data) => {
+        return restClient.post(url, req.body, userAgent).then((data) => {
           return getResponse(data);
         })
       }
@@ -929,8 +971,9 @@ module.exports = ({ config, db }) => {
 
       module.sendShareCustomerStoriesRequest = function () {
         let url = `share/customerStories`;
+        const userAgent = req.headers['user-agent'];
 
-        return restClient.post(url, req.body).then((data) => {
+        return restClient.post(url, req.body, userAgent).then((data) => {
           return getResponse(data);
         })
       }
@@ -953,6 +996,7 @@ module.exports = ({ config, db }) => {
 
       module.getSettings = async function () {
         let url = 'settings/retrieve';
+        const userAgent = req.headers['user-agent'];
 
         const cachedData = await bridgeRequestsCache.get(backendSettingsRequestCacheKey);
 
@@ -960,7 +1004,7 @@ module.exports = ({ config, db }) => {
           return cachedData;
         }
 
-        const data = await restClient.get(url);
+        const data = await restClient.get(url, userAgent);
 
         const responseData = getResponse(data);
 
@@ -994,10 +1038,11 @@ module.exports = ({ config, db }) => {
           token: getToken(req),
           cartId: req.query.cartId
         });
+        const userAgent = req.headers['user-agent'];
 
         let url = `order/creditCardProcessingErrorNotifications?${params.toString()}`
 
-        return restClient.post(url, req.body).then((data) => {
+        return restClient.post(url, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -1020,8 +1065,9 @@ module.exports = ({ config, db }) => {
 
       module.createAddress = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
-        return restClient.post(`address/create?token=${customerToken}`, req.body).then((data) => {
+        return restClient.post(`address/create?token=${customerToken}`, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -1044,8 +1090,9 @@ module.exports = ({ config, db }) => {
 
       module.updateAddress = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
-        return restClient.post(`address/update?token=${customerToken}`, req.body).then((data) => {
+        return restClient.post(`address/update?token=${customerToken}`, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -1068,10 +1115,11 @@ module.exports = ({ config, db }) => {
 
       module.getAddress = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `address/get?token=${customerToken}`;
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -1094,10 +1142,11 @@ module.exports = ({ config, db }) => {
 
       module.listAddress = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
         let url = `address/list?token=${customerToken}`;
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -1120,8 +1169,9 @@ module.exports = ({ config, db }) => {
 
       module.deleteAddress = function () {
         const customerToken = getToken(req);
+        const userAgent = req.headers['user-agent'];
 
-        return restClient.post(`address/delete?token=${customerToken}`, req.body).then((data) => {
+        return restClient.post(`address/delete?token=${customerToken}`, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -1144,8 +1194,9 @@ module.exports = ({ config, db }) => {
 
       module.getBulkOrderClientTypes = function () {
         let url = 'bulkOrders/clientTypes';
+        const userAgent = req.headers['user-agent'];
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -1167,7 +1218,9 @@ module.exports = ({ config, db }) => {
       let module = {};
 
       module.createBulkOrder = function () {
-        return restClient.post('bulkOrders/create', req.body).then((data) => {
+        const userAgent = req.headers['user-agent'];
+
+        return restClient.post('bulkOrders/create', req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -1190,6 +1243,7 @@ module.exports = ({ config, db }) => {
 
       module.getBulkOrderInfo = function () {
         let url = 'bulkOrders/info';
+        const userAgent = req.headers['user-agent'];
 
         const bulkOrderId = req.query.bulkOrderId;
 
@@ -1197,7 +1251,7 @@ module.exports = ({ config, db }) => {
           url += `?bulkOrderId=${bulkOrderId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -1220,6 +1274,7 @@ module.exports = ({ config, db }) => {
 
       module.getBulkOrderQuotes = function () {
         let url = 'bulkOrders/quotes';
+        const userAgent = req.headers['user-agent'];
 
         const bulkOrderId = req.query.bulkOrderId;
 
@@ -1227,7 +1282,7 @@ module.exports = ({ config, db }) => {
           url += `?bulkOrderId=${bulkOrderId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.get(url, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -1253,10 +1308,11 @@ module.exports = ({ config, db }) => {
           token: getToken(req),
           cartId: req.query.cartId
         });
+        const userAgent = req.headers['user-agent'];
 
         const url = `bulkOrders/quoteChoose?${params.toString()}`;
 
-        return restClient.post(url, req.body).then((data) => {
+        return restClient.post(url, req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }
@@ -1278,7 +1334,9 @@ module.exports = ({ config, db }) => {
       let module = {};
 
       module.createBulkOrderQuestion = function () {
-        return restClient.post('bulkOrders/question', req.body).then((data) => {
+        const userAgent = req.headers['user-agent'];
+
+        return restClient.post('bulkOrders/question', req.body, userAgent).then((data) => {
           return getResponse(data);
         });
       }

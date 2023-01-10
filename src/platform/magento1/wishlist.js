@@ -7,14 +7,14 @@ class WishlistProxy extends AbstractWishlistProxy {
     super(config, req)
     this.api = Magento1Client(multiStoreConfig(config.magento1.api, req));
   }
-  pull (customerToken) {
-    return this.api.wishlist.pull(customerToken);
+  pull (customerToken, userAgent) {
+    return this.api.wishlist.pull(customerToken, userAgent);
   }
-  update (customerToken, wishListItem) {
-    return this.api.wishlist.update(customerToken, wishListItem);
+  update (customerToken, wishListItem, userAgent) {
+    return this.api.wishlist.update(customerToken, wishListItem, userAgent);
   }
-  delete (customerToken, wishListItem) {
-    return this.api.wishlist.delete(customerToken, wishListItem);
+  delete (customerToken, wishListItem, userAgent) {
+    return this.api.wishlist.delete(customerToken, wishListItem, userAgent);
   }
 }
 

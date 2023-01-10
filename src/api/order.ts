@@ -77,7 +77,9 @@ export default ({ config, db }) => resource({
       }
     } else {
       const orderProxy = _getProxy(req, config)
-      orderProxy.create(req.body).then((result) => {
+      const userAgent = req.headers['user-agent']
+
+      orderProxy.create(req.body, userAgent).then((result) => {
         apiStatus(res, result, 200);
       }).catch(err => {
         apiError(res, err);

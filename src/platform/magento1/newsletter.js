@@ -7,11 +7,11 @@ class NewsletterProxy extends AbstractNewsletterProxy {
     super(config, req)
     this.api = Magento1Client(multiStoreConfig(config.magento1.api, req));
   }
-  subscribe (emailAddress) {
-    return this.api.newsletter.subscribe(emailAddress);
+  subscribe (emailAddress, userAgent) {
+    return this.api.newsletter.subscribe(emailAddress, userAgent);
   }
-  unsubscribe (customerToken) {
-    return this.api.newsletter.unsubscribe(customerToken);
+  unsubscribe (customerToken, userAgent) {
+    return this.api.newsletter.unsubscribe(customerToken, userAgent);
   }
 }
 
