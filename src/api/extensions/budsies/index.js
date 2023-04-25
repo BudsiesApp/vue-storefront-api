@@ -547,7 +547,7 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/promotion-platform/active-campaigns', (req, res) => {
+  budsiesApi.get('/promotion-platform/quotes-campaigns', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
@@ -556,7 +556,7 @@ module.exports = ({ config, db }) => {
       module.getActivePromotionPlatformCampaign = function () {
         const customerToken = getToken(req);
 
-        let url = `promotionPlatform/activeCampaigns?token=${customerToken}`;
+        let url = `promotionPlatform/quotesCampaigns?token=${customerToken}`;
 
         const cartId = req.query.cartId;
 
@@ -579,16 +579,16 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.post('/promotion-platform/calculate-campaigns', (req, res) => {
+  budsiesApi.post('/promotion-platform/active-campaign-update-requests', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.calculatePromotionPlatformCampaign = function () {
+      module.updateActivePromotionPlatformCampaign = function () {
         const customerToken = getToken(req);
 
-        let url = `promotionPlatform/calculateCampaigns?token=${customerToken}`;
+        let url = `promotionPlatform/activeCampaignUpdateRequests?token=${customerToken}`;
 
         const campaignToken = req.query.campaignToken;
 
@@ -616,7 +616,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.calculatePromotionPlatformCampaign().then((result) => {
+    client.budsies.updateActivePromotionPlatformCampaign().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
