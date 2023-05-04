@@ -608,7 +608,7 @@ module.exports = ({ config, db }) => {
           url += `&cartId=${cartId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.post(url).then((data) => {
           return getResponse(data);
         });
       }
