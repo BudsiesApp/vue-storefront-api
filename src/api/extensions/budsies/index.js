@@ -547,16 +547,48 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/promotion-platform/campaigns', (req, res) => {
+  budsiesApi.get('/promotion-platform/quotes-campaigns', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getPromotionPlatformCampaign = function () {
+      module.getActivePromotionPlatformCampaign = function () {
         const customerToken = getToken(req);
 
-        let url = `promotionPlatform/campaigns?token=${customerToken}`;
+        let url = `promotionPlatform/quotesCampaigns?token=${customerToken}`;
+
+        const cartId = req.query.cartId;
+
+        if (cartId !== undefined) {
+          url += `&cartId=${cartId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getActivePromotionPlatformCampaign().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.post('/promotion-platform/active-campaign-update-requests', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.updateActivePromotionPlatformCampaign = function () {
+        const customerToken = getToken(req);
+
+        let url = `promotionPlatform/activeCampaignUpdateRequests?token=${customerToken}`;
 
         const campaignToken = req.query.campaignToken;
 
@@ -576,7 +608,7 @@ module.exports = ({ config, db }) => {
           url += `&cartId=${cartId}`;
         }
 
-        return restClient.get(url).then((data) => {
+        return restClient.post(url).then((data) => {
           return getResponse(data);
         });
       }
@@ -584,7 +616,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getPromotionPlatformCampaign().then((result) => {
+    client.budsies.updateActivePromotionPlatformCampaign().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, 500);
