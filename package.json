@@ -50,6 +50,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "^7.3.0",
     "@google-cloud/storage": "^3.0.3",
+    "@vue-storefront-api/amazon-pay": "https://gitpkg.now.sh/BudsiesApp/vsf-amazon-pay/API/amazon-pay?d9f6fcd224938bbcb7472306946d2a947c3ae5e6",
     "ajv": "^6.4.0",
     "ajv-keywords": "^3.4.0",
     "body-parser": "^1.18.2",
@@ -73,8 +74,8 @@
     "jwt-simple": "^0.5.1",
     "kue": "^0.11.6",
     "lodash": "^4.17.10",
-    "magento1-vsbridge-client": "BudsiesApp/magento1-vsbridge-client#f69721e4d0034cd971f4b78d6cb113c60a5627ee",
     "mage2vuestorefront": "git+https://github.com/vuestorefront/mage2vuestorefront.git",
+    "magento1-vsbridge-client": "BudsiesApp/magento1-vsbridge-client#d3eb986a50ae02ae996c882501cfdaf5548676c3",
     "magento2-rest-client": "github:vuestorefront/magento2-rest-client",
     "md5": "^2.2.1",
     "merge-graphql-schemas": "^1.5.2",
@@ -96,8 +97,7 @@
     "syswide-cas": "latest",
     "tsconfig-paths": "^3.9.0",
     "vsf-utilities": "^1.0.2",
-    "winston": "^2.4.2",
-    "@vue-storefront-api/amazon-pay": "https://gitpkg.now.sh/BudsiesApp/vsf-amazon-pay/API/amazon-pay?d9f6fcd224938bbcb7472306946d2a947c3ae5e6"
+    "winston": "^2.4.2"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
