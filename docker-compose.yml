@@ -42,6 +42,7 @@ services:
     environment:
       - VS_ENV
       - PM2_ARGS=--no-daemon
+      - LOG_LEVEL
 
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
@@ -115,6 +116,7 @@ services:
     environment:
       - VS_ENV
       - PM2_ARGS=--no-daemon
+      - LOG_LEVEL
 
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
@@ -188,6 +190,7 @@ services:
     environment:
       - VS_ENV
       - PM2_ARGS=--no-daemon
+      - LOG_LEVEL
 
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
