@@ -22,6 +22,22 @@ app.enable('trust proxy');
 const httpLogFormat = process.env.LOG_HTTP_FORMAT || 'dev'
 
 // logger
+morgan.token('response-time-in-seconds', function getResponseTimeInSecondsToken (req, res, digits) {
+  if (!req._startAt || !res._startAt) {
+    // missing request and/or response start time
+    return
+  }
+
+  // calculate diff
+  const ms = (res._startAt[0] - req._startAt[0]) * 1e3 +
+    (res._startAt[1] - req._startAt[1]) * 1e-6
+  
+  const seconds = ms / 1000.0;
+
+  // return truncated value
+  return seconds.toFixed(digits === undefined ? 3 : digits)
+})
+
 app.use(morgan(httpLogFormat));
 
 app.use('/media', express.static(path.join(__dirname, config.get(`${config.get('platform')}.assetPath`))))
