@@ -100,6 +100,7 @@ services:
       - './src:/var/www/src'
       - './var:/var/www/var'
       - './tmp:/tmp/vue-storefront-api'
+      - './node_modules:/var/www/node_modules'
     tmpfs:
       - /var/www/dist
     networks:
@@ -176,6 +177,7 @@ services:
       - './src:/var/www/src'
       - './var:/var/www/var'
       - './tmp:/tmp/vue-storefront-api'
+      - './node_modules:/var/www/node_modules'
     tmpfs:
       - /var/www/dist
     networks:
@@ -252,6 +254,7 @@ services:
       - './src:/var/www/src'
       - './var:/var/www/var'
       - './tmp:/tmp/vue-storefront-api'
+      - './node_modules:/var/www/node_modules'
     tmpfs:
       - /var/www/dist
     networks:
