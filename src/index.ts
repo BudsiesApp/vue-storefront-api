@@ -17,9 +17,12 @@ import typeDefs from './graphql/schema';
 import * as path from 'path'
 
 const app = express();
+app.enable('trust proxy');
+
+const httpLogFormat = process.env.LOG_HTTP_FORMAT || 'dev'
 
 // logger
-app.use(morgan('dev'));
+app.use(morgan(httpLogFormat));
 
 app.use('/media', express.static(path.join(__dirname, config.get(`${config.get('platform')}.assetPath`))))
 
