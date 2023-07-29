@@ -27,8 +27,6 @@ module.exports = ({ config, db }) => {
 
   api.post('/do-payment', (req, res) => {
     var reqB = req.body;
-    console.log(reqB)
-    console.log(reqB.nonce)
     var gateway = new braintree.BraintreeGateway({
       environment: env,
       merchantId: config.extensions.braintree.merchantId,
