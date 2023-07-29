@@ -44,6 +44,7 @@ services:
       - PM2_ARGS=--no-daemon
       - LOG_LEVEL
       - LOG_COLORIZE
+      - LOG_HTTP_FORMAT
 
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
@@ -119,6 +120,7 @@ services:
       - PM2_ARGS=--no-daemon
       - LOG_LEVEL
       - LOG_COLORIZE
+      - LOG_HTTP_FORMAT
 
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
@@ -194,6 +196,7 @@ services:
       - PM2_ARGS=--no-daemon
       - LOG_LEVEL
       - LOG_COLORIZE
+      - LOG_HTTP_FORMAT
 
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
