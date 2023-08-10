@@ -75,7 +75,7 @@
     "kue": "^0.11.6",
     "lodash": "^4.17.10",
     "mage2vuestorefront": "git+https://github.com/vuestorefront/mage2vuestorefront.git",
-    "magento1-vsbridge-client": "BudsiesApp/magento1-vsbridge-client#7bfdc85ac9b7d575e9a1df2324d7055b36d9e2fe",
+    "magento1-vsbridge-client": "BudsiesApp/magento1-vsbridge-client#e7787bbb0e8b762223f3193f05f1ca48e95a9deb",
     "magento2-rest-client": "github:vuestorefront/magento2-rest-client",
     "md5": "^2.2.1",
     "merge-graphql-schemas": "^1.5.2",
