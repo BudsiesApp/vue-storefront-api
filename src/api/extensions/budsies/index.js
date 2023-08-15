@@ -1349,6 +1349,80 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/inspirationMachine/themes', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getInspirationMachineThemes = function () {
+        const customerToken = getToken(req);
+
+        let url = `inspirationMachine/themes?token=${customerToken}`;
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getInspirationMachineThemes().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.get('/inspirationMachine/extras', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getInspirationMachineExtras = function () {
+        const customerToken = getToken(req);
+
+        let url = `inspirationMachine/extras?token=${customerToken}`;
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getInspirationMachineExtras().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.post('/inspirationMachine/kitRequests', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.inspirationMachineSendKitRequest = function () {
+        return restClient.post('inspirationMachine/kitRequests', req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.inspirationMachineSendKitRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   budsiesApi.get('/raffle/participants/:participantId', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
