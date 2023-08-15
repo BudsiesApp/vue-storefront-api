@@ -1423,5 +1423,134 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/raffle/participants/:participantId', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getParticipants = function () {
+        const customerToken = getToken(req);
+
+        const participantId = req.params.participantId;
+        let url = `raffle/participants/${participantId}?token=${customerToken}`;
+
+        const referrerCode = req.query.referrerCode;
+
+        if (referrerCode !== undefined) {
+          url += `?referrerCode=${referrerCode}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getParticipants().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.post('/raffle/registrations', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.registerInRaffle = function () {
+        return restClient.post('raffle/registrations', req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.registerInRaffle().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.post('/raffle/tokenVerificationRequests', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendTokenVerificationRequest = function () {
+        return restClient.post('raffle/tokenVerificationRequests', req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.sendTokenVerificationRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.get('/raffle/states/current', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getCurrentState = function () {
+        const customerToken = getToken(req);
+
+        let url = `raffle/currentState?token=${customerToken}`;
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getCurrentState().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
+  budsiesApi.get('/raffle/tickets/winning', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getWinningTicketsList = function () {
+        const customerToken = getToken(req);
+
+        let url = `raffle/winningTickets?token=${customerToken}`;
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getWinningTicketsList().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, 500);
+    });
+  });
+
   return budsiesApi;
 }
