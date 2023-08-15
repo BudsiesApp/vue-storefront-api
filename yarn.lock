@@ -117,6 +117,11 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@braintree/wrap-promise@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@braintree/wrap-promise/-/wrap-promise-2.1.0.tgz#7e27ffc5dacd2d71533b0c42506eea8e7c2e50fa"
+  integrity sha512-UIrJB+AfKU0CCfbMoWrsGpd2D/hBpY/SGgFI6WRHPOwhaZ3g9rz1weiJ6eb6L9KgVyunT7s2tckcPkbHw+NzeA==
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.3.tgz#099139eaec7ebf07a27c1786a3ff64f39464d2ef"
@@ -596,6 +601,18 @@
     semver "^6.3.0"
     tsutils "^3.17.1"
 
+"@vue-storefront-api/amazon-pay@https://gitpkg.now.sh/BudsiesApp/vsf-amazon-pay/API/amazon-pay?d9f6fcd224938bbcb7472306946d2a947c3ae5e6":
+  version "0.1.0"
+  resolved "https://gitpkg.now.sh/BudsiesApp/vsf-amazon-pay/API/amazon-pay?d9f6fcd224938bbcb7472306946d2a947c3ae5e6#33df212e2126b08354716b4d0eb3dffb34105562"
+  dependencies:
+    "@types/express" "^4.17.6"
+    "@types/node" "^14.0.5"
+    crypto-js "^3.1.9-1"
+    express "^4.16.3"
+    flat "^5.0.2"
+    uuid "^3.3.2"
+    xml2js "^0.4.19"
+
 JSONStream@^1.3.5:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.5.tgz#3208c1f08d3a4d99261ab64f92302bc15e111ca0"
@@ -992,6 +1009,13 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.9.1.tgz#7e33d8f7d449b3f673cd72deb9abdc552dbe528e"
   integrity sha512-wMHVg2EOHaMRxbzgFJ9gtjOOCrI80OHLG14rxi28XwOW8ux6IiEbRCGGGqCtdAIg4FQCbW20k9RsT4y3gJlFug==
 
+axios@^0.19.0:
+  version "0.19.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.19.2.tgz#3ea36c5d8818d0d5f8a8a97a6d36b86cdc00cb27"
+  integrity sha512-fjgm5MvRHLhx+osE2xoekY70AhARk3a6hkN+3Io1jc00jtquGvxYlKlsFUhmUET0V5te6CcZI7lcv2Ym61mjHA==
+  dependencies:
+    follow-redirects "1.5.10"
+
 babel-jest@^24.8.0:
   version "24.8.0"
   resolved "https://registry.yarnpkg.com/babel-jest/-/babel-jest-24.8.0.tgz#5c15ff2b28e20b0f45df43fe6b7f2aae93dba589"
@@ -1170,6 +1194,15 @@ braces@^2.3.1, braces@^2.3.2:
     snapdragon-node "^2.0.1"
     split-string "^3.0.2"
     to-regex "^3.0.1"
+
+braintree@^3.6.0:
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/braintree/-/braintree-3.8.0.tgz#ed0f91dafb83015b2e7dfb7953027e22ec950ac7"
+  integrity sha512-d3TyH0uwSqOskcq88CkiNj5c/aJseF15kVmyOvmJMcAc65EyN1/d2nHD6OcgAri1fsHbUTr67Q9n9RKF8WtW+A==
+  dependencies:
+    "@braintree/wrap-promise" "2.1.0"
+    dateformat "4.5.1"
+    xml2js "0.4.23"
 
 browser-process-hrtime@^0.1.2:
   version "0.1.3"
@@ -1758,6 +1791,11 @@ cross-spawn@^7.0.1:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/crypt/-/crypt-0.0.2.tgz#88d7ff7ec0dfb86f713dc87bbb42d044d3e6c41b"
 
+crypto-js@^3.1.9-1:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.3.0.tgz#846dd1cce2f68aacfa156c8578f926a609b7976b"
+  integrity sha512-DIT51nX0dCfKltpRiXV+/TVZq+Qq2NgF4644+K7Ttnla7zEzqc+kjJyiB96BHNyUTBxyjzRcZYpUdZa+QAqi6Q==
+
 crypto-js@~3.1.2-2:
   version "3.1.8"
   resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.1.8.tgz#715f070bf6014f2ae992a98b3929258b713f08d5"
@@ -1826,6 +1864,11 @@ date-and-time@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/date-and-time/-/date-and-time-0.7.0.tgz#26273355558877799f9c95888293fccee92fdb94"
 
+dateformat@4.5.1:
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-4.5.1.tgz#c20e7a9ca77d147906b6dc2261a8be0a5bd2173c"
+  integrity sha512-OD0TZ+B7yP7ZgpJf5K2DIbj3FZvFvxgFUuaqA/V5zTjAtAAXZ1E8bktHxmAGs4x5b7PflqA9LeQ84Og7wYtF7Q==
+
 dateformat@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-2.2.0.tgz#4065e2013cf9fb916ddfd82efb506ad4c6769062"
@@ -1843,19 +1886,19 @@ debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.3, debug@^2.6.8, debug@^2.6.
   dependencies:
     ms "2.0.0"
 
+debug@=3.1.0, debug@~3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
+  integrity sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==
+  dependencies:
+    ms "2.0.0"
+
 debug@^3, debug@^3.0, debug@^3.1.0, debug@^3.2.6:
   version "3.2.6"
   resolved "https://registry.yarnpkg.com/debug/-/debug-3.2.6.tgz#e83d17de16d8a7efb7717edbe5fb10135eee629b"
   integrity sha512-mel+jf7nrtEl5Pn1Qx46zARXKDpBbvzezse7p7LqINmdoIk8PYP5SySaxEmYv6TZ0JyEKA1hsCId6DIhgITtWQ==
   dependencies:
     ms "^2.1.1"
-
-debug@~3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
-  integrity sha512-OX8XqP7/1a9cqkxYw2yXss15f26NKWBpDXQd0/uK/KPqdQhxbPa994hnzjcE2VqQpDslf55723cKPUOGSmMY3g==
-  dependencies:
-    ms "2.0.0"
 
 decamelize@^1.0.0, decamelize@^1.1.1, decamelize@^1.2.0:
   version "1.2.0"
@@ -2683,9 +2726,21 @@ flat-cache@^2.0.1:
     rimraf "2.6.3"
     write "1.0.3"
 
+flat@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/flat/-/flat-5.0.2.tgz#8ca6fe332069ffa9d324c327198c598259ceb241"
+  integrity sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==
+
 flatted@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.1.tgz#69e57caa8f0eacbc281d2e2cb458d46fdb449e08"
+
+follow-redirects@1.5.10:
+  version "1.5.10"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.5.10.tgz#7b7a9f9aea2fdff36786a94ff643ed07f4ff5e2a"
+  integrity sha512-0V5l4Cizzvqt5D44aTXbFZz+FtyXV1vrDN6qrelxtfYQKW0KO0W2T/hkE8xvGa/540LkZlkaUjO4ailYTFtHVQ==
+  dependencies:
+    debug "=3.1.0"
 
 for-in@^1.0.1, for-in@^1.0.2:
   version "1.0.2"
@@ -4415,9 +4470,9 @@ lru-cache@^5.0.0:
   dependencies:
     yallist "^3.0.2"
 
-"mage2vuestorefront@git+https://github.com/DivanteLtd/mage2vuestorefront.git":
-  version "1.11.0"
-  resolved "git+https://github.com/DivanteLtd/mage2vuestorefront.git#6b477d35b6d11f935b1643938881969f16c87c04"
+"mage2vuestorefront@git+https://github.com/vuestorefront/mage2vuestorefront.git":
+  version "1.11.1"
+  resolved "git+https://github.com/vuestorefront/mage2vuestorefront.git#a2abf48ec40d9fb761ee3f5117a1c87dc7f7c0c6"
   dependencies:
     "@elastic/elasticsearch" "^7.3.0"
     agentkeepalive "^3.3.0"
@@ -4428,8 +4483,8 @@ lru-cache@^5.0.0:
     jsonfile "^4.0.0"
     jwt-simple "^0.5.1"
     kue "^0.11.5"
-    lodash "^4.17.13"
-    magento2-rest-client "0.0.2"
+    lodash "^4.17.19"
+    magento2-rest-client "https://github.com/DivanteLtd/magento2-rest-client"
     moment "^2.22.2"
     node-sync "^0.2.1"
     passport "^0.3.2"
@@ -4441,27 +4496,27 @@ lru-cache@^5.0.0:
     request "^2.88.0"
     sha1 "^1.1.1"
 
-"magento1-vsbridge-client@github:DivanteLtd/magento1-vsbridge-client":
+magento1-vsbridge-client@BudsiesApp/magento1-vsbridge-client#e7787bbb0e8b762223f3193f05f1ca48e95a9deb:
   version "0.1.0"
-  resolved "https://codeload.github.com/DivanteLtd/magento1-vsbridge-client/tar.gz/3420aacc9807576b2d6e3b64a2fa07c6181ec305"
+  resolved "https://codeload.github.com/BudsiesApp/magento1-vsbridge-client/tar.gz/e7787bbb0e8b762223f3193f05f1ca48e95a9deb"
   dependencies:
     oauth-1.0a "^1.0.1"
     request "^2.72.0"
     winston "^2.2.0"
 
-magento2-rest-client@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/magento2-rest-client/-/magento2-rest-client-0.0.2.tgz#2a6ef230c88129a8680b63ead3793ea7e99bf6a4"
-  integrity sha1-Km7yMMiBKahoC2Pq03k+p+mb9qQ=
+"magento2-rest-client@github:vuestorefront/magento2-rest-client":
+  version "0.0.14"
+  uid "3ed81008e617abfed347ed42fb52ac9d72c8705b"
+  resolved "https://codeload.github.com/vuestorefront/magento2-rest-client/tar.gz/3ed81008e617abfed347ed42fb52ac9d72c8705b"
   dependencies:
     humps "^1.1.0"
     oauth-1.0a "^1.0.1"
     request "^2.72.0"
     winston "^2.2.0"
 
-"magento2-rest-client@github:DivanteLtd/magento2-rest-client":
-  version "0.0.12"
-  resolved "https://codeload.github.com/DivanteLtd/magento2-rest-client/tar.gz/fb5adcb24fe25e097c2127a3ded5ef05e0fcb2f7"
+"magento2-rest-client@https://github.com/DivanteLtd/magento2-rest-client":
+  version "0.0.14"
+  resolved "https://github.com/DivanteLtd/magento2-rest-client#3ed81008e617abfed347ed42fb52ac9d72c8705b"
   dependencies:
     humps "^1.1.0"
     oauth-1.0a "^1.0.1"
@@ -5944,12 +5999,7 @@ redis-tag-cache@^1.2.1:
   dependencies:
     ioredis "^4.0.0"
 
-redis@^0.12.1:
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/redis/-/redis-0.12.1.tgz#64df76ad0fc8acebaebd2a0645e8a48fac49185e"
-  integrity sha1-ZN92rQ/IrOuuvSoGReikj6xJGF4=
-
-redis@~2.6.0-2:
+redis@2.6.5, redis@~2.6.0-2:
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/redis/-/redis-2.6.5.tgz#87c1eff4a489f94b70871f3d08b6988f23a95687"
   integrity sha1-h8Hv9KSJ+Utwhx89CLaYjyOpVoc=
@@ -5957,6 +6007,11 @@ redis@~2.6.0-2:
     double-ended-queue "^2.1.0-0"
     redis-commands "^1.2.0"
     redis-parser "^2.0.0"
+
+redis@^0.12.1:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/redis/-/redis-0.12.1.tgz#64df76ad0fc8acebaebd2a0645e8a48fac49185e"
+  integrity sha1-ZN92rQ/IrOuuvSoGReikj6xJGF4=
 
 reds@^0.2.5:
   version "0.2.5"
@@ -6694,12 +6749,17 @@ stealthy-require@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/stealthy-require/-/stealthy-require-1.1.1.tgz#35b09875b4ff49f26a777e509b3090a3226bf24b"
 
-"storefront-query-builder@https://github.com/DivanteLtd/storefront-query-builder.git":
-  version "1.0.1"
-  resolved "https://github.com/DivanteLtd/storefront-query-builder.git#0ef1f9760eb44edce5b9464a9145ce0a7517a419"
+"storefront-query-builder@https://github.com/vuestorefront/storefront-query-builder.git":
+  version "1.0.2"
+  resolved "https://github.com/vuestorefront/storefront-query-builder.git#7416993f07927f598d22ca448462f0d3f0288f20"
   dependencies:
     "@typescript-eslint/parser" "^2.26.0"
     clone-deep "^4.0.1"
+
+storyblok-js-client@4.5.8:
+  version "4.5.8"
+  resolved "https://registry.yarnpkg.com/storyblok-js-client/-/storyblok-js-client-4.5.8.tgz#862f67d4f25b6c50334e6965bf27f6b6a755ccae"
+  integrity sha512-0Wp7Kn4RdKaKRgMmNDu8c6OC81x1mgeri4ziKDY9BsUZEIGLTNw8KFIWlHYACgMnJQn/6qZaV9kGo8IY4hv6GA==
 
 stream-events@^1.0.1, stream-events@^1.0.4:
   version "1.0.5"
@@ -7586,6 +7646,19 @@ xml2js@0.4.19:
   dependencies:
     sax ">=0.6.0"
     xmlbuilder "~9.0.1"
+
+xml2js@0.4.23, xml2js@^0.4.19:
+  version "0.4.23"
+  resolved "https://registry.yarnpkg.com/xml2js/-/xml2js-0.4.23.tgz#a0c69516752421eb2ac758ee4d4ccf58843eac66"
+  integrity sha512-ySPiMjM0+pLDftHgXY4By0uswI3SPKLDw/i3UXbnO8M/p28zqexCUoPmQFrYD+/1BzhGJSs2i1ERWKJAtiLrug==
+  dependencies:
+    sax ">=0.6.0"
+    xmlbuilder "~11.0.0"
+
+xmlbuilder@~11.0.0:
+  version "11.0.1"
+  resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-11.0.1.tgz#be9bae1c8a046e76b31127726347d0ad7002beb3"
+  integrity sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==
 
 xmlbuilder@~9.0.1:
   version "9.0.7"

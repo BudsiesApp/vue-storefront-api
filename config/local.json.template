@@ -1,15 +1,15 @@
 {
   "server": {
-    "host": "localhost",
-    "port": 8080,
+    "host": "0.0.0.0",
+    "port": "8080",
     "searchEngine": "elasticsearch",
     "useOutputCacheTagging": false,
     "useOutputCache": false,
     "outputCacheDefaultTtl": 86400,
     "availableCacheTags": ["P", "C", "T", "A", "product", "category", "attribute", "taxrule"],
-    "invalidateCacheKey": "aeSu7aip",
+    "invalidateCacheKey": "${CACHE_INVALIDATION_KEY}",
     "invalidateCacheForwarding": false,
-    "invalidateCacheForwardUrl": "http://localhost:3000/invalidate?key=aeSu7aip&tag=",
+    "invalidateCacheForwardUrl": "https://${VSF_DOMAIN}/invalidate?key=${CACHE_INVALIDATION_KEY}&tag=",
     "showErrorStack": false
   },
   "users": {
@@ -22,25 +22,22 @@
     "excludeDisabledProducts": false
   },
   "elasticsearch": {
-    "host": "localhost",
-    "index": "vue_storefront_catalog",
-    "port": 9200,
-    "protocol": "http",
+    "host": "${ELASTICSEARCH_HOST}",
+    "index": "vue_storefront_catalog_${DEFAULT_STORE_ID}",
+    "port": ${ELASTICSEARCH_PORT},
+    "protocol": "${ELASTICSEARCH_PROTOCOL}",
     "requestTimeout": 5000,
     "min_score": 0.01,
     "indices": [
-      "vue_storefront_catalog",
-      "vue_storefront_catalog_de",
-      "vue_storefront_catalog_it"
+      "vue_storefront_catalog_${DEFAULT_STORE_ID}"
     ],
     "indexTypes": [
       "product",
       "category",
-      "cms_block",
-      "cms_page",
       "attribute",
       "taxrule",
-      "review"
+      "review",
+      "promo_campaign"
     ],
     "apiVersion": "5.6",
     "useRequestFilter": false,
@@ -130,28 +127,28 @@
     "enabled": false
   },
   "redis": {
-    "host": "localhost",
-    "port": 6379,
-    "db": 0,
+    "host": "${REDIS_HOST}",
+    "port": ${REDIS_PORT},
+    "db": ${REDIS_DB},
     "auth": false
   },
   "kue": {},
   "availableStores": [],
   "msi": {
     "enabled": false,
-    "defaultStockId": 1
+    "defaultStockId": "${DEFAULT_STORE_ID}"
   },
   "storeViews": {
     "multistore": false,
     "mapStoreUrlsFor": []
   },
-  "authHashSecret": "__SECRET_CHANGE_ME__",
-  "objHashSecret": "__SECRET_CHANGE_ME__",
+  "authHashSecret": "${AUTH_HASH_SECRET}",
+  "objHashSecret": "${OBJ_HASH_SECRET}",
   "cart": {
     "setConfigurableProductOptions": false
   },
   "tax": {
-    "defaultCountry": "PL",
+    "defaultCountry": "US",
     "defaultRegion": "",
     "calculateServerSide": true,
     "alwaysSyncPlatformPricesOver": false,
@@ -166,67 +163,64 @@
   "review": {
     "defaultReviewStatus": 2
   },
-  "bodyLimit": "100kb",
+  "bodyLimit": "4096kb",
   "corsHeaders": [
     "Link"
   ],
-  "platform": "magento2",
-  "registeredExtensions": [
-    "mailchimp-subscribe",
-    "example-magento-api",
-    "cms-data",
-    "mail-service",
-    "example-processor",
-    "example-custom-filter",
-    "elastic-stock"
-  ],
-  "extensions": {
-    "mailchimp": {
-      "listId": "e06875a7e1",
-      "apiKey": "a9a3318ea7d30f5c5596bd4a78ae0985-us3",
-      "apiUrl": "https://us3.api.mailchimp.com/3.0",
-      "userStatus": "subscribed"
+  "storyblok": {
+    "storiesIndex": "storyblok_stories_${DEFAULT_STORE_ID}",
+    "previewToken": "${STORYBLOK_TOKEN}",
+    "managementToken": "${STORYBLOK_MANAGEMENT_TOKEN}",
+    "hookSecret": "${STORYBLOK_HOOK_SECRET}",
+    "invalidate": "https://${VSF_DOMAIN}/invalidate?tag=storyblok&key=${CACHE_INVALIDATION_KEY}",
+    "spaceId": "${STORYBLOK_SPACE_ID}",
+    "settings": {
+      "appendStoreCodeFromHeader": true
     },
-    "mailService": {
-      "transport": {
-        "host": "smtp.gmail.com",
-        "port": 465,
-        "secure": true,
-        "user": "vuestorefront",
-        "pass": "vuestorefront.io"
-      },
-      "targetAddressWhitelist": ["contributors@vuestorefront.io"],
-      "secretString": "__THIS_IS_SO_SECRET__"
-    },
-    "example-processor": {
-      "resultProcessors": {
-        "product": "my-product-processor"
-      }
-    },
-    "example-custom-filter": {
-      "catalogFilter": [ "SampleFilter" ]
+    "sync": {
+      "enabled": ${STORYBLOK_SYNC_DATASOURCES},
+      "index": "vue_storefront_catalog_${DEFAULT_STORE_ID}",
+      "categoriesDatasourceSlug": "categories",
+      "productsDatasourceSlug": "products",
+      "promoCampaignsDatasourceSlug": "promo-campaigns"
     }
   },
-  "magento2": {
-    "imgUrl": "https://magento2.storefrontcloud.io/pub/media/catalog/product",
-    "assetPath": "/../var/magento2-sample-data/pub/media",
-    "api": {
-      "url": "https://magento2.storefrontcloud.io/rest",
-      "consumerKey": "bpylmdkq6eupx7sl0jzdq827k8264cgb",
-      "consumerSecret": "pcgueevjv8ftue8llm2fvx7actov205h",
-      "accessToken": "agvkwu9626jg8qics05mxs7lwtrht253",
-      "accessTokenSecret": "h4rrc656usjseimxwksjmb66hncqzxj8"
+  "platform": "magento1",
+  "registeredExtensions": [
+    "elastic-stock",
+    "budsies",
+    "vsf-storyblok-extension",
+    "braintree",
+    "url-rewrite"
+  ],
+  "extensions": {
+    "braintree": {
+      "mode": "${BRAINTREE_MODE}",
+      "merchantId": "${BRAINTREE_MERCHANT_ID}",
+      "publicKey": "${BRAINTREE_PUBLIC_KEY}",
+      "privateKey": "${BRAINTREE_PRIVATE_KEY}"
+    },
+    "amazonPay": {
+      "sandbox": ${AMAZONPAY_SANDBOX},
+      "accessKey": "${AMAZONPAY_ACCESS_KEY}",
+      "secretKey": "${AMAZONPAY_SECRET_KEY}",
+      "sellerId": "${AMAZONPAY_SELLER_ID}",
+      "endpoint": "${AMAZONPAY_ENDPOINT}"
+    },
+    "urlRewrite": {
+      "enabled": true
     }
   },
   "magento1": {
-    "imgUrl": "http://magento-demo.local/media/catalog/product",
+    "url": "https://${MAGENTO_DOMAIN}",
+    "imgUrl": "https://${MAGENTO_DOMAIN}/media",
     "assetPath": "",
-    "magentoUserName": "",
-    "magentoUserPassword": "",
+    "magentoUserName": "${MAGENTO_USER_NAME}",
+    "magentoUserPassword": "${MAGENTO_USER_PASSWORD}",
     "httpUserName": "",
     "httpUserPassword": "",
     "api": {
-      "url": "http://magento-demo.local/vsbridge",
+      "url": "https://${MAGENTO_DOMAIN}/vsbridge",
       "consumerKey": "",
       "consumerSecret": "",
       "accessToken": "",
@@ -235,11 +229,11 @@
   },
   "imageable": {
     "maxListeners": 512,
-    "imageSizeLimit": 1024,
+    "imageSizeLimit": 1674,
     "whitelist": {
       "allowedHosts": [
-        ".*divante.pl",
-        ".*vuestorefront.io"
+        "${MAGENTO_DOMAIN}",
+        "localhost"
       ]
     },
     "cache": {
@@ -254,7 +248,7 @@
     },
     "simd": true,
     "caching": {
-      "active": false,
+      "active": true,
       "type": "file",
       "file": {
         "path": "/tmp/vue-storefront-api"
@@ -267,7 +261,7 @@
     },
     "action": {
       "type": "local",
-      "supportWebp": false
+      "supportWebp": true
     }
   },
   "entities": {
@@ -299,7 +293,7 @@
     "map": {
       "includeFields": ["url_path", "identifier", "id", "slug", "sku", "type_id"],
       "searchedFields": ["url_path", "identifier"],
-      "searchedEntities": ["product", "category", "cms_page"]
+      "searchedEntities": ["product", "category"]
     }
   }
 }

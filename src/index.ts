@@ -7,6 +7,7 @@ import middleware from './middleware';
 import { loadAdditionalCertificates } from './helpers/loadAdditionalCertificates'
 import api from './api';
 import config from 'config';
+import healthCheck from './api/health-check';
 import img from './api/img';
 import invalidateCache from './api/invalidate'
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
@@ -16,9 +17,28 @@ import typeDefs from './graphql/schema';
 import * as path from 'path'
 
 const app = express();
+app.enable('trust proxy');
+
+const httpLogFormat = process.env.LOG_HTTP_FORMAT || 'dev'
 
 // logger
-app.use(morgan('dev'));
+morgan.token('response-time-in-seconds', function getResponseTimeInSecondsToken (req, res, digits) {
+  if (!req._startAt || !res._startAt) {
+    // missing request and/or response start time
+    return
+  }
+
+  // calculate diff
+  const ms = (res._startAt[0] - req._startAt[0]) * 1e3 +
+    (res._startAt[1] - req._startAt[1]) * 1e-6
+  
+  const seconds = ms / 1000.0;
+
+  // return truncated value
+  return seconds.toFixed(digits === undefined ? 3 : digits)
+})
+
+app.use(morgan(httpLogFormat));
 
 app.use('/media', express.static(path.join(__dirname, config.get(`${config.get('platform')}.assetPath`))))
 
@@ -46,6 +66,7 @@ initializeDb(db => {
   });
   app.post('/invalidate', invalidateCache)
   app.get('/invalidate', invalidateCache)
+  app.get('/healthcheck', healthCheck)
 
   const port = process.env.PORT || config.get('server.port')
   const host = process.env.HOST || config.get('server.host')
