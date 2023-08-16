@@ -298,7 +298,11 @@ module.exports = ({ config, db }) => {
 
         const productId = req.query.productId;
 
-        if (productId !== undefined) {
+        if (Array.isArray(productId)) {
+          productId.forEach((value) => {
+            url += `&productId[]=${value}`;
+          });
+        } else if (productId !== undefined) {
           url += `&productId=${productId}`;
         }
 
