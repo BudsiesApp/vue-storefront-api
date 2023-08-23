@@ -2,6 +2,7 @@ import BridgeRequestsCache from '../../../helpers/bridgeRequestsCache';
 import { apiStatus, getToken } from '../../../lib/util';
 import { Router } from 'express';
 import { multiStoreConfig } from '../../../platform/magento1/util';
+import { getClient } from '../../../lib/elastic';
 
 const Magento1Client = require('magento1-vsbridge-client').Magento1Client
 
@@ -18,6 +19,8 @@ module.exports = ({ config, db }) => {
 
   let budsiesApi = Router();
   let bridgeRequestsCache = BridgeRequestsCache({ db })
+
+  const es = getClient(config);
 
   budsiesApi.post('/printed-products/cart-items', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
@@ -1554,6 +1557,41 @@ module.exports = ({ config, db }) => {
     }).catch(err => {
       apiStatus(res, err, 500);
     });
+  });
+
+  budsiesApi.get('/hospitals', async (req, res) => {
+    const query = {
+      index: config.elasticsearch.index,
+      type: 'hospital',
+      body: {
+        query: {
+          match_all: {}
+        }
+      }
+    };
+
+    try {
+      const response = await es.search(query)
+      const hits = response.body ? response.body.hits : response.hits;
+
+      if (hits.total === 0) {
+        apiStatus(res, 'Not found', 404);
+      }
+
+      const stories = [];
+
+      hits.hits.forEach(hit => {
+        stories.push({
+          id: hit._source.id,
+          name: hit._source.name
+        });
+      });
+
+      apiStatus(res, stories);
+    } catch (error) {
+      console.log(error);
+      apiStatus(res, error.toString(), 500);
+    }
   });
 
   return budsiesApi;
