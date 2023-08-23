@@ -1576,6 +1576,8 @@ module.exports = ({ config, db }) => {
 
       if (hits.total === 0) {
         apiStatus(res, 'Not found', 404);
+
+        return;
       }
 
       const stories = [];
