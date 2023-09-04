@@ -282,7 +282,7 @@ export default ({config, db}) => {
   userApi.post('/password-reset-confirm', (req, res) => {
     const userProxy = _getProxy(req);
 
-    userProxy.resetPasswordConfirm(req.body)
+    userProxy.passwordResetConfirm(req.body)
       .then(result => {
         apiStatus(res, result, 200);
       })
