@@ -37,6 +37,9 @@ class UserProxy extends AbstractUserProxy {
   resetPasswordUsingResetToken (resetData) {
     return this.api.user.resetPasswordUsingResetToken(resetData)
   }
+  passwordResetConfirm (data) {
+    return this.api.user.passwordResetConfirm(data);
+  }
 }
 
 module.exports = UserProxy
