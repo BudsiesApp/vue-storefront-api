@@ -42,7 +42,7 @@ module.exports = ({ config, db }) => {
     client.budsies.addPrintedProductToCart().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -68,7 +68,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getPhrasePillowsSizeOptions().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -100,7 +100,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getPhrasePillowsDesignOptions().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   })
 
@@ -124,7 +124,7 @@ module.exports = ({ config, db }) => {
     client.budsies.addPhrasePillowToCart().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -156,7 +156,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getPrintedProductDesigns().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -188,7 +188,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getExtraPhotosAddons().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -220,7 +220,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getShortCodes().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -252,7 +252,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getDogBreeds().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -284,7 +284,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getPlushiesUpgrades().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -320,7 +320,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getPlushiesBodyParts().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -352,7 +352,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getPlushiesRushUpgrades().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -376,7 +376,7 @@ module.exports = ({ config, db }) => {
     client.budsies.createPlushie().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -408,7 +408,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getBodyPartsPlushieValues().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -440,7 +440,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getPlushieImages().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -472,7 +472,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getSelectedUpgrades().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -499,7 +499,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getPlushies().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -526,7 +526,7 @@ module.exports = ({ config, db }) => {
     client.budsies.addPrintedProductToCart().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -550,7 +550,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendDonglerBookRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -582,7 +582,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getActivePromotionPlatformCampaign().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -626,7 +626,7 @@ module.exports = ({ config, db }) => {
     client.budsies.updateActivePromotionPlatformCampaign().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -654,7 +654,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendCartRecoveryRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -686,7 +686,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getStoreRating().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -718,7 +718,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getGiftcardsTemplates().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -750,7 +750,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendGiftcardsApplyRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -782,7 +782,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendGiftcardsRemoveRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -814,7 +814,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendGiftcardsChangeValueRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -846,7 +846,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendGiftcardsPullRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -878,7 +878,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendAffirmGetCheckoutObjectRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -904,7 +904,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendNewsletterSubscriptionsRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -930,7 +930,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendMailchimpSubscriptionsRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -956,7 +956,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendShareArtistsRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch((err) => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     })
   });
 
@@ -980,7 +980,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendShareCustomerStoriesRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch((err) => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     })
   });
 
@@ -1018,7 +1018,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getSettings().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1047,7 +1047,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendCreditCardProcessingErrorNotifications().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1071,7 +1071,7 @@ module.exports = ({ config, db }) => {
     client.budsies.createAddress().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1095,7 +1095,7 @@ module.exports = ({ config, db }) => {
     client.budsies.updateAddress().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1121,7 +1121,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getAddress().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1147,7 +1147,7 @@ module.exports = ({ config, db }) => {
     client.budsies.listAddress().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1171,7 +1171,7 @@ module.exports = ({ config, db }) => {
     client.budsies.deleteAddress().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1195,7 +1195,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getBulkOrderClientTypes().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1217,7 +1217,7 @@ module.exports = ({ config, db }) => {
     client.budsies.createBulkOrder().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1247,7 +1247,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getBulkOrderInfo().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1277,7 +1277,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getBulkOrderQuotes().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1306,7 +1306,7 @@ module.exports = ({ config, db }) => {
     client.budsies.chooseBulkOrderQuote().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1328,7 +1328,7 @@ module.exports = ({ config, db }) => {
     client.budsies.createBulkOrderQuestion().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1352,7 +1352,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendPlushieReminderRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
