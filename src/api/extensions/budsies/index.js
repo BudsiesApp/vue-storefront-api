@@ -1378,7 +1378,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getInspirationMachineThemes().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1404,7 +1404,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getInspirationMachineExtras().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1426,7 +1426,7 @@ module.exports = ({ config, db }) => {
     client.budsies.inspirationMachineSendKitRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1459,7 +1459,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getParticipants().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1481,7 +1481,7 @@ module.exports = ({ config, db }) => {
     client.budsies.registerInRaffle().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1503,7 +1503,7 @@ module.exports = ({ config, db }) => {
     client.budsies.sendTokenVerificationRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1529,7 +1529,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getCurrentState().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1555,7 +1555,7 @@ module.exports = ({ config, db }) => {
     client.budsies.getWinningTicketsList().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
-      apiStatus(res, err, 500);
+      apiStatus(res, err, err.code);
     });
   });
 
@@ -1592,7 +1592,7 @@ module.exports = ({ config, db }) => {
       apiStatus(res, stories);
     } catch (error) {
       console.log(error);
-      apiStatus(res, error.toString(), 500);
+      apiStatus(res, error.toString(), error.code);
     }
   });
 
