@@ -23,7 +23,7 @@ module.exports = ({ config, db }) => {
   const es = getClient(config);
 
   budsiesApi.post('/printed-products/cart-items', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -47,7 +47,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/pillows/size-options', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -73,7 +73,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/phrase-pillows/design-options', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -105,7 +105,7 @@ module.exports = ({ config, db }) => {
   })
 
   budsiesApi.post('/phrase-pillows/cart-items', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -129,7 +129,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/printed-products/designs', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -161,7 +161,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/printed-products/extra-photos-addons', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -193,7 +193,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/plushies/short-codes', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -225,7 +225,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/plushies/breeds', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -257,7 +257,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/plushies/upgrades', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -289,7 +289,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/plushies/body-parts', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -325,7 +325,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/plushies/rush-upgrades', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -357,7 +357,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/plushies', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -381,7 +381,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/plushies/body-parts-plushie-values', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -413,7 +413,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/plushies/images', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -445,7 +445,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/plushies/upgrades-plushie-values', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -477,7 +477,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/plushies/:plushieId', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -504,7 +504,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/carts/email-update-requests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -531,7 +531,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/dongler-book-requests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -555,7 +555,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/promotion-platform/quotes-campaigns', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -587,7 +587,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/promotion-platform/active-campaign-update-requests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -631,7 +631,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/carts/recovery-requests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -659,7 +659,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/stores/ratings', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -691,7 +691,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/giftcards/templates', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -723,7 +723,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/giftcards/apply', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -755,7 +755,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/giftcards/remove', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -787,7 +787,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/giftcards/change-value', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -819,7 +819,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/giftcards/pull', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -851,7 +851,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/affirm/get-checkout-object', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -883,7 +883,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/newsletter/subscriptions', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -909,7 +909,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/mailing-list-subscriptions', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -935,7 +935,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/share/artists', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -961,7 +961,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/share/customer-stories', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -985,7 +985,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/settings/retrieve', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1023,7 +1023,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/order/creditcard-processing-error-notifications', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1052,7 +1052,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/address/create', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1076,7 +1076,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/address/update', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1100,7 +1100,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/address/get', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1126,7 +1126,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/address/list', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1152,7 +1152,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/address/delete', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1176,7 +1176,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/bulk-orders/client-types', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1200,7 +1200,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/bulk-orders/create', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1222,7 +1222,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/bulk-orders/info', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1252,7 +1252,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/bulk-orders/quotes', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1282,7 +1282,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/bulk-orders/quote-choose', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1311,7 +1311,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/bulk-orders/question', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1333,7 +1333,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/plushie-reminders', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1357,7 +1357,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/inspirationMachine/themes', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1383,7 +1383,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/inspirationMachine/extras', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1409,7 +1409,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/inspirationMachine/kitRequests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1431,7 +1431,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/raffle/participants/:participantId', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1464,7 +1464,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/raffle/registrations', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1486,7 +1486,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/raffle/tokenVerificationRequests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1508,7 +1508,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/raffle/states/current', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1534,7 +1534,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/raffle/tickets/winning', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};

@@ -233,7 +233,7 @@ export default ({ config, db }) => {
 
   cartApi.post('/merge-guest-and-customer', (req, res) => {
     res.setHeader('Cache-Control', 'no-cache, no-store');
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
 
     client.addMethods('cart', (restClient) => {
       let module: any = {};
