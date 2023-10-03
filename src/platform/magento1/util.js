@@ -42,5 +42,5 @@ export function multiStoreConfig (apiConfig, req) {
     }
   }
 
-  return addDebugHeaders(confCopy);
+  return addDebugHeaders(confCopy, req);
 }
