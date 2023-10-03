@@ -13,8 +13,14 @@ function addDebugHeaders (config, req) {
 
   config.debugHeaders = {};
 
-  for (const headerKey of DEBUG_HEADER_KEY) {
-    config.debugHeaders[headerKey] = req.headers[headerKey];
+  for (const headerKey of Object.values(DEBUG_HEADER_KEY)) {
+    const value = req.headers[headerKey];
+
+    if (!value) {
+      continue;
+    }
+
+    config.debugHeaders[headerKey] = value;
   }
 
   return config;
