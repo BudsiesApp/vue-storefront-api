@@ -5,7 +5,7 @@ class CartProxy extends AbstractCartProxy {
   constructor (config, req) {
     const Magento1Client = require('magento1-vsbridge-client').Magento1Client;
     super(config, req)
-    this.api = Magento1Client(multiStoreConfig(config.magento1.api, req), req);
+    this.api = Magento1Client(multiStoreConfig(config.magento1.api, req));
   }
   create (customerToken, campaignToken = undefined) {
     return this.api.cart.create(customerToken, campaignToken);

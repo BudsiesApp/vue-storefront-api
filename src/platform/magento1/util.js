@@ -1,5 +1,25 @@
 import config from 'config'
 import { getCurrentStoreCode } from '../../lib/util'
+
+const DEBUG_HEADER_KEY = {
+  APP_VERSION: 'app-version',
+  INSTANCE_ID: 'instance-id'
+}
+
+function addDebugHeaders (config, req) {
+  if (!req.headers) {
+    return config;
+  }
+
+  config.debugHeaders = {};
+
+  for (const headerKey of DEBUG_HEADER_KEY) {
+    config.debugHeaders[headerKey] = req.headers[headerKey];
+  }
+
+  return config;
+}
+
 /**
  * Adjust the config provided to the current store selected via request params
  * @param Object config configuration
@@ -22,5 +42,5 @@ export function multiStoreConfig (apiConfig, req) {
     }
   }
 
-  return confCopy
+  return addDebugHeaders(confCopy);
 }
