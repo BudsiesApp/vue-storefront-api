@@ -2,8 +2,8 @@ import config from 'config'
 import { getCurrentStoreCode } from '../../lib/util'
 
 const DEBUG_HEADER_KEY = {
-  APP_VERSION: 'app-version',
-  INSTANCE_ID: 'instance-id'
+  APP_VERSION: 'x-app-version',
+  INSTANCE_ID: 'x-instance-id'
 }
 
 function addDebugHeaders (config, req) {
@@ -11,7 +11,7 @@ function addDebugHeaders (config, req) {
     return config;
   }
 
-  config.debugHeaders = {};
+  config.headers = {};
 
   for (const headerKey of Object.values(DEBUG_HEADER_KEY)) {
     const value = req.headers[headerKey];
@@ -20,7 +20,7 @@ function addDebugHeaders (config, req) {
       continue;
     }
 
-    config.debugHeaders[headerKey] = value;
+    config.headers[headerKey] = value;
   }
 
   return config;
