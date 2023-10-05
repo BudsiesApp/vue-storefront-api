@@ -129,7 +129,7 @@ services:
 
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - REDIS_DB=0
+      - REDIS_DB=1
       
       - AUTH_HASH_SECRET
       - OBJ_HASH_SECRET
@@ -206,7 +206,7 @@ services:
 
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - REDIS_DB=0
+      - REDIS_DB=2
       
       - AUTH_HASH_SECRET
       - OBJ_HASH_SECRET
@@ -239,6 +239,83 @@ services:
 
       - VIRTUAL_HOST=${BULKORDERS_DOMAIN}
       - LETSENCRYPT_HOST=${BULKORDERS_DOMAIN}
+      - LETSENCRYPT_EMAIL
+      
+    volumes:
+      - './config/local.json.template:/var/www/config/local.json.template'
+      - './ecosystem.json:/var/www/ecosystem.json'
+      - './migrations:/var/www/migrations'
+      - './package.json:/var/www/package.json'
+      - './yarn.lock:/var/www/yarn.lock'
+      - './babel.config.js:/var/www/babel.config.js'
+      - './tsconfig.json:/var/www/tsconfig.json'
+      - './nodemon.json:/var/www/nodemon.json'
+      - './scripts:/var/www/scripts'
+      - './src:/var/www/src'
+      - './var:/var/www/var'
+      - './tmp:/tmp/vue-storefront-api'
+      - './node_modules:/var/www/node_modules'
+    tmpfs:
+      - /var/www/dist
+    networks:
+      - default
+      - reverseproxy
+    expose:
+      - 8080    
+
+  app-waggables:
+    build:
+      context: .
+      dockerfile: docker/vue-storefront-api/Dockerfile
+    depends_on:
+      - es1
+      - redis
+    environment:
+      - VS_ENV
+      - PM2_ARGS=--no-daemon
+      - LOG_LEVEL
+      - LOG_COLORIZE
+      - LOG_HTTP_FORMAT
+
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
+      - ELASTICSEARCH_PROTOCOL=http
+
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=3
+      
+      - AUTH_HASH_SECRET
+      - OBJ_HASH_SECRET
+      - CACHE_INVALIDATION_KEY
+
+      - VSF_DOMAIN=${WAGGABLES_VSF_DOMAIN}
+
+      - MAGENTO_DOMAIN=${WAGGABLES_MAGENTO_DOMAIN}
+      - MAGENTO_USER_NAME
+      - MAGENTO_USER_PASSWORD
+      - DEFAULT_STORE_ID=${WAGGABLES_STORE_ID}
+      - API_USER_AGENT=${WAGGABLES_API_USER_AGENT}
+      
+      - STORYBLOK_TOKEN=${WAGGABLES_STORYBLOK_TOKEN}
+      - STORYBLOK_MANAGEMENT_TOKEN
+      - STORYBLOK_SPACE_ID=${WAGGABLES_STORYBLOK_SPACE_ID}
+      - STORYBLOK_HOOK_SECRET
+      - STORYBLOK_SYNC_DATASOURCES
+      
+      - AMAZONPAY_SANDBOX
+      - AMAZONPAY_ACCESS_KEY
+      - AMAZONPAY_SECRET_KEY
+      - AMAZONPAY_SELLER_ID
+      - AMAZONPAY_ENDPOINT
+      
+      - BRAINTREE_MODE
+      - BRAINTREE_MERCHANT_ID
+      - BRAINTREE_PUBLIC_KEY
+      - BRAINTREE_PRIVATE_KEY
+
+      - VIRTUAL_HOST=${WAGGABLES_DOMAIN}
+      - LETSENCRYPT_HOST=${WAGGABLES_DOMAIN}
       - LETSENCRYPT_EMAIL
       
     volumes:
