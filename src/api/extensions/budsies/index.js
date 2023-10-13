@@ -288,40 +288,43 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/plushies/body-parts', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+  budsiesApi.get('/plushies/body-parts', async (req, res) => {
+    if (req.query.productId === undefined) {
+      apiStatus(res, 'The field productId is required', 400);
+    }
 
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getPlushiesBodyParts = function () {
-        const customerToken = getToken(req);
-
-        let url = `plushies/bodyParts?token=${customerToken}`;
-
-        const productId = req.query.productId;
-
-        if (Array.isArray(productId)) {
-          productId.forEach((value) => {
-            url += `&productId[]=${value}`;
-          });
-        } else if (productId !== undefined) {
-          url += `&productId=${productId}`;
+    const query = {
+      index: config.elasticsearch.index,
+      type: 'bodypart',
+      body: {
+        query: {
+          terms: {
+            'product_id': Array.isArray(req.query.productId) ? req.query.productId : [req.query.productId]
+          }
         }
+      }
+    };
 
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
+    try {
+      const response = await es.search(query)
+      const hits = response.body ? response.body.hits : response.hits;
+
+      if (hits.total === 0) {
+        apiStatus(res, 'Not found', 404);
+
+        return;
       }
 
-      return module;
-    });
+      const bodyparts = hits.hits.map((hit) => {
+        delete hit._source.tsk;
+        return hit._source;
+      });
 
-    client.budsies.getPlushiesBodyParts().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
+      apiStatus(res, bodyparts);
+    } catch (error) {
+      console.log(error);
+      apiStatus(res, error.toString(), error.code);
+    }
   });
 
   budsiesApi.get('/plushies/rush-upgrades', (req, res) => {
