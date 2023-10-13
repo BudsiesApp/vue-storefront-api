@@ -309,12 +309,6 @@ module.exports = ({ config, db }) => {
       const response = await es.search(query)
       const hits = response.body ? response.body.hits : response.hits;
 
-      if (hits.total === 0) {
-        apiStatus(res, 'Not found', 404);
-
-        return;
-      }
-
       const bodyparts = hits.hits.map((hit) => {
         delete hit._source.tsk;
         return hit._source;
