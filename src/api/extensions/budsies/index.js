@@ -289,12 +289,18 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/plushies/body-parts', async (req, res) => {
+    if (req.query.productId === undefined) {
+      apiStatus(res, 'The field productId is required', 400);
+    }
+
     const query = {
       index: config.elasticsearch.index,
       type: 'bodypart',
       body: {
         query: {
-          match_all: {}
+          term: {
+            'product_id': req.query.productId
+          }
         }
       }
     };
