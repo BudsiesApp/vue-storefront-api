@@ -298,8 +298,8 @@ module.exports = ({ config, db }) => {
       type: 'bodypart',
       body: {
         query: {
-          term: {
-            'product_id': req.query.productId
+          terms: {
+            'product_id': Array.isArray(req.query.productId) ? req.query.productId : [req.query.productId]
           }
         }
       }
