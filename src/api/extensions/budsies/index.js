@@ -1593,5 +1593,38 @@ module.exports = ({ config, db }) => {
     }
   });
 
+  budsiesApi.get('/statistic-values', async (req, res) => {
+    if (req.query.metric === undefined) {
+      apiStatus(res, 'The field metric is required', 400);
+    }
+
+    const query = {
+      index: config.elasticsearch.index,
+      type: 'statistic_value',
+      body: {
+        query: {
+          match: {
+            'metric': req.query.metric
+          }
+        }
+      }
+    };
+
+    try {
+      const response = await es.search(query)
+      const hits = response.body ? response.body.hits : response.hits;
+
+      const metrics = hits.hits.map((hit) => {
+        delete hit._source.tsk;
+        return hit._source;
+      });
+
+      apiStatus(res, metrics);
+    } catch (error) {
+      console.log(error);
+      apiStatus(res, error.toString(), error.code);
+    }
+  });
+
   return budsiesApi;
 }
