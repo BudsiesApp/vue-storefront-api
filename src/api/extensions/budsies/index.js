@@ -321,36 +321,37 @@ module.exports = ({ config, db }) => {
     }
   });
 
-  budsiesApi.get('/plushies/rush-upgrades', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+  budsiesApi.get('/plushies/rush-upgrades', async (req, res) => {
+    if (req.query.productId === undefined) {
+      apiStatus(res, 'The field productId is required', 400);
+    }
 
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getPlushiesRushUpgrades = function () {
-        const customerToken = getToken(req);
-
-        let url = `plushies/rushUpgrades?token=${customerToken}`;
-
-        const productId = req.query.productId;
-
-        if (productId !== undefined) {
-          url += `&productId=${productId}`;
+    const query = {
+      index: config.elasticsearch.index,
+      type: 'rush_upgrade',
+      body: {
+        query: {
+          terms: {
+            'product_id': Array.isArray(req.query.productId) ? req.query.productId : [req.query.productId]
+          }
         }
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
       }
+    };
 
-      return module;
-    });
+    try {
+      const response = await es.search(query)
+      const hits = response.body ? response.body.hits : response.hits;
 
-    client.budsies.getPlushiesRushUpgrades().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
+      const rushUpgrades = hits.hits.map((hit) => {
+        delete hit._source.tsk;
+        return hit._source;
+      });
+
+      apiStatus(res, rushUpgrades);
+    } catch (error) {
+      console.log(error);
+      apiStatus(res, error.toString(), error.code);
+    }
   });
 
   budsiesApi.post('/plushies', (req, res) => {
