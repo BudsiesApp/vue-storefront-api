@@ -252,19 +252,8 @@ const seedStoryblokDatasources = async (db, config) => {
                     }
                   },
                   {
-                    'bool': {
-                      'must': [
-                        {
-                          'match': {
-                            'attribute_set_id': 4
-                          }
-                        },
-                        {
-                          'match': {
-                            'type_id': 'plushToyAccessory'
-                          }
-                        }
-                      ]
+                    'match': {
+                      'attribute_set_id': 4
                     }
                   }
                 ],
