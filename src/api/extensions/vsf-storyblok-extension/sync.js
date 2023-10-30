@@ -221,6 +221,14 @@ const seedStoryblokDatasources = async (db, config) => {
 
     await db.ping()
 
+    const productTypesToExclude = [
+      'plushToyAddon',
+      'plushToyRushAddon',
+      'customPlushToy',
+      'bundlePrimaryProduct',
+      'pillowSideDesign',
+      'simple'
+    ];
     const { body: { hits: { hits: products } } } = await db.search({
       index: config.storyblok.sync.index,
       type: 'product',
@@ -233,9 +241,38 @@ const seedStoryblokDatasources = async (db, config) => {
           'constant_score': {
             'filter': {
               'bool': {
-                'must': [
-                  {'terms': {'visibility': [2, 3, 4]}}
-                ]
+                'should': [
+                  {
+                    'bool': {
+                      'must_not': {
+                        'match': {
+                          'type_id': 'plushToyAccessory'
+                        }
+                      }
+                    }
+                  },
+                  {
+                    'bool': {
+                      'must': [
+                        {
+                          'match': {
+                            'attribute_set_id': 4
+                          }
+                        },
+                        {
+                          'match': {
+                            'type_id': 'plushToyAccessory'
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                'must_not': productTypesToExclude.map((type) => ({
+                  'match': {
+                    'type_id': type
+                  }
+                }))
               }
             }
           }
