@@ -263,6 +263,9 @@ const seedStoryblokDatasources = async (db, config) => {
                     }
                   })),
                   {
+                    // Most simple products is used for items of bundle products
+                    // But there is also simple products which can be visible in catalog
+                    // So need to exclude only simple products which is "Not Visible Individually" - `visibility: 1`
                     'bool': {
                       'must': [
                         {
