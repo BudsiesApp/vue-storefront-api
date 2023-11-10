@@ -1,6 +1,6 @@
 import { storyblokClient } from './storyblok'
 import { storyblokManagementClient } from './storyblok'
-import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate, getStoriesMatchedToId, getStoriesWithIdReference } from './helpers'
+import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate, getStoriesMatchedToId, getStoriesWithIdReference, resolveParentData, getParentStoriesForStoryById } from './helpers'
 
 function indexStories ({ db, config, stories = [] }) {
   const bulkOps = createBulkOperations(config.storyblok.storiesIndex, stories)
@@ -23,26 +23,6 @@ async function deleteStory ({ db, config, story }) {
   await db.delete(transformedStory)
 
   log(`Story ${story.full_slug} was deleted`)
-}
-
-function resolveParentData (parent) {
-  const parentData = {
-    slug: parent.full_slug,
-    name: parent.name,
-    id: parent.id,
-    parent: parent.content.parent
-  };
-
-  if (!parentData.parent) {
-    return parentData;
-  }
-
-  return {
-    slug: parent.full_slug,
-    name: parent.name,
-    id: parent.id,
-    parent: resolveParentData(parent.content.parent)
-  }
 }
 
 async function syncStories ({ db, config, page = 1, perPage = 100, languages = [] }) {
@@ -77,6 +57,7 @@ async function syncStories ({ db, config, page = 1, perPage = 100, languages = [
 
     return {
       ...story,
+      parent_data: story.content.parent,
       full_slug: story.full_slug.replace(/^\/|\/$/g, '')
     }
   })
@@ -138,6 +119,9 @@ const handleActionForRelatedStories = async (db, config, id, action, cv) => {
       break
     case 'published': {
       let storiesToIndex = await getStoriesWithIdReference(db, config.storyblok.storiesIndex, id)
+      let parentStories = await getParentStoriesForStoryById(db, config.storyblok.storiesIndex, id)
+
+      storiesToIndex = Object.assign(storiesToIndex, parentStories);
 
       while (storiesToIndex.length > 0) {
         const batchStories = storiesToIndex.splice(0, size)

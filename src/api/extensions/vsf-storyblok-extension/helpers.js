@@ -40,6 +40,11 @@ function getHitsAsStories (hits) {
 }
 
 export const transformStory = (index, story, forIndexing = true) => {
+  if (story.content.parent && forIndexing) {
+    story.content.parent = resolveParentData(story.content.parent)
+  }
+
+  story.parent_data = story.content.parent
   story.content = JSON.stringify(story.content)
   story.full_slug = story.full_slug.replace(/^\/|\/$/g, '')
   const result = {
@@ -189,4 +194,87 @@ export const validateEditor = (config, params) => {
     }
   }
   throw new Error('Unauthorized editor')
+}
+
+export function resolveParentData (parent) {
+  const parentData = {
+    slug: parent.full_slug,
+    name: parent.name,
+    id: parent.id,
+    parent: parent.content ? parent.content.parent : undefined
+  };
+
+  if (!parentData.parent) {
+    return parentData;
+  }
+
+  return {
+    slug: parent.full_slug,
+    name: parent.name,
+    id: parent.id,
+    parent: resolveParentData(parentData.parent)
+  }
+}
+
+const getFirstParent = (parentData) => {
+  if (!parentData.parent) {
+    return parentData
+  }
+
+  return getFirstParent(parentData.parent)
+}
+
+export const getParentStoriesForStoryById = async (db, index, id) => {
+  const targetStories = await getStoriesMatchedToId(db, index, id)
+
+  if (targetStories.length === 0) {
+    return []
+  }
+
+  const targetStory = targetStories[0];
+
+  if (!targetStory.parent_data) {
+    return []
+  }
+
+  const firstParent = getFirstParent(targetStory.parent_data)
+
+  if (!firstParent) {
+    return []
+  }
+
+  const response = await db.search({
+    index: index,
+    type: 'story',
+    size: 1000,
+    body: {
+      query: {
+        constant_score: {
+          filter: {
+            bool: {
+              should: [
+                {
+                  match_phrase: {
+                    'content': `"id": ${firstParent.id}`
+                  }
+                },
+                {
+                  match: {
+                    'id': firstParent.id
+                  }
+                }
+              ],
+              must_not: {
+                match: {
+                  'id': id // no reason to search target story
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  })
+  const hits = getHits(response)
+  return getHitsAsStories(hits)
 }
