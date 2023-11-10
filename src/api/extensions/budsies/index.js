@@ -7,6 +7,7 @@ import { getClient } from '../../../lib/elastic';
 const Magento1Client = require('magento1-vsbridge-client').Magento1Client
 
 const backendSettingsRequestCacheKey = 'backend_settings';
+const storeRatingRequestCacheKey = 'store_rating';
 
 module.exports = ({ config, db }) => {
   function getResponse (data) {
@@ -662,20 +663,40 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getStoreRating = function () {
+      module.getStoreRating = async function () {
+        const storeId = req.query.storeId;
+
+        let cacheKey = storeRatingRequestCacheKey;
+
+        if (storeId !== undefined) {
+          cacheKey += `_${storeId}`;
+        }
+
+        const cachedData = await bridgeRequestsCache.get(cacheKey);
+
+        if (cachedData) {
+          return cachedData;
+        }
+
         const customerToken = getToken(req);
 
         let url = `stores/ratings?token=${customerToken}`;
-
-        const storeId = req.query.storeId;
 
         if (storeId !== undefined) {
           url += `&storeId=${storeId}`;
         }
 
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
+        const data = await restClient.get(url);
+
+        const responseData = getResponse(data);
+
+        if (responseData) {
+          await bridgeRequestsCache.setWithTtl(cacheKey, responseData, 300);
+        } else {
+          await bridgeRequestsCache.del(cacheKey);
+        }
+
+        return responseData;
       }
 
       return module;
