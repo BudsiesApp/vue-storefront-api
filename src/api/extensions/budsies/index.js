@@ -665,7 +665,13 @@ module.exports = ({ config, db }) => {
 
       module.getStoreRating = async function () {
         const storeId = req.query.storeId;
-        const cacheKey = `${storeRatingRequestCacheKey}_${storeId}`;
+
+        let cacheKey = storeRatingRequestCacheKey;
+
+        if (storeId !== undefined) {
+          cacheKey += `_${storeId}`;
+        }
+
         const cachedData = await bridgeRequestsCache.get(cacheKey);
 
         if (cachedData) {
