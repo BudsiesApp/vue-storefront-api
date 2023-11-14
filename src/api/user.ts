@@ -60,6 +60,10 @@ export default ({config, db}) => {
       return;
     }
 
+    if (req.body.customer.email) {
+      req.body.customer.email = req.body.customer.email.toLowerCase();
+    }
+
     const userProxy = _getProxy(req)
 
     userProxy.register(req.body).then((result) => {
@@ -210,6 +214,10 @@ export default ({config, db}) => {
       const validationMessage = validateAddresses(addresses, customer.addresses)
       if (validationMessage) {
         return apiStatus(res, validationMessage, 403)
+      }
+
+      if (req.body.customer.email) {
+        req.body.customer.email = req.body.customer.email.toLowerCase();
       }
 
       const result = await userProxy.update({
