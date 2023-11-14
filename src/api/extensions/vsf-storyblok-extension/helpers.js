@@ -41,7 +41,7 @@ function getHitsAsStories (hits) {
 
 export const transformStory = (index, story, forIndexing = true) => {
   if (story.content.parent && forIndexing) {
-    story.content.parent = resolveParentData(story.content.parent)
+    story.content.parent = resolveParentDataFactory()(story.content.parent)
   }
 
   story.content = JSON.stringify(story.content)
@@ -195,22 +195,40 @@ export const validateEditor = (config, params) => {
   throw new Error('Unauthorized editor')
 }
 
-export function resolveParentData (parent) {
-  const parentData = {
-    slug: parent.full_slug,
-    name: parent.name,
-    id: parent.id,
-    parent: parent.content ? parent.content.parent : undefined
-  };
+export function resolveParentDataFactory () {
+  const resolvedParents = new Set();
 
-  if (!parentData.parent) {
-    return parentData;
+  function resolve (parent) {
+    const parentData = {
+      slug: parent.full_slug,
+      name: parent.name,
+      id: parent.id,
+      parent: parent.content ? parent.content.parent : undefined
+    };
+
+    resolvedParents.add(parentData.slug);
+
+    if (!parentData.parent) {
+      return parentData;
+    }
+
+    if (resolvedParents.has(parentData.parent.full_slug)) {
+      parentData.parent = undefined;
+      return parentData;
+    }
+
+    return {
+      slug: parent.full_slug,
+      name: parent.name,
+      id: parent.id,
+      parent: resolve(parentData.parent)
+    }
   }
 
-  return {
-    slug: parent.full_slug,
-    name: parent.name,
-    id: parent.id,
-    parent: resolveParentData(parentData.parent)
+  function resolveParentData (parent) {
+    resolvedParents.clear();
+    return resolve(parent);
   }
+
+  return resolveParentData;
 }

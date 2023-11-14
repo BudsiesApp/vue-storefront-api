@@ -1,6 +1,6 @@
 import { storyblokClient } from './storyblok'
 import { storyblokManagementClient } from './storyblok'
-import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate, getStoriesMatchedToId, getStoriesWithIdReference, resolveParentData } from './helpers'
+import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate, getStoriesMatchedToId, getStoriesWithIdReference, resolveParentDataFactory } from './helpers'
 
 function indexStories ({ db, config, stories = [] }) {
   const bulkOps = createBulkOperations(config.storyblok.storiesIndex, stories)
@@ -44,6 +44,7 @@ async function syncStories ({ db, config, page = 1, perPage = 100, languages = [
 
     stories.push(...response.data.stories)
   }
+  const resolveParentData = resolveParentDataFactory();
 
   const newStories = stories.map(story => {
     if (!story.content.parent) {
