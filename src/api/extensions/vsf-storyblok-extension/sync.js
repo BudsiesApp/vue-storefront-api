@@ -57,7 +57,6 @@ async function syncStories ({ db, config, page = 1, perPage = 100, languages = [
 
     return {
       ...story,
-      parent_data: story.content.parent,
       full_slug: story.full_slug.replace(/^\/|\/$/g, '')
     }
   })
