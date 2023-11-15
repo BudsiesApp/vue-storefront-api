@@ -41,7 +41,7 @@ function getHitsAsStories (hits) {
 
 export const transformStory = (index, story, forIndexing = true) => {
   if (story.content.parent && forIndexing) {
-    story.content.parent = resolveParentDataFactory()(story.content.parent)
+    story.content.parent = resolveParentData(story.content.parent)
   }
 
   story.content = JSON.stringify(story.content)
@@ -195,40 +195,62 @@ export const validateEditor = (config, params) => {
   throw new Error('Unauthorized editor')
 }
 
-export function resolveParentDataFactory () {
-  const resolvedParents = new Set();
+function getStoryParent (story) {
+  return (
+    story.content &&
+    story.content.parent &&
+    story.content.parent.full_slug
+      ? story.content.parent
+      : undefined
+  );
+}
 
-  function resolve (parent) {
+export function resolveParentData (storyParent) {
+  if (!storyParent.full_slug) {
+    return;
+  }
+
+  const resolvedParents = new Set();
+  const parents = [];
+
+  let parent = storyParent;
+
+  while (parent) {
+    const nextParent = getStoryParent(parent);
+
+    parents.push(parent);
+
+    if (!nextParent || resolvedParents.has(nextParent.full_slug)) {
+      parent = undefined;
+      break;
+    }
+
+    resolvedParents.add(nextParent.full_slug);
+
+    parent = nextParent;
+  }
+
+  for (let i = parents.length - 1; i >= 0; i--) {
+    const parent = parents[i];
+
     const parentData = {
       slug: parent.full_slug,
       name: parent.name,
       id: parent.id,
-      parent: parent.content ? parent.content.parent : undefined
+      parent: parent.parent
     };
 
-    resolvedParents.add(parentData.slug);
+    parents[i] = parentData;
 
-    if (!parentData.parent) {
-      return parentData;
+    const hasChild = i > 0;
+
+    if (!hasChild) {
+      break;
     }
 
-    if (resolvedParents.has(parentData.parent.full_slug)) {
-      parentData.parent = undefined;
-      return parentData;
-    }
-
-    return {
-      slug: parent.full_slug,
-      name: parent.name,
-      id: parent.id,
-      parent: resolve(parentData.parent)
-    }
+    const child = parents[i - 1];
+    child.parent = parentData;
   }
 
-  function resolveParentData (parent) {
-    resolvedParents.clear();
-    return resolve(parent);
-  }
-
-  return resolveParentData;
+  return parents[0];
 }
