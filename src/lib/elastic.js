@@ -48,10 +48,10 @@ function decorateBackendUrl (entityType, url, req, config) {
     let _source_exclude = excludeFields || []
 
     if (!config.elasticsearch.overwriteRequestSourceParams) {
-      const requestSourceInclude = req.query._source_include || []
-      const requestSourceExclude = req.query._source_exclude || []
-      _source_include = [...includeFields, ...requestSourceInclude]
-      _source_exclude = [...excludeFields, ...requestSourceExclude]
+      const requestSourceInclude = req.query._source_include.split(',') || []
+      const requestSourceExclude = req.query._source_exclude.split(',') || []
+      _source_include = [..._source_include, ...requestSourceInclude]
+      _source_exclude = [..._source_exclude, ...requestSourceExclude]
     }
 
     const urlParams = {
