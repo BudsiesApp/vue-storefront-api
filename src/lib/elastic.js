@@ -35,9 +35,11 @@ function adjustIndexName (indexName, entityType, config) {
 function decorateBackendUrl (entityType, url, req, config) {
   if (config.elasticsearch.useRequestFilter && typeof config.entities[entityType] === 'object') {
     const urlParts = url.split('?')
+    const queryData = querystring.parse(urlParts[1] || '');
+
     const { includeFields, excludeFields } = config.entities[entityType]
 
-    const filteredParams = Object.keys(req.query)
+    const filteredParams = Object.keys(queryData)
       .filter(key => !config.elasticsearch.requestParamsBlacklist.includes(key))
       .reduce((object, key) => {
         object[key] = req.query[key]
@@ -48,18 +50,14 @@ function decorateBackendUrl (entityType, url, req, config) {
     let _source_exclude = excludeFields || []
 
     if (!config.elasticsearch.overwriteRequestSourceParams) {
-      const requestSourceInclude = req.query._source_include.split(',') || []
-      const requestSourceExclude = req.query._source_exclude.split(',') || []
-      _source_include = [..._source_include, ...requestSourceInclude]
-      _source_exclude = [..._source_exclude, ...requestSourceExclude]
+      const requestSourceInclude = filteredParams._source_include?.split(',') || []
+      const requestSourceExclude = filteredParams._source_exclude?.split(',') || []
+
+      filteredParams._source_include = [..._source_include, ...requestSourceInclude].join(',')
+      filteredParams._source_exclude = [..._source_exclude, ...requestSourceExclude].join(',')
     }
 
-    const urlParams = {
-      ...filteredParams,
-      _source_include,
-      _source_exclude
-    }
-    url = `${urlParts[0]}?${querystring.stringify(urlParams)}`
+    url = `${urlParts[0]}?${querystring.stringify(filteredParams)}`
   }
 
   return url
