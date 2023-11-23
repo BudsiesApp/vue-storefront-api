@@ -1,6 +1,6 @@
 import { storyblokClient } from './storyblok'
 import { storyblokManagementClient } from './storyblok'
-import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate, getStoriesMatchedToId, getStoriesWithIdReference } from './helpers'
+import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate, getStoriesMatchedToId, getStoriesWithIdReference, resolveParentData } from './helpers'
 
 function indexStories ({ db, config, stories = [] }) {
   const bulkOps = createBulkOperations(config.storyblok.storiesIndex, stories)
@@ -30,7 +30,7 @@ async function syncStories ({ db, config, page = 1, perPage = 100, languages = [
     page,
     per_page: perPage,
     resolve_links: 'url',
-    resolve_relations: 'block_reference.reference'
+    resolve_relations: ['block_reference.reference', 'page.parent']
   })
 
   for (let language of languages) {
@@ -38,17 +38,28 @@ async function syncStories ({ db, config, page = 1, perPage = 100, languages = [
       page,
       per_page: perPage,
       resolve_links: 'url',
-      resolve_relations: 'block_reference.reference',
+      resolve_relations: ['block_reference.reference', 'page.parent'],
       starts_with: language + '/*'
     })
 
     stories.push(...response.data.stories)
   }
 
-  const newStories = stories.map(story => ({
-    ...story,
-    full_slug: story.full_slug.replace(/^\/|\/$/g, '')
-  }))
+  const newStories = stories.map(story => {
+    if (!story.content.parent) {
+      return {
+        ...story,
+        full_slug: story.full_slug.replace(/^\/|\/$/g, '')
+      }
+    }
+
+    story.content.parent = resolveParentData(story.content.parent);
+
+    return {
+      ...story,
+      full_slug: story.full_slug.replace(/^\/|\/$/g, '')
+    }
+  })
 
   const promise = indexStories({ db, config, stories: newStories })
 
@@ -116,7 +127,7 @@ const handleActionForRelatedStories = async (db, config, id, action, cv) => {
           cv,
           per_page: size,
           resolve_links: 'url',
-          resolve_relations: 'block_reference.reference',
+          resolve_relations: ['block_reference.reference', 'page.parent'],
           by_slugs: batchSlugs.join()
         })
 
@@ -145,7 +156,7 @@ const handleActionForStory = async (db, config, id, action, cv) => {
       const response = await storyblokClient.get(`cdn/stories/${id}`, {
         cv,
         resolve_links: 'url',
-        resolve_relations: 'block_reference.reference'
+        resolve_relations: ['block_reference.reference', 'page.parent']
       })
 
       storiesToPublish.push(response.data.story)
@@ -156,7 +167,7 @@ const handleActionForStory = async (db, config, id, action, cv) => {
         const response = await storyblokClient.get(`cdn/stories/${id}`, {
           cv,
           resolve_links: 'url',
-          resolve_relations: 'block_reference.reference',
+          resolve_relations: ['block_reference.reference', 'page.parent'],
           language: language
         })
 
