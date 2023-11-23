@@ -264,7 +264,7 @@
         "loadByAttributeMetadata": false
       },
       "product": {
-        "excludeFields": [ "updated_at", "created_at", "attribute_set_id", "status", "visibility", "tier_prices", "options_container", "msrp_display_actual_price_type", "has_options", "stock.manage_stock", "stock.use_config_min_qty", "stock.use_config_notify_stock_qty", "stock.stock_id",  "stock.use_config_backorders", "stock.use_config_enable_qty_inc", "stock.enable_qty_increments", "stock.use_config_manage_stock", "stock.use_config_min_sale_qty", "stock.notify_stock_qty", "stock.use_config_max_sale_qty", "stock.use_config_max_sale_qty", "stock.qty_increments", "small_image"],
+        "excludeFields": [ "updated_at", "created_at", "attribute_set_id", "status", "visibility", "tier_prices", "options_container", "msrp_display_actual_price_type", "has_options", "stock.manage_stock", "stock.use_config_min_qty", "stock.use_config_notify_stock_qty", "stock.stock_id",  "stock.use_config_backorders", "stock.use_config_enable_qty_inc", "stock.enable_qty_increments", "stock.use_config_manage_stock", "stock.use_config_min_sale_qty", "stock.notify_stock_qty", "stock.use_config_max_sale_qty", "stock.use_config_max_sale_qty", "stock.qty_increments", "small_image",  "sgn", "*.sgn"],
         "includeFields": [
           "category_ids",
           "category",
@@ -281,6 +281,9 @@
           "configurable_children.stock.manage_stock",
           "configurable_children.sku",
           "configurable_children.stock.is_in_stock",
+          "configurable_children.*_accessory",
+          "configurable_children.giftbox_type",
+          "configurable_children.pet_bed_color",
           "price",
           "special_price",
           "original_price_incl_tax",
@@ -300,7 +303,8 @@
           "stock.max_sale_qty",
           "product_links",
           "video_url",
-          "thumbnail"
+          "thumbnail",
+          "slug"
         ],
         "filterFieldMapping": {
           "category.name": "category.name.keyword"
