@@ -40,6 +40,10 @@ function getHitsAsStories (hits) {
 }
 
 export const transformStory = (index, story, forIndexing = true) => {
+  if (story.content.parent && forIndexing) {
+    story.content.parent = resolveParentData(story.content.parent)
+  }
+
   story.content = JSON.stringify(story.content)
   story.full_slug = story.full_slug.replace(/^\/|\/$/g, '')
   const result = {
@@ -189,4 +193,58 @@ export const validateEditor = (config, params) => {
     }
   }
   throw new Error('Unauthorized editor')
+}
+
+function getStoryParent (story) {
+  return (
+    story.content &&
+    story.content.parent &&
+    story.content.parent.full_slug
+      ? story.content.parent
+      : undefined
+  );
+}
+
+export function resolveParentData (storyParent) {
+  if (!storyParent.full_slug) {
+    return;
+  }
+
+  const resolvedParents = new Set();
+  const parents = [];
+
+  let parent = storyParent;
+
+  while (parent) {
+    parents.push(parent);
+
+    const nextParent = getStoryParent(parent);
+
+    if (!nextParent || resolvedParents.has(nextParent.full_slug)) {
+      parent = undefined;
+      break;
+    }
+
+    resolvedParents.add(nextParent.full_slug);
+
+    parent = nextParent;
+  }
+
+  let previousParentData;
+  let parentData;
+
+  while (parents.length > 0) {
+    const parent = parents.pop();
+
+    parentData = {
+      slug: parent.full_slug,
+      name: parent.name,
+      id: parent.id,
+      parent: previousParentData
+    };
+
+    previousParentData = parentData;
+  }
+
+  return parentData;
 }
