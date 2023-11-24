@@ -36,7 +36,11 @@
     "test": "eslint src",
     "test:unit": "jest -c test/unit/jest.conf.js",
     "setup": "npm run restore; npm run migrate",
-    "lint": "eslint --ext .js,.ts src migrations scripts --fix"
+    "lint": "eslint --ext .js,.ts src migrations scripts --fix",
+    "storyblok:sync:stories": "cross-env TS_NODE_PROJECT=\"tsconfig-build.json\" && ts-node -r tsconfig-paths/register ./scripts/storyblok sync --target=stories",
+    "storyblok:sync:datasources": "cross-env TS_NODE_PROJECT=\"tsconfig-build.json\" && ts-node -r tsconfig-paths/register ./scripts/storyblok sync --target=datasources",
+    "storyblok:sync:all": "cross-env TS_NODE_PROJECT=\"tsconfig-build.json\" && ts-node -r tsconfig-paths/register ./scripts/storyblok sync --target=all"
+
   },
   "pre-commit": [
     "lint"
