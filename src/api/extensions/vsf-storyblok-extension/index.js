@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { apiStatus } from '../../../lib/util'
 import { getClient } from '../../../lib/elastic'
-import { fullSync, handleHook, seedDatabase, seedStoryblokDatasources } from './sync'
+import { fullSync, handleHook } from './sync'
 import { getStory, log, cacheInvalidate, validateEditor } from './helpers'
 import { initStoryblokClients } from './storyblok'
 import protectRoute from './middleware/protectRoute'
@@ -14,8 +14,6 @@ module.exports = ({ config }) => {
   const api = Router()
 
   initStoryblokClients(config)
-  seedDatabase(db, config)
-  seedStoryblokDatasources(db, config)
 
   api.get('/story/', async (req, res) => {
     const story = await getStory(db, config.storyblok.storiesIndex, 'home')
