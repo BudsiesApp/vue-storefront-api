@@ -1070,6 +1070,36 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.post('/order/reorder', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendReorderRequest = function () {
+        const params = new URLSearchParams({
+          token: getToken(req),
+          cartId: req.query.cartId,
+          orderId: req.query.orderId
+        });
+
+        let url = `order/reorder?${params.toString()}`
+
+        return restClient.post(url, req.body).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.sendReorderRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   budsiesApi.post('/address/create', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
