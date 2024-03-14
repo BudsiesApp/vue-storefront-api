@@ -7414,10 +7414,9 @@ void-elements@^2.0.1:
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
   integrity sha1-wGavtYK7HLQSjWDqkjkulNXp2+w=
 
-vsf-utilities@^1.0.2:
+"vsf-utilities@git+https://github.com/BudsiesApp/vsf-utilities.git#c28fe3291db5d4b5d59a9d932ffd836a1faa43ec":
   version "1.0.2"
-  resolved "https://registry.yarnpkg.com/vsf-utilities/-/vsf-utilities-1.0.2.tgz#213dc474e9cb032c543d23018964592e2c14abc0"
-  integrity sha512-RdBQNxLIRrr5D/c/zUQyc2GkOwLWyfuM2yeX9sBkSlzmnHT8OcV7Jdo26kADULD54Qvl9mrpb0IHMWzeC+FHNw==
+  resolved "git+https://github.com/BudsiesApp/vsf-utilities.git#c28fe3291db5d4b5d59a9d932ffd836a1faa43ec"
   dependencies:
     lodash "^4.17.19"
     sha3 "^2.1.3"
