@@ -100,7 +100,7 @@
     "storefront-query-builder": "https://github.com/vuestorefront/storefront-query-builder.git",
     "syswide-cas": "latest",
     "tsconfig-paths": "^3.9.0",
-    "vsf-utilities": "git+https://github.com/BudsiesApp/vsf-utilities.git#3c6490d0745f270046eb09ce7db648075eaeae65",
+    "vsf-utilities": "git+https://github.com/BudsiesApp/vsf-utilities.git#c28fe3291db5d4b5d59a9d932ffd836a1faa43ec",
     "winston": "^2.4.2"
   },
   "devDependencies": {
