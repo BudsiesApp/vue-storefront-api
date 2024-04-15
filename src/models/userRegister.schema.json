@@ -58,6 +58,9 @@
                                 "properties": {
                                     "region": {
                                         "type": ["string", "null"]
+                                    },
+                                    "region_id": {
+                                        "type": ["integer", "null"]
                                     }
                                 }
                             },
