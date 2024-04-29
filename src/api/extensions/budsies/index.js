@@ -193,6 +193,38 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/plushies/extra-photos-upgrades', (req, res) => {
+    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getExtraPhotosUpgrades = function () {
+        const customerToken = getToken(req);
+
+        let url = `plushies/extraPhotosUpgrades?token=${customerToken}`;
+
+        const productId = req.query.productId;
+
+        if (productId !== undefined) {
+          url += `&productId=${productId}`;
+        }
+
+        return restClient.get(url).then((data) => {
+          return getResponse(data);
+        });
+      }
+
+      return module;
+    });
+
+    client.budsies.getExtraPhotosUpgrades().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   budsiesApi.get('/plushies/short-codes', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
