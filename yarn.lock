@@ -4506,17 +4506,8 @@ magento1-vsbridge-client@BudsiesApp/magento1-vsbridge-client#01f865d690094aa62cc
 
 "magento2-rest-client@github:vuestorefront/magento2-rest-client":
   version "0.0.14"
-  uid "3ed81008e617abfed347ed42fb52ac9d72c8705b"
-  resolved "https://codeload.github.com/vuestorefront/magento2-rest-client/tar.gz/3ed81008e617abfed347ed42fb52ac9d72c8705b"
-  dependencies:
-    humps "^1.1.0"
-    oauth-1.0a "^1.0.1"
-    request "^2.72.0"
-    winston "^2.2.0"
-
-"magento2-rest-client@https://github.com/DivanteLtd/magento2-rest-client":
-  version "0.0.14"
-  resolved "https://github.com/DivanteLtd/magento2-rest-client#3ed81008e617abfed347ed42fb52ac9d72c8705b"
+  uid "6c5f534fc583457e36611b85fd7cf346e0f375af"
+  resolved "https://codeload.github.com/vuestorefront/magento2-rest-client/tar.gz/6c5f534fc583457e36611b85fd7cf346e0f375af"
   dependencies:
     humps "^1.1.0"
     oauth-1.0a "^1.0.1"
