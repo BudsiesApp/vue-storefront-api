@@ -4514,6 +4514,15 @@ magento1-vsbridge-client@BudsiesApp/magento1-vsbridge-client#01f865d690094aa62cc
     request "^2.72.0"
     winston "^2.2.0"
 
+"magento2-rest-client@https://github.com/DivanteLtd/magento2-rest-client":
+  version "0.0.14"
+  resolved "https://github.com/DivanteLtd/magento2-rest-client#6c5f534fc583457e36611b85fd7cf346e0f375af"
+  dependencies:
+    humps "^1.1.0"
+    oauth-1.0a "^1.0.1"
+    request "^2.72.0"
+    winston "^2.2.0"
+
 make-dir@^1.0.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-1.3.0.tgz#79c1033b80515bd6d24ec9933e860ca75ee27f0c"
