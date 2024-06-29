@@ -1,0 +1,19 @@
+version: '3.0'
+services:
+  es1:
+    networks:
+      - default
+      - budsies-store-common-network
+
+  app-petsies:
+    extra_hosts:
+      - "[magento-host]:host-gateway"
+    environment:
+      - CERT_NAME=localdev
+      # - HTTPS_METHOD=noredirect
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+
+networks:
+  budsies-store-common-network:
+    external: true
+    name: budsies-store-common-network

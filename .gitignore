@@ -2,7 +2,6 @@
 node_modules/
 dist/
 npm-debug.log
-.vscode/
 .idea/
 api_start.sh
 api_test.sh
@@ -20,3 +19,4 @@ var/magento2-sample-data/
 
 .env
 tmp/*
+docker-compose.override.yml

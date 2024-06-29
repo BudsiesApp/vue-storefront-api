@@ -342,7 +342,8 @@ services:
 
 networks:
   reverseproxy:
-        name: webdevelopmentreverseproxy_default
+    external: true
+    name: webdevelopmentreverseproxy_default
 
 volumes:
   esdat1:
