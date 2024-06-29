@@ -19,3 +19,4 @@ var/magento2-sample-data/
 
 .env
 tmp/*
+docker-compose.override.yml
