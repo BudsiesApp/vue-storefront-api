@@ -1438,19 +1438,16 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/inspirationMachine/themes', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.getInspirationMachineThemes = function () {
         const customerToken = getToken(req);
+        let url = `/inspirationMachine/themes`;
 
-        let url = `inspirationMachine/themes?token=${customerToken}`;
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
+        return restClient.get(url, customerToken);
       }
 
       return module;
@@ -1464,19 +1461,16 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/inspirationMachine/extras', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.getInspirationMachineExtras = function () {
         const customerToken = getToken(req);
+        let url = `/inspirationMachine/extras`;
 
-        let url = `inspirationMachine/extras?token=${customerToken}`;
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
+        return restClient.get(url, customerToken);
       }
 
       return module;
@@ -1490,15 +1484,16 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/inspirationMachine/kitRequests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.inspirationMachineSendKitRequest = function () {
-        return restClient.post('inspirationMachine/kitRequests', req.body).then((data) => {
-          return getResponse(data);
-        });
+        const customerToken = getToken(req);
+        let url = `/inspirationMachine/kitRequests`;
+
+        return restClient.post(url, req.body, customerToken);
       }
 
       return module;
