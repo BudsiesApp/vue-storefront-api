@@ -587,7 +587,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/promotion-platform/quotes-campaigns', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -595,16 +595,25 @@ module.exports = ({ config, db }) => {
       module.getActivePromotionPlatformCampaign = function () {
         const customerToken = getToken(req);
 
-        let url = `promotionPlatform/quotesCampaigns?token=${customerToken}`;
+        let url = `/promotionPlatform/quotesCampaigns`;
+        const queryParams = new URLSearchParams();
 
         const cartId = req.query.cartId;
 
         if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+          queryParams.append('cartId', cartId);
         }
 
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
+        if (queryParams.toString() !== '') {
+          url += '?' + queryParams.toString();
+        }
+
+        return restClient.get(url, customerToken).then((data) => {
+          if (Array.isArray(data)) {
+            return data[0];
+          }
+
+          return data;
         });
       }
 
@@ -619,7 +628,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/promotion-platform/active-campaign-update-requests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -627,28 +636,33 @@ module.exports = ({ config, db }) => {
       module.updateActivePromotionPlatformCampaign = function () {
         const customerToken = getToken(req);
 
-        let url = `promotionPlatform/activeCampaignUpdateRequests?token=${customerToken}`;
-
+        let url = `/promotionPlatform/activeCampaignUpdateRequests`;
+        const queryParams = {};
+       
         const campaignToken = req.query.campaignToken;
 
         if (campaignToken !== undefined) {
-          url += `&campaignToken=${campaignToken}`;
+          queryParams['campaignToken'] = campaignToken;
         }
 
         const data = req.query.data;
 
         if (data !== undefined) {
-          url += `&data=${data}`;
+          queryParams['data'] = data;
         }
 
         const cartId = req.query.cartId;
 
         if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+          queryParams['cartId'] = cartId;
         }
 
-        return restClient.post(url).then((data) => {
-          return getResponse(data);
+        return restClient.post(url, queryParams, customerToken).then(data => {
+          if (Array.isArray(data)) {
+            return data[0];
+          }
+
+          return data;
         });
       }
 
