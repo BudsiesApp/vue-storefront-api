@@ -1051,13 +1051,13 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/settings/retrieve', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.getSettings = async function () {
-        let url = 'settings/retrieve';
+        let url = '/settings';
 
         const cachedData = await bridgeRequestsCache.get(backendSettingsRequestCacheKey);
 
@@ -1065,17 +1065,15 @@ module.exports = ({ config, db }) => {
           return cachedData;
         }
 
-        const data = await restClient.get(url);
+        const data = (await restClient.get(url)).shift();
 
-        const responseData = getResponse(data);
-
-        if (responseData) {
-          await bridgeRequestsCache.setWithTtl(backendSettingsRequestCacheKey, responseData, 300);
+        if (data) {
+          await bridgeRequestsCache.setWithTtl(backendSettingsRequestCacheKey, data, 300);
         } else {
           await bridgeRequestsCache.del(backendSettingsRequestCacheKey);
         }
 
-        return responseData;
+        return data;
       }
 
       return module;
