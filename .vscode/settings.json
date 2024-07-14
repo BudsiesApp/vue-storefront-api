@@ -43,5 +43,9 @@
         "xxlarge",
         "zurb"
     ],
-    "githubIssues.issueBranchTitle": "${issueNumber}-${sanitizedIssueTitle}"
+    "githubIssues.issueBranchTitle": "${issueNumber}-${sanitizedIssueTitle}",
+    "search.useIgnoreFiles": false,
+    "explorer.autoRevealExclude": {
+        "**/node_modules": false
+    }
 }
