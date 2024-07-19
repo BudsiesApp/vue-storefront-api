@@ -231,7 +231,7 @@
     "imgUrl": "https://${MAGENTO_DOMAIN}/pub/media",
     "assetPath": "",
     "api": {
-      "url": "https://${MAGENTO_DOMAIN}/rest",
+      "url": "https://${MAGENTO_DOMAIN}/rest/${DEFAULT_STORE_CODE}",
       "consumerKey": "${MAGENTO_CONSUMER_KEY}",
       "consumerSecret": "${MAGENTO_CONSUMER_SECRET}",
       "accessToken": "${MAGENTO_ACCESS_TOKEN}",
