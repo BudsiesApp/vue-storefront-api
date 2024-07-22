@@ -46,30 +46,7 @@ export default ({ config, db }) => {
     if (!req.body.cartItem) {
       return apiStatus(res, 'No cartItem element provided within the request body', 500)
     }
-
-    var cartItem = req.body.cartItem;
-
-    if (cartItem.plushieId) {
-      if (!cartItem.extension_attributes) {
-        cartItem.extension_attributes = {};
-      }
-
-      cartItem.extension_attributes.plushie_id = cartItem.plushieId;
-
-      delete cartItem.plushieId;
-    }
-
-    if (cartItem.customizationState) {
-      if (!cartItem.extension_attributes) {
-        cartItem.extension_attributes = {};
-      }
-
-      cartItem.extension_attributes.customization_state = cartItem.customizationState;
-
-      delete cartItem.customizationState;
-    }
-
-    cartProxy.update(token, req.query.cartId ? req.query.cartId : null, cartItem).then((result) => {
+    cartProxy.update(token, req.query.cartId ? req.query.cartId : null, req.body.cartItem).then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiError(res, err);
