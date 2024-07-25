@@ -1347,19 +1347,19 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/bulk-orders/quotes', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+  budsiesApi.get('/bulk-requests/quotes', (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getBulkOrderQuotes = function () {
-        let url = 'bulkOrders/quotes';
+      module.getBulkRequestQuotes = function () {
+        let url = 'bulkRequests/quotes';
 
-        const bulkOrderId = req.query.bulkOrderId;
+        const bulkRequestId = req.query.bulkRequestId;
 
-        if (bulkOrderId !== undefined) {
-          url += `?bulkOrderId=${bulkOrderId}`;
+        if (bulkRequestId !== undefined) {
+          url += `?bulkRequestId=${bulkRequestId}`;
         }
 
         return restClient.get(url).then((data) => {
@@ -1370,26 +1370,26 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getBulkOrderQuotes().then((result) => {
+    client.budsies.getBulkRequestQuotes().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, err.code);
     });
   });
 
-  budsiesApi.post('/bulk-orders/quote-choose', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+  budsiesApi.post('/bulk-requests/chosen-quotes', (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.chooseBulkOrderQuote = function () {
+      module.chooseBulkRequestQuote = function () {
         const params = new URLSearchParams({
           token: getToken(req),
           cartId: req.query.cartId
         });
 
-        const url = `bulkOrders/quoteChoose?${params.toString()}`;
+        const url = `bulkRequests/chosenQuotes?${params.toString()}`;
 
         return restClient.post(url, req.body).then((data) => {
           return getResponse(data);
@@ -1399,7 +1399,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.chooseBulkOrderQuote().then((result) => {
+    client.budsies.chooseBulkRequestQuote().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, err.code);
