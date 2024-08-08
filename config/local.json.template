@@ -318,7 +318,8 @@
           "video_url",
           "thumbnail",
           "slug",
-          "disabled_upgrades"
+          "disabled_upgrades",
+          "customizations"
         ],
         "filterFieldMapping": {
           "category.name": "category.name.keyword"
