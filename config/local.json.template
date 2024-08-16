@@ -209,6 +209,13 @@
     },
     "urlRewrite": {
       "enabled": true
+    },
+    "amastyGiftCard": {
+      "apiPath": {
+        "guest": "/guest-carts/{{quoteId}}/gift-card/{{giftCardCode}}",
+        "customer": "/carts/mine/gift-card/{{giftCardCode}}",
+        "check": "/amgcard/cart/check"
+      }
     }
   },
   "magento1": {
@@ -331,7 +338,8 @@
           "thumbnail",
           "slug",
           "disabled_upgrades",
-          "customizations"
+          "customizations",
+          "gift_card_images_data" 
         ],
         "filterFieldMapping": {
           "category.name": "category.name.keyword"

@@ -10,6 +10,19 @@ const Magento2Client = require('magento2-rest-client').Magento2Client
 const backendSettingsRequestCacheKey = 'backend_settings';
 const storeRatingRequestCacheKey = 'store_rating';
 
+const getGiftCardRequestPath = (customerToken, cartId, giftCardCode, config) => {
+  if (customerToken) {
+    const url = config.extensions.amastyGiftCard.apiPath.customer
+      .replace('{{giftCardCode}}', encodeURIComponent(giftCardCode))
+
+    return `${url}?cartId=${cartId}`;
+  }
+
+  return config.extensions.amastyGiftCard.apiPath.guest
+    .replace('{{quoteId}}', cartId)
+    .replace('{{giftCardCode}}', encodeURIComponent(giftCardCode))
+}
+
 module.exports = ({ config, db }) => {
   function getResponse (data) {
     if (data.code === 200) {
@@ -638,7 +651,7 @@ module.exports = ({ config, db }) => {
 
         let url = `/promotionPlatform/activeCampaignUpdateRequests`;
         const bodyParams = {};
-       
+
         const campaignToken = req.query.campaignToken;
 
         if (campaignToken !== undefined) {
@@ -789,7 +802,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/giftcards/apply', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(config.magento2.api);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -797,16 +810,15 @@ module.exports = ({ config, db }) => {
       module.sendGiftcardsApplyRequest = function () {
         const customerToken = getToken(req);
 
-        let url = `giftcards/apply?token=${customerToken}`;
+        const url = getGiftCardRequestPath(
+          customerToken,
+          req.query.cartId,
+          req.body.code,
+          config
+        );
 
-        const cartId = req.query.cartId;
-
-        if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
-        }
-
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
+        return restClient.put(url).then((data) => {
+          return data;
         });
       }
 
@@ -821,7 +833,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/giftcards/remove', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(config.magento2.api);
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -829,16 +841,24 @@ module.exports = ({ config, db }) => {
       module.sendGiftcardsRemoveRequest = function () {
         const customerToken = getToken(req);
 
-        let url = `giftcards/remove?token=${customerToken}`;
+        const codes = req.body.codes;
 
-        const cartId = req.query.cartId;
+        // TODO: better implement Magento 2 resource that will working with list of codes for remove
+        const deleteRequests = [];
 
-        if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+        for (const code of codes) {
+          const url = getGiftCardRequestPath(
+            customerToken,
+            req.query.cartId,
+            code,
+            config
+          );
+
+          deleteRequests.push(restClient.delete(url));
         }
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
+        return Promise.all(deleteRequests).then((data) => {
+          return data[0];
         });
       }
 
