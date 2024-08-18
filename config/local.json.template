@@ -210,13 +210,6 @@
     "urlRewrite": {
       "enabled": true
     },
-    "amastyGiftCard": {
-      "apiPath": {
-        "guest": "/guest-carts/{{quoteId}}/gift-card/{{giftCardCode}}",
-        "customer": "/carts/mine/gift-card/{{giftCardCode}}",
-        "check": "/amgcard/cart/check"
-      }
-    }
   },
   "magento1": {
     "url": "http://${MAGENTO_DOMAIN}",
