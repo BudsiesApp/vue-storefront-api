@@ -331,7 +331,11 @@
           "thumbnail",
           "slug",
           "disabled_upgrades",
-          "customizations"
+          "customizations",
+          "gift_card_images_data",
+          "am_gift_card_prices",
+          "am_open_amount_min",
+          "am_open_amount_max"
         ],
         "filterFieldMapping": {
           "category.name": "category.name.keyword"

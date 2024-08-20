@@ -133,7 +133,7 @@ module.exports = ({ config, db }) => {
 
         let url = `/promotionPlatform/activeCampaignUpdateRequests`;
         const bodyParams = {};
-       
+
         const campaignToken = req.query.campaignToken;
 
         if (campaignToken !== undefined) {
@@ -252,7 +252,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/giftcards/apply', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -260,17 +260,16 @@ module.exports = ({ config, db }) => {
       module.sendGiftcardsApplyRequest = function () {
         const customerToken = getToken(req);
 
-        let url = `giftcards/apply?token=${customerToken}`;
-
-        const cartId = req.query.cartId;
-
-        if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+        let url;
+        if (customerToken) {
+          url = `/carts/mine/gift-card/`;
+        } else {
+          url = `/guest-carts/${req.query.cartId}/gift-card/`;
         }
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        });
+        url += req.body.code;
+
+        return restClient.put(url, {}, customerToken);
       }
 
       return module;
@@ -284,25 +283,24 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/giftcards/remove', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.sendGiftcardsRemoveRequest = function () {
+      module.sendGiftcardsRemoveRequest = async function () {
         const customerToken = getToken(req);
 
-        let url = `giftcards/remove?token=${customerToken}`;
-
-        const cartId = req.query.cartId;
-
-        if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+        let url;
+        if (customerToken) {
+          url = `/carts/mine/gift-card/bulk-removal-requests/`;
+        } else {
+          url = `/guest-carts/${req.query.cartId}/gift-card/bulk-removal-requests/`;
         }
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        });
+        const codes = req.body.codes;
+
+        return restClient.post(url, { codes }, customerToken);
       }
 
       return module;
@@ -316,7 +314,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/giftcards/pull', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -324,16 +322,20 @@ module.exports = ({ config, db }) => {
       module.sendGiftcardsPullRequest = function () {
         const customerToken = getToken(req);
 
-        let url = `giftcards/pull?token=${customerToken}`;
-
-        const cartId = req.query.cartId;
-
-        if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+        let url;
+        if (customerToken) {
+          url = `/carts/mine/gift-card/applied-cards`;
+        } else {
+          url = `/guest-carts/${req.query.cartId}/gift-card/applied-cards`;
         }
 
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
+        return restClient.get(url, customerToken).then((data) => {
+          const result = {};
+          for (const card of data) {
+            result[card.code] = card.amount;
+          }
+
+          return result;
         });
       }
 
@@ -735,7 +737,9 @@ module.exports = ({ config, db }) => {
       let module = {};
 
       module.createBulkOrder = function () {
-        return restClient.post('/bulkRequests', req.body);
+        const customerToken = getToken(req);
+
+        return restClient.post('/bulkRequests', req.body, customerToken);
       }
 
       return module;
@@ -875,7 +879,9 @@ module.exports = ({ config, db }) => {
           bodyParams.bulkRequestId = bodyParams.bulkOrderId;
         }
 
-        return restClient.post('/bulkRequests/questions', bodyParams);
+        const customerToken = getToken(req);
+
+        return restClient.post('/bulkRequests/questions', bodyParams, customerToken);
       }
 
       return module;
