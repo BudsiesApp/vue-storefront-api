@@ -200,7 +200,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/stores/ratings', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -222,23 +222,22 @@ module.exports = ({ config, db }) => {
 
         const customerToken = getToken(req);
 
-        let url = `stores/ratings?token=${customerToken}`;
+        let url = `/stores/ratings`;
 
         if (storeId !== undefined) {
-          url += `&storeId=${storeId}`;
+          url += `?storeId=${storeId}`;
         }
 
-        const data = await restClient.get(url);
+        let data = await restClient.get(url, customerToken);
 
-        const responseData = getResponse(data);
-
-        if (responseData) {
-          await bridgeRequestsCache.setWithTtl(cacheKey, responseData, 300);
+        if (data) {
+          data = {'storeRating': data[0]};
+          await bridgeRequestsCache.setWithTtl(cacheKey, data, 300);
         } else {
           await bridgeRequestsCache.del(cacheKey);
         }
 
-        return responseData;
+        return data;
       }
 
       return module;
