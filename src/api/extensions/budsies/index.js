@@ -434,7 +434,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/share/artists', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -442,11 +442,9 @@ module.exports = ({ config, db }) => {
       module.sendShareArtistsRequest = function () {
         const customerToken = getToken(req);
 
-        let url = `share/artists?token=${customerToken}`;
+        let url = `/budsies_artists`;
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        })
+        return restClient.post(url, req.body, customerToken);
       }
 
       return module;
