@@ -10,15 +10,21 @@ class OrderProxy extends AbstractOrderProxy {
     this.api = Magento2Client(multiStoreConfig(config.magento2.api, req));
   }
 
-  create (orderData) {
+  create (orderData, customerToken) {
     const inst = this
     return new Promise((resolve, reject) => {
       try {
-        processSingleOrder(orderData, inst.config, null, (error, result) => {
-          console.log(error)
-          if (error) reject(error)
-          resolve(result)
-        })
+        processSingleOrder(
+          orderData,
+          inst.config,
+          null,
+          (error, result) => {
+            console.log(error)
+            if (error) reject(error)
+            resolve(result)
+          },
+          customerToken
+        )
       } catch (e) {
         reject(e)
       }
