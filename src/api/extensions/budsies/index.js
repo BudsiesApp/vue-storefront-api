@@ -632,14 +632,33 @@ module.exports = ({ config, db }) => {
       module.updateAddress = function () {
         const customerToken = getToken(req);
         const userProxy = _getUserProxy(req);
-        const addressForUpdateId = req.body.address.id;
+        const addressForUpdate = req.body.address;
 
         return userProxy.me(customerToken).then((result) => {
-          const addressToUpdateIndex = result.addresses.findIndex(
-            (address) => addressForUpdateId === address.id
+          let isAddressForUpdateFound = false;
+          const updatedAddresses = [];
+
+          result.addresses.forEach(
+            (address) => {
+              if (addressForUpdate.id === address.id) {
+                isAddressForUpdateFound = true;
+                updatedAddresses.push(addressForUpdate);
+                return;
+              }
+
+              if (addressForUpdate.default_shipping) {
+                address.default_shipping = false;
+              }
+
+              if (addressForUpdate.default_billing) {
+                address.default_billing = false
+              }
+
+              updatedAddresses.push(address);
+            }
           );
 
-          if (addressToUpdateIndex === -1) {
+          if (!isAddressForUpdateFound) {
             const error = {
               code: 404,
               result: 'Not Found'
@@ -647,21 +666,15 @@ module.exports = ({ config, db }) => {
             throw error;
           }
 
-          result.addresses.splice(
-            addressToUpdateIndex,
-            1,
-            req.body.address
-          );
-
           return updateUserAddresses(
             customerToken,
             userProxy,
             result,
-            result.addresses
+            updatedAddresses
           );
         }).then((data) => {
           const updatedAddress = data.addresses.find(
-            (address) => addressForUpdateId === address.id
+            (address) => addressForUpdate.id === address.id
           );
 
           return updatedAddress;
