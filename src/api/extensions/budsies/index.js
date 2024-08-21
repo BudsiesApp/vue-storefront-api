@@ -3,6 +3,8 @@ import { apiStatus, getToken } from '../../../lib/util';
 import { Router } from 'express';
 import { multiStoreConfig } from '../../../platform/magento1/util';
 import { getClient } from '../../../lib/elastic';
+import PlatformFactory from '../../../platform/factory';
+import { updateUserAddresses } from '../../user.ts';
 
 const Magento1Client = require('magento1-vsbridge-client').Magento1Client
 const Magento2Client = require('magento2-rest-client').Magento2Client
@@ -18,6 +20,12 @@ module.exports = ({ config, db }) => {
 
     return false;
   }
+
+  const _getUserProxy = (req) => {
+    const platform = config.platform
+    const factory = new PlatformFactory(config, req)
+    return factory.getAdapter(platform, 'user')
+  };
 
   let budsiesApi = Router();
   let bridgeRequestsCache = BridgeRequestsCache({ db })
@@ -231,7 +239,7 @@ module.exports = ({ config, db }) => {
         let data = await restClient.get(url, customerToken);
 
         if (data) {
-          data = {'storeRating': data[0]};
+          data = { 'storeRating': data[0] };
           await bridgeRequestsCache.setWithTtl(cacheKey, data, 300);
         } else {
           await bridgeRequestsCache.del(cacheKey);
@@ -576,16 +584,32 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/address/create', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
-    client.addMethods('budsies', (restClient) => {
+    client.addMethods('budsies', () => {
       let module = {};
 
       module.createAddress = function () {
         const customerToken = getToken(req);
+        const userProxy = _getUserProxy(req);
 
-        return restClient.post(`address/create?token=${customerToken}`, req.body).then((data) => {
-          return getResponse(data);
+        let existingAddressesIds = [];
+
+        return userProxy.me(customerToken).then((result) => {
+          existingAddressesIds = result.addresses.map((address) => address.id);
+
+          return updateUserAddresses(
+            customerToken,
+            userProxy,
+            result,
+            [...result.addresses, req.body.address]
+          );
+        }).then((data) => {
+          const addedAddress = data.addresses.find(
+            (address) => !existingAddressesIds.includes(address.id)
+          );
+
+          return addedAddress;
         });
       }
 
@@ -600,16 +624,47 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/address/update', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
-    client.addMethods('budsies', (restClient) => {
+    client.addMethods('budsies', () => {
       let module = {};
 
       module.updateAddress = function () {
         const customerToken = getToken(req);
+        const userProxy = _getUserProxy(req);
+        const addressForUpdateId = req.body.address.id;
 
-        return restClient.post(`address/update?token=${customerToken}`, req.body).then((data) => {
-          return getResponse(data);
+        return userProxy.me(customerToken).then((result) => {
+          const addressToUpdateIndex = result.addresses.findIndex(
+            (address) => addressForUpdateId === address.id
+          );
+
+          if (addressToUpdateIndex === -1) {
+            const error = {
+              code: 404,
+              result: 'Not Found'
+            }
+            throw error;
+          }
+
+          result.addresses.splice(
+            addressToUpdateIndex,
+            1,
+            req.body.address
+          );
+
+          return updateUserAddresses(
+            customerToken,
+            userProxy,
+            result,
+            result.addresses
+          );
+        }).then((data) => {
+          const updatedAddress = data.addresses.find(
+            (address) => addressForUpdateId === address.id
+          );
+
+          return updatedAddress;
         });
       }
 
@@ -623,69 +678,40 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/address/get', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getAddress = function () {
-        const customerToken = getToken(req);
-
-        let url = `address/get?token=${customerToken}`;
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getAddress().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/address/list', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.listAddress = function () {
-        const customerToken = getToken(req);
-
-        let url = `address/list?token=${customerToken}`;
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.listAddress().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
   budsiesApi.post('/address/delete', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
-    client.addMethods('budsies', (restClient) => {
+    client.addMethods('budsies', () => {
       let module = {};
 
       module.deleteAddress = function () {
+        const userProxy = _getUserProxy(req);
         const customerToken = getToken(req);
 
-        return restClient.post(`address/delete?token=${customerToken}`, req.body).then((data) => {
-          return getResponse(data);
+        return userProxy.me(customerToken).then((result) => {
+          const addressToDeleteIndex = result.addresses.findIndex(
+            (address) => address.id === req.body.address.id
+          );
+
+          if (addressToDeleteIndex === -1) {
+            const error = {
+              code: 404,
+              result: 'Not Found'
+            };
+
+            throw error;
+          }
+
+          result.addresses.splice(addressToDeleteIndex, 1)
+
+          return updateUserAddresses(
+            customerToken,
+            userProxy,
+            result,
+            result.addresses
+          );
+        }).then(() => {
+          return req.body.address.id;
         });
       }
 
