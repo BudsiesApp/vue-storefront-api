@@ -465,17 +465,15 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/share/customer-stories', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.sendShareCustomerStoriesRequest = function () {
-        let url = `share/customerStories`;
+        let url = `/customer_stories`;
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        })
+        return restClient.post(url, req.body);
       }
 
       return module;
