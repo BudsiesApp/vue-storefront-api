@@ -76,8 +76,14 @@ export default ({ config, db }) => resource({
         apiStatus(res, e, 500);
       }
     } else {
+      let customerToken = null
+
+      if (req.query && req.query.token) {
+        customerToken = req.query.token
+      }
+
       const orderProxy = _getProxy(req, config)
-      orderProxy.create(req.body).then((result) => {
+      orderProxy.create(req.body, customerToken).then((result) => {
         apiStatus(res, result, 200);
       }).catch(err => {
         apiError(res, err);
