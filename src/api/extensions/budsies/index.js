@@ -465,7 +465,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/share/customer-stories', (req, res) => {
-    const client = Magento2Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -690,7 +690,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/address/delete', (req, res) => {
-    const client = Magento2Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', () => {
       let module = {};
