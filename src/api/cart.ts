@@ -4,7 +4,7 @@ import { apiStatus, apiError, getToken } from '../lib/util';
 import PlatformFactory from '../platform/factory';
 import { multiStoreConfig } from '../platform/magento1/util';
 
-const Magento1Client = require('magento1-vsbridge-client').Magento1Client
+const Magento2Client = require('magento2-rest-client').Magento2Client
 
 export default ({ config, db }) => {
   let cartApi = Router();
@@ -233,19 +233,19 @@ export default ({ config, db }) => {
 
   cartApi.post('/merge-guest-and-customer', (req, res) => {
     res.setHeader('Cache-Control', 'no-cache, no-store');
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('cart', (restClient) => {
       let module: any = {};
 
       module.mergeGuestAndCustomer = function () {
         const customerToken = getToken(req);
+        const data = {
+          cartId: req.query.cartId
+        }
 
         return restClient
-          .post(`cart/mergeGuestAndCustomer?token=${customerToken}&cartId=${req.query.cartId}`)
-          .then((data) => {
-            return data.code === 200 ? data.result : false;
-          })
+          .post(`/guest-carts/merge-requests/`, data, customerToken);
       }
 
       return module;
