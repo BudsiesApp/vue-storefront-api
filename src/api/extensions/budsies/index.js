@@ -66,7 +66,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/dongler-book-requests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -74,8 +74,12 @@ module.exports = ({ config, db }) => {
       module.sendDonglerBookRequest = function () {
         const customerToken = getToken(req);
 
-        return restClient.post(`donglerBooks/requests/?token=${customerToken}`, req.body).then((data) => {
-          return getResponse(data);
+        return restClient.post(`/dongler_books_requests`, req.body, customerToken).then((data) => {
+          if (data === 'success') {
+            data = true;
+          }
+
+          return data;
         });
       }
 
