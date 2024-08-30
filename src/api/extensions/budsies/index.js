@@ -4,7 +4,7 @@ import { Router } from 'express';
 import { multiStoreConfig } from '../../../platform/magento1/util';
 import { getClient } from '../../../lib/elastic';
 import PlatformFactory from '../../../platform/factory';
-import { updateUserAddresses } from '../../user.ts';
+import { updateUserAddresses } from '../../user';
 
 const Magento1Client = require('magento1-vsbridge-client').Magento1Client
 const Magento2Client = require('magento2-rest-client').Magento2Client
