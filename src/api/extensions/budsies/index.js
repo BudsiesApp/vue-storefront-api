@@ -526,22 +526,20 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/order/creditcard-processing-error-notifications', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.sendCreditCardProcessingErrorNotifications = function () {
-        const params = new URLSearchParams({
-          token: getToken(req),
-          cartId: req.query.cartId
-        });
+        const customerToken = getToken(req);
 
-        let url = `order/creditCardProcessingErrorNotifications?${params.toString()}`
+        const bodyParams = req.body;
+        bodyParams.cartId = req.query.cartId;
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        });
+        let url = `/paymentErrorHelpRequests`
+
+        return restClient.post(url, bodyParams, customerToken);
       }
 
       return module;
