@@ -184,20 +184,21 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/carts/recovery-requests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.sendCartRecoveryRequest = function () {
-        const params = new URLSearchParams({
-          recoveryId: req.query.recoveryId,
-          recoveryCode: req.query.recoveryCode,
-          token: getToken(req)
-        });
+        const customerToken = getToken(req);
 
-        return restClient.post(`carts/recoveryRequests?${params.toString()}`, req.body).then((data) => {
-          return getResponse(data);
+        const bodyParams = {
+          key: req.query.recoveryCode,
+          currentQuoteId: req.body.quoteId
+        };
+
+        return restClient.post(`/carts/recovery-requests`, bodyParams, customerToken).then((data) => {
+          return data.quote_id;
         });
       }
 
