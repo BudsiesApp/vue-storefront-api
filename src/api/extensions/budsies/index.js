@@ -638,7 +638,7 @@ module.exports = ({ config, db }) => {
 
         let url = `/promotionPlatform/activeCampaignUpdateRequests`;
         const queryParams = {};
-       
+
         const campaignToken = req.query.campaignToken;
 
         if (campaignToken !== undefined) {
@@ -1295,14 +1295,14 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.post('/bulk-orders/create', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+  budsiesApi.post('/bulk-request/create', (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.createBulkOrder = function () {
-        return restClient.post('bulkOrders/create', req.body).then((data) => {
+      module.createBulkRequest = function () {
+        return restClient.post('bulkRequests/create', req.body).then((data) => {
           return getResponse(data);
         });
       }
@@ -1310,26 +1310,26 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.createBulkOrder().then((result) => {
+    client.budsies.createBulkRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, err.code);
     });
   });
 
-  budsiesApi.get('/bulk-orders/info', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+  budsiesApi.get('/bulk-requests/info', (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getBulkOrderInfo = function () {
-        let url = 'bulkOrders/info';
+      module.getBulkRequestInfo = function () {
+        let url = 'bulkRequests/info';
 
-        const bulkOrderId = req.query.bulkOrderId;
+        const bulkRequestId = req.query.bulkRequestId;
 
-        if (bulkOrderId !== undefined) {
-          url += `?bulkOrderId=${bulkOrderId}`;
+        if (bulkRequestId !== undefined) {
+          url += `?bulkRequestId=${bulkRequestId}`;
         }
 
         return restClient.get(url).then((data) => {
@@ -1340,7 +1340,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.getBulkOrderInfo().then((result) => {
+    client.budsies.getBulkRequestInfo().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, err.code);
@@ -1406,13 +1406,13 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.post('/bulk-orders/question', (req, res) => {
+  budsiesApi.post('/bulk-requests/question', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.createBulkOrderQuestion = function () {
+      module.createBulkRequestQuestion = function () {
         return restClient.post('bulkOrders/question', req.body).then((data) => {
           return getResponse(data);
         });
@@ -1421,7 +1421,7 @@ module.exports = ({ config, db }) => {
       return module;
     });
 
-    client.budsies.createBulkOrderQuestion().then((result) => {
+    client.budsies.createBulkRequestQuestion().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, err.code);
