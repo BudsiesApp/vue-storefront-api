@@ -394,19 +394,25 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/newsletter/subscriptions', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.sendNewsletterSubscriptionsRequest = function () {
-        const customerToken = getToken(req);
+        let bodyParams = req.body;
 
-        let url = `newsletter/subscriptions?token=${customerToken}`;
+        if (req.body.email) {
+          bodyParams = {
+            subscriber: {
+              subscriber_email: req.body.email
+            }
+          };
+        }
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        });
+        let url = `/subscriber`;
+
+        return restClient.post(url, bodyParams);
       }
 
       return module;
