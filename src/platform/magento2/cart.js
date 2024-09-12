@@ -9,7 +9,7 @@ class CartProxy extends AbstractCartProxy {
   }
 
   create (customerToken, campaignToken = undefined) {
-    return this.api.cart.create(customerToken, campaignToken)
+    return this.api.cart.create(customerToken, null, campaignToken)
   }
 
   update (customerToken, cartId, cartItem) {
