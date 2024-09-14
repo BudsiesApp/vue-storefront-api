@@ -4504,9 +4504,9 @@ magento1-vsbridge-client@BudsiesApp/magento1-vsbridge-client#01f865d690094aa62cc
     request "^2.72.0"
     winston "^2.2.0"
 
-"magento2-rest-client@github:GorbunovStudio/magento2-rest-client#32664-cart-create-add-campaign-param":
+"magento2-rest-client@github:GorbunovStudio/magento2-rest-client#budsies":
   version "0.0.14"
-  resolved "https://codeload.github.com/GorbunovStudio/magento2-rest-client/tar.gz/787e49e3d63a6bda454fe455208a87282924b4e2"
+  resolved "https://codeload.github.com/GorbunovStudio/magento2-rest-client/tar.gz/88a4bdbf85aa36eb33fe66ad167145a899480422"
   dependencies:
     humps "^1.1.0"
     oauth-1.0a "^1.0.1"
