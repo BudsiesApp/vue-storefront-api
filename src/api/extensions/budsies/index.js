@@ -362,25 +362,22 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/affirm/get-checkout-object', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.sendAffirmGetCheckoutObjectRequest = function () {
         const customerToken = getToken(req);
-
-        let url = `affirm/getCheckoutObject?token=${customerToken}`;
-
         const cartId = req.query.cartId;
 
+        let url = `/affirm/checkout-requests`;
+
         if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+          url += `?cartId=${cartId}`;
         }
 
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
+        return restClient.get(url, customerToken);
       }
 
       return module;
