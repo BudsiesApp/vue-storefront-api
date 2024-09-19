@@ -358,14 +358,20 @@ export default ({ config, db }) => {
     if (!req.body.email) {
       return apiStatus(res, 'email is not provided', 500);
     }
-    if (!req.body.resetToken) {
+    if (!req.body.token) {
       return apiStatus(res, 'reset token is not provided', 500);
     }
-    if (!req.body.newPassword) {
+    if (!req.body.password) {
       return apiStatus(res, 'password is not provided', 500);
     }
 
-    userProxy.resetPasswordUsingResetToken(req.body)
+    const params = {
+      email: req.body.email,
+      resetToken: req.body.token,
+      newPassword: req.body.password
+    };
+
+    userProxy.resetPasswordUsingResetToken(params)
       .then(result => {
         apiStatus(res, result, 200);
       })
