@@ -355,7 +355,23 @@ export default ({ config, db }) => {
   userApi.post('/password-reset-confirm', (req, res) => {
     const userProxy = _getProxy(req);
 
-    userProxy.passwordResetConfirm(req.body)
+    if (!req.body.email) {
+      return apiStatus(res, 'email is not provided', 500);
+    }
+    if (!req.body.token) {
+      return apiStatus(res, 'reset token is not provided', 500);
+    }
+    if (!req.body.password) {
+      return apiStatus(res, 'password is not provided', 500);
+    }
+
+    const params = {
+      email: req.body.email,
+      resetToken: req.body.token,
+      newPassword: req.body.password
+    };
+
+    userProxy.resetPasswordUsingResetToken(params)
       .then(result => {
         apiStatus(res, result, 200);
       })
