@@ -211,6 +211,30 @@ module.exports = ({ config, db }) => {
       apiStatus(res, err, err.code);
     });
   });
+  
+  budsiesApi.post('/carts/personal-details-update-requests', (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendCartPersonalDetailsUpdateRequest = function () {
+        const customerToken = getToken(req);
+
+        let url = `/carts/personal-details-update-requests`;
+
+        return restClient.post(url, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.sendCartPersonalDetailsUpdateRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
 
   budsiesApi.get('/stores/ratings', (req, res) => {
     const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
