@@ -223,21 +223,7 @@ module.exports = ({ config, db }) => {
 
         let url = `/carts/personal-details-update-requests`;
 
-        const queryParams = new URLSearchParams();
-
-        const cartId = req.query.cartId;
-
-        if (cartId !== undefined) {
-          queryParams.append('cartId', cartId);
-        }
-
-        if (queryParams.toString() !== '') {
-          url += '?' + queryParams.toString();
-        }
-
-        return restClient.post(url, req.body, customerToken).then((data) => {
-          return data.quote_id;
-        });
+        return restClient.post(url, req.body, customerToken);
       }
 
       return module;
