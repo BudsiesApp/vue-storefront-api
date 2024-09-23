@@ -689,6 +689,10 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.post('/carts/personal-details-update-requests', (req, res) => {
+    apiStatus(res, true, 200);
+  });
+
   budsiesApi.get('/stores/ratings', (req, res) => {
     const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
 
