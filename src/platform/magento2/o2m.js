@@ -125,10 +125,6 @@ function processSingleOrder (orderData, config, job, done, customerToken = null,
       logger.info(THREAD_ID + '> Sync between clientItems', clientItems.map((item) => { return { sku: item.sku, qty: item.qty, server_item_id: item.server_item_id, product_option: item.product_option } }))
       logger.info(THREAD_ID + '> ... and serverItems', serverItems)
 
-      if (serverItems[0] && serverItems[0].quote_id !== cartId) {
-        return done({ code: 404, errorMessage: 'No such entity with cartId: ' + cartId });
-      }
-
       if (!isClientAndServerItemsEquals(clientItems, serverItems)) {
         return done({ code: 409, errorMessage: 'Cart items were changed' });
       }
