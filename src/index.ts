@@ -1,4 +1,5 @@
 import express from 'express';
+import compression from 'compression';
 import cors from 'cors';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
@@ -18,6 +19,7 @@ import * as path from 'path'
 
 const app = express();
 app.enable('trust proxy');
+app.use(compression());
 
 const httpLogFormat = process.env.LOG_HTTP_FORMAT || 'dev'
 
@@ -44,7 +46,8 @@ app.use('/media', express.static(path.join(__dirname, config.get(`${config.get('
 
 // 3rd party middleware
 app.use(cors({
-  exposedHeaders: config.get('corsHeaders')
+  exposedHeaders: config.get('corsHeaders'),
+  maxAge: 86400
 }));
 
 app.use(bodyParser.json({
