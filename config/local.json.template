@@ -297,6 +297,8 @@
           "configurable_children.special_price",
           "configurable_children.original_price_incl_tax",
           "configurable_children.price_incl_tax",
+          "special_from_date",
+          "special_to_date",
           "price",
           "special_price",
           "original_price_incl_tax",
