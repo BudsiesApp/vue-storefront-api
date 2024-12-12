@@ -355,6 +355,39 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/plushies/rush-upgrades', async (req, res) => {
+    if (req.query.productId === undefined) {
+      apiStatus(res, 'The field productId is required', 400);
+    }
+
+    const query = {
+      index: config.elasticsearch.index,
+      type: 'rush_upgrade',
+      body: {
+        query: {
+          terms: {
+            'product_id': Array.isArray(req.query.productId) ? req.query.productId : [req.query.productId]
+          }
+        }
+      }
+    };
+
+    try {
+      const response = await es.search(query)
+      const hits = response.body ? response.body.hits : response.hits;
+
+      const rushUpgrades = hits.hits.map((hit) => {
+        delete hit._source.tsk;
+        return hit._source;
+      });
+
+      apiStatus(res, rushUpgrades);
+    } catch (error) {
+      console.log(error);
+      apiStatus(res, error.toString(), error.code);
+    }
+  });
+
+  budsiesApi.get('/plushies/products-rush-upgrades', async (req, res) => {
     const query = {
       index: config.elasticsearch.index,
       type: 'rush_upgrade',
