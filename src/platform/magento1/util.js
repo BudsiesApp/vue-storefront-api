@@ -1,5 +1,6 @@
 import config from 'config'
 import { getCurrentStoreCode } from '../../lib/util'
+import queryString from 'query-string'
 
 const DEBUG_QUERY_PARAM_KEY = {
   APP_VERSION: 'x-app-version',
@@ -12,7 +13,6 @@ function addDebugHeaders (config, req) {
   }
 
   config.headers = {};
-  const queryString = require('query-string');
   const parsedQuery = queryString.parseUrl(req.url).query
 
   for (const debugParamKey of Object.values(DEBUG_QUERY_PARAM_KEY)) {
