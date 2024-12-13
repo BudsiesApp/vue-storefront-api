@@ -1,7 +1,8 @@
 import config from 'config'
 import { getCurrentStoreCode } from '../../lib/util'
+import queryString from 'query-string'
 
-const DEBUG_HEADER_KEY = {
+const DEBUG_QUERY_PARAM_KEY = {
   APP_VERSION: 'x-app-version',
   INSTANCE_ID: 'x-instance-id'
 }
@@ -12,15 +13,20 @@ function addDebugHeaders (config, req) {
   }
 
   config.headers = {};
+  const parsedQuery = queryString.parseUrl(req.url).query
 
-  for (const headerKey of Object.values(DEBUG_HEADER_KEY)) {
-    const value = req.headers[headerKey];
+  for (const debugParamKey of Object.values(DEBUG_QUERY_PARAM_KEY)) {
+    let value = parsedQuery[debugParamKey];
+
+    if (!value) {
+      value = req.headers[debugParamKey];
+    }
 
     if (!value) {
       continue;
     }
 
-    config.headers[headerKey] = value;
+    config.headers[debugParamKey] = value;
   }
 
   return config;
