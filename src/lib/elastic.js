@@ -72,8 +72,8 @@ function adjustBackendProxyUrl (req, indexName, entityType, config) {
     delete parsedQuery.request
     delete parsedQuery.request_format
     delete parsedQuery.response_format
-    delete parsedQuery.appVersion
-    delete parsedQuery.instanceId
+    delete parsedQuery['x-app-version']
+    delete parsedQuery['x-instance-id']
     url = config.elasticsearch.host + ':' + config.elasticsearch.port + '/' + indexName + '/' + entityType + '/_search?' + queryString.stringify(parsedQuery)
   } else {
     parsedQuery._source_includes = parsedQuery._source_include
