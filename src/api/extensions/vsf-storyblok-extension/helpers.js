@@ -84,6 +84,8 @@ export function createIndex (config) {
   return {
     index: config.storyblok.storiesIndex,
     body: {
+      number_of_shards: 1,
+      number_of_replicas: 0,
       index: {
         mapping: {
           total_fields: {

@@ -65,6 +65,41 @@ module.exports = ({ config, db }) => {
     }
   });
 
+  budsiesApi.get('/plushies/products-rush-upgrades', async (req, res) => {
+    const query = {
+      index: config.elasticsearch.index,
+      type: 'rush_upgrade',
+      body: {
+        query: {
+          match_all: {}
+        }
+      }
+    };
+
+    try {
+      const response = await es.search(query)
+      const hits = response.body ? response.body.hits : response.hits;
+
+      const rushUpgrades = {};
+
+      hits.hits.forEach((hit) => {
+        const productId = hit._source.product_id;
+
+        if (rushUpgrades[productId] === undefined) {
+          rushUpgrades[productId] = [];
+        }
+
+        delete hit._source.tsk;
+        rushUpgrades[productId].push(hit._source);
+      });
+
+      apiStatus(res, rushUpgrades);
+    } catch (error) {
+      console.log(error);
+      apiStatus(res, error.toString(), error.code);
+    }
+  });
+
   budsiesApi.post('/dongler-book-requests', (req, res) => {
     const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
