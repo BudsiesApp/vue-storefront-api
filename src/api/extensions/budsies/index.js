@@ -69,6 +69,7 @@ module.exports = ({ config, db }) => {
     const query = {
       index: config.elasticsearch.index,
       type: 'rush_upgrade',
+      size: 1000,
       body: {
         query: {
           match_all: {}
