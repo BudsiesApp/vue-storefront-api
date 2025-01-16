@@ -172,7 +172,7 @@
     "previewToken": "${STORYBLOK_TOKEN}",
     "managementToken": "${STORYBLOK_MANAGEMENT_TOKEN}",
     "hookSecret": "${STORYBLOK_HOOK_SECRET}",
-    "invalidate": "https://${VSF_DOMAIN}/invalidate?tag=storyblok&key=${CACHE_INVALIDATION_KEY}",
+    "invalidate": "https://${VSF_DOMAIN}/invalidate?tag={{tag}}&key=${CACHE_INVALIDATION_KEY}",
     "spaceId": "${STORYBLOK_SPACE_ID}",
     "settings": {
       "appendStoreCodeFromHeader": true
