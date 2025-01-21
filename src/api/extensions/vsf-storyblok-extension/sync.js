@@ -10,7 +10,7 @@ function indexStories ({ db, config, stories = [] }) {
 }
 
 function getCacheTagsByStoriesSlugs (slugs) {
-  return slugs.map((slug) => `S_${slug}`)
+  return slugs.map((slug) => `storyblok_${slug}`)
 }
 
 async function indexStory ({ db, config, story }) {
@@ -105,7 +105,7 @@ const handleHook = async (db, config, params) => {
       await cacheInvalidate(config.storyblok, 'storyblok')
       return
     }
-  } catch (e) {}
+  } catch (e) { }
 
   const updatedStoriesSlugs = await handleActionForStory(db, config, id, action, cv)
   const updatedRelatedStoriesSlugs = await handleActionForRelatedStories(db, config, id, action, cv)
@@ -268,7 +268,7 @@ const seedStoryblokDatasources = async (db, config) => {
       body: {
         'size': 1000,
         'sort': [
-          {'name.keyword': 'asc'}
+          { 'name.keyword': 'asc' }
         ],
         'query': {
           'constant_score': {
@@ -329,14 +329,14 @@ const seedStoryblokDatasources = async (db, config) => {
       body: {
         'size': 1000,
         'sort': [
-          {'name.keyword': 'asc'}
+          { 'name.keyword': 'asc' }
         ],
         'query': {
           'constant_score': {
             'filter': {
               'bool': {
                 'must': [
-                  {'term': {'is_active': true}}
+                  { 'term': { 'is_active': true } }
                 ]
               }
             }
@@ -351,7 +351,7 @@ const seedStoryblokDatasources = async (db, config) => {
       body: {
         'size': 1000,
         'sort': [
-          {'name.keyword': 'asc'}
+          { 'name.keyword': 'asc' }
         ],
         'query': {}
       }
