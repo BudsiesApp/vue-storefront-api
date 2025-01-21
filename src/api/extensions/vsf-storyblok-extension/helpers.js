@@ -119,11 +119,12 @@ export const log = (string) => {
   console.log('📖 : ' + string) // eslint-disable-line no-console
 }
 
-export const cacheInvalidate = async (config) => {
+export const cacheInvalidate = async (config, tag) => {
   if (config.invalidate) {
-    log(`Invalidating cache... (${config.invalidate})`)
+    const uri = config.invalidate.replace('{{tag}}', tag)
+    log(`Invalidating cache... (${uri})`)
     await rp({
-      uri: config.invalidate
+      uri
     })
     log('Invalidated cache ✅')
   }

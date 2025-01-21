@@ -55,7 +55,7 @@ module.exports = ({ config }) => {
 
   api.get('/full', protectRoute(config), async (req, res) => {
     await fullSync(db, config)
-    await cacheInvalidate(config.storyblok)
+    await cacheInvalidate(config.storyblok, 'storyblok')
     log('Stories synced!')
     apiStatus(res)
   })
