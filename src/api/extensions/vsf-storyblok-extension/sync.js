@@ -9,6 +9,10 @@ function indexStories ({ db, config, stories = [] }) {
   })
 }
 
+function getCacheTagsByStoriesSlugs (slugs) {
+  return slugs.map((slug) => `storyblok_${slug}`)
+}
+
 async function indexStory ({ db, config, story }) {
   const transformedStory = transformStory(config.storyblok.storiesIndex, story)
 
@@ -87,7 +91,7 @@ const handleHook = async (db, config, params) => {
 
   if (action === 'branch_deployed') {
     await fullSync(db, config)
-    await cacheInvalidate(config.storyblok)
+    await cacheInvalidate(config.storyblok, 'storyblok')
     return
   }
 
@@ -98,19 +102,28 @@ const handleHook = async (db, config, params) => {
 
     if (response.data.story && response.data.story.is_folder) {
       await fullSync(db, config)
-      await cacheInvalidate(config.storyblok)
+      await cacheInvalidate(config.storyblok, 'storyblok')
       return
     }
-  } catch (e) {}
+  } catch (e) { }
 
-  await handleActionForStory(db, config, id, action, cv)
-  await handleActionForRelatedStories(db, config, id, action, cv)
+  const updatedStoriesSlugs = await handleActionForStory(db, config, id, action, cv)
+  const updatedRelatedStoriesSlugs = await handleActionForRelatedStories(db, config, id, action, cv)
 
-  await cacheInvalidate(config.storyblok)
+  await cacheInvalidate(
+    config.storyblok,
+    getCacheTagsByStoriesSlugs(
+      [
+        ...updatedStoriesSlugs,
+        ...updatedRelatedStoriesSlugs
+      ]
+    )
+  )
 }
 
 const handleActionForRelatedStories = async (db, config, id, action, cv) => {
   const size = 10
+  const updatedStoriesSlugs = []
 
   switch (action) {
     case 'deleted':
@@ -133,6 +146,7 @@ const handleActionForRelatedStories = async (db, config, id, action, cv) => {
 
         for (const storyToReindex of response.data.stories) {
           log(`Try to reindex story ${storyToReindex.full_slug} with ${id} ID reference`)
+          updatedStoriesSlugs.push(storyToReindex.full_slug)
 
           await indexStory({ db, config, story: storyToReindex })
         }
@@ -146,9 +160,13 @@ const handleActionForRelatedStories = async (db, config, id, action, cv) => {
       break
     }
   }
+
+  return updatedStoriesSlugs
 }
 
 const handleActionForStory = async (db, config, id, action, cv) => {
+  const updatedStoriesSlugs = []
+
   switch (action) {
     case 'published': {
       let storiesToPublish = []
@@ -178,12 +196,14 @@ const handleActionForStory = async (db, config, id, action, cv) => {
 
       for (const storyToDelete of storiesToDelete) {
         log(`Try to delete old copy of story ${storyToDelete.full_slug}`)
+        updatedStoriesSlugs.push(storyToDelete.full_slug)
 
         await deleteStory({ db, config, story: storyToDelete })
       }
 
       for (const storyToPublish of storiesToPublish) {
         log(`Try to reindex story ${storyToPublish.full_slug}`)
+        updatedStoriesSlugs.push(storyToPublish.full_slug)
 
         await indexStory({ db, config, story: storyToPublish })
       }
@@ -196,6 +216,7 @@ const handleActionForStory = async (db, config, id, action, cv) => {
 
       for (const storyToDelete of stories) {
         log(`Try to delete story ${storyToDelete.full_slug}`)
+        updatedStoriesSlugs.push(storyToDelete.full_slug)
 
         await deleteStory({ db, config, story: storyToDelete });
       }
@@ -208,6 +229,8 @@ const handleActionForStory = async (db, config, id, action, cv) => {
       break
     }
   }
+
+  return updatedStoriesSlugs
 }
 
 const seedDatabase = async (db, config) => {
@@ -245,7 +268,7 @@ const seedStoryblokDatasources = async (db, config) => {
       body: {
         'size': 1000,
         'sort': [
-          {'name.keyword': 'asc'}
+          { 'name.keyword': 'asc' }
         ],
         'query': {
           'constant_score': {
@@ -306,14 +329,14 @@ const seedStoryblokDatasources = async (db, config) => {
       body: {
         'size': 1000,
         'sort': [
-          {'name.keyword': 'asc'}
+          { 'name.keyword': 'asc' }
         ],
         'query': {
           'constant_score': {
             'filter': {
               'bool': {
                 'must': [
-                  {'term': {'is_active': true}}
+                  { 'term': { 'is_active': true } }
                 ]
               }
             }
@@ -328,7 +351,7 @@ const seedStoryblokDatasources = async (db, config) => {
       body: {
         'size': 1000,
         'sort': [
-          {'name.keyword': 'asc'}
+          { 'name.keyword': 'asc' }
         ],
         'query': {}
       }

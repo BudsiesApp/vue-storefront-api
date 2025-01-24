@@ -3,7 +3,8 @@ const config = require('config')
 
 const { getClient } = require('../src/lib/elastic');
 const { seedDatabase, seedStoryblokDatasources } = require('../src/api/extensions/vsf-storyblok-extension/sync');
-const {initStoryblokClients} = require('../src/api/extensions/vsf-storyblok-extension/storyblok');
+const { initStoryblokClients } = require('../src/api/extensions/vsf-storyblok-extension/storyblok');
+const { cacheInvalidate } = require('../src/api/extensions/vsf-storyblok-extension/helpers');
 
 const db = getClient(config);
 initStoryblokClients(config);
@@ -34,6 +35,8 @@ program
     if (cmd.target === 'datasources') {
       await seedStoryblokDatasources(db, config);
     }
+
+    await cacheInvalidate(config.storyblok, 'storyblok');
 
     process.exit(0)
   });
