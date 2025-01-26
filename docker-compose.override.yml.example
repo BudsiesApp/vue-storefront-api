@@ -8,10 +8,10 @@ services:
   app-petsies:
     extra_hosts:
       - "[magento-host]:host-gateway"
-    environment:
-      - CERT_NAME=localdev
+    # environment:
+      # - CERT_NAME=localdev
       # - HTTPS_METHOD=noredirect
-      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      # - NODE_TLS_REJECT_UNAUTHORIZED=0
 
 networks:
   budsies-store-common-network:
