@@ -3,8 +3,11 @@ import { apiStatus, getToken } from '../../../lib/util';
 import { Router } from 'express';
 import { multiStoreConfig } from '../../../platform/magento1/util';
 import { getClient } from '../../../lib/elastic';
+import PlatformFactory from '../../../platform/factory';
+import { updateUserAddresses } from '../../user';
 
 const Magento1Client = require('magento1-vsbridge-client').Magento1Client
+const Magento2Client = require('magento2-rest-client').Magento2Client
 
 const backendSettingsRequestCacheKey = 'backend_settings';
 const storeRatingRequestCacheKey = 'store_rating';
@@ -18,341 +21,16 @@ module.exports = ({ config, db }) => {
     return false;
   }
 
+  const _getUserProxy = (req) => {
+    const platform = config.platform
+    const factory = new PlatformFactory(config, req)
+    return factory.getAdapter(platform, 'user')
+  };
+
   let budsiesApi = Router();
   let bridgeRequestsCache = BridgeRequestsCache({ db })
 
   const es = getClient(config);
-
-  budsiesApi.post('/printed-products/cart-items', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.addPrintedProductToCart = function () {
-        const customerToken = getToken(req);
-
-        return restClient.post(`printedProducts/cartItems?token=${customerToken}`, req.body).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.addPrintedProductToCart().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/pillows/size-options', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getPhrasePillowsSizeOptions = function () {
-        const customerToken = getToken(req);
-
-        const url = `pillows/sizeOptions?token=${customerToken}`;
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getPhrasePillowsSizeOptions().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/phrase-pillows/design-options', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getPhrasePillowsDesignOptions = function () {
-        const customerToken = getToken(req);
-
-        let url = `phrasePillows/designOptions?token=${customerToken}`;
-
-        const type = req.query.type;
-
-        if (type !== undefined) {
-          url += `&type=${type}`
-        }
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getPhrasePillowsDesignOptions().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  })
-
-  budsiesApi.post('/phrase-pillows/cart-items', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.addPhrasePillowToCart = function () {
-        const customerToken = getToken(req);
-
-        return restClient.post(`phrasePillows/cartItems?token=${customerToken}`, req.body).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.addPhrasePillowToCart().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/printed-products/designs', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getPrintedProductDesigns = function () {
-        const customerToken = getToken(req);
-
-        let url = `printedProducts/designs?token=${customerToken}`;
-
-        const productId = req.query.productId;
-
-        if (productId !== undefined) {
-          url += `&productId=${productId}`;
-        }
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getPrintedProductDesigns().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/printed-products/extra-photos-addons', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getExtraPhotosAddons = function () {
-        const customerToken = getToken(req);
-
-        let url = `printedProducts/extraPhotosAddons?token=${customerToken}`;
-
-        const productId = req.query.productId;
-
-        if (productId !== undefined) {
-          url += `&productId=${productId}`;
-        }
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getExtraPhotosAddons().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/plushies/extra-photos-upgrades', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getExtraPhotosUpgrades = function () {
-        const customerToken = getToken(req);
-
-        let url = `plushies/extraPhotosUpgrades?token=${customerToken}`;
-
-        const productId = req.query.productId;
-
-        if (productId !== undefined) {
-          url += `&productId=${productId}`;
-        }
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getExtraPhotosUpgrades().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/plushies/short-codes', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getShortCodes = function () {
-        const customerToken = getToken(req);
-
-        let url = `plushies/shortCodes?token=${customerToken}`;
-
-        const plushieId = req.query.plushieId;
-
-        if (plushieId !== undefined) {
-          url += `&plushieId=${plushieId}`;
-        }
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getShortCodes().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/plushies/breeds', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getDogBreeds = function () {
-        const customerToken = getToken(req);
-
-        let url = `plushies/dogBreeds?token=${customerToken}`;
-
-        const term = req.query.term;
-
-        if (term !== undefined) {
-          url += `&term=${term}`;
-        }
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getDogBreeds().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/plushies/upgrades', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getPlushiesUpgrades = function () {
-        const customerToken = getToken(req);
-
-        let url = `plushies/upgrades?token=${customerToken}`;
-
-        const productId = req.query.productId;
-
-        if (productId !== undefined) {
-          url += `&productId=${productId}`;
-        }
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getPlushiesUpgrades().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/plushies/body-parts', async (req, res) => {
-    if (req.query.productId === undefined) {
-      apiStatus(res, 'The field productId is required', 400);
-    }
-
-    const query = {
-      index: config.elasticsearch.index,
-      type: 'bodypart',
-      body: {
-        query: {
-          terms: {
-            'product_id': Array.isArray(req.query.productId) ? req.query.productId : [req.query.productId]
-          }
-        }
-      }
-    };
-
-    try {
-      const response = await es.search(query)
-      const hits = response.body ? response.body.hits : response.hits;
-
-      const bodyparts = hits.hits.map((hit) => {
-        delete hit._source.tsk;
-        return hit._source;
-      });
-
-      apiStatus(res, bodyparts);
-    } catch (error) {
-      console.log(error);
-      apiStatus(res, error.toString(), error.code);
-    }
-  });
 
   budsiesApi.get('/plushies/rush-upgrades', async (req, res) => {
     if (req.query.productId === undefined) {
@@ -423,182 +101,8 @@ module.exports = ({ config, db }) => {
     }
   });
 
-  budsiesApi.post('/plushies', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.createPlushie = function () {
-        const customerToken = getToken(req);
-
-        return restClient.post(`plushies?token=${customerToken}`, req.body).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.createPlushie().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/plushies/body-parts-plushie-values', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getBodyPartsPlushieValues = function () {
-        const customerToken = getToken(req);
-
-        let url = `plushies/bodyPartsPlushieValues?token=${customerToken}`;
-
-        const plushieId = req.query.plushieId;
-
-        if (plushieId !== undefined) {
-          url += `&plushieId=${plushieId}`;
-        }
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getBodyPartsPlushieValues().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/plushies/images', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getPlushieImages = function () {
-        const customerToken = getToken(req);
-
-        let url = `plushies/images?token=${customerToken}`;
-
-        const plushieId = req.query.plushieId;
-
-        if (plushieId !== undefined) {
-          url += `&plushieId=${plushieId}`;
-        }
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getPlushieImages().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/plushies/upgrades-plushie-values', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getSelectedUpgrades = function () {
-        const customerToken = getToken(req);
-
-        let url = `plushies/upgradesPlushieValues?token=${customerToken}`;
-
-        const plushieId = req.query.plushieId;
-
-        if (plushieId !== undefined) {
-          url += `&plushieId=${plushieId}`;
-        }
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getSelectedUpgrades().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/plushies/:plushieId', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getPlushies = function () {
-        const customerToken = getToken(req);
-
-        const plushieId = req.params.plushieId;
-        let url = `plushies/${plushieId}?token=${customerToken}`;
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getPlushies().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.post('/carts/email-update-requests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.addPrintedProductToCart = function () {
-        const params = new URLSearchParams({
-          cartId: req.query.cartId,
-          token: getToken(req)
-        });
-
-        return restClient.post(`carts/emailUpdateRequests?${params.toString()}`, req.body).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.addPrintedProductToCart().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
   budsiesApi.post('/dongler-book-requests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -606,8 +110,12 @@ module.exports = ({ config, db }) => {
       module.sendDonglerBookRequest = function () {
         const customerToken = getToken(req);
 
-        return restClient.post(`donglerBooks/requests/?token=${customerToken}`, req.body).then((data) => {
-          return getResponse(data);
+        return restClient.post(`/dongler_books_requests`, req.body, customerToken).then((data) => {
+          if (data === 'success') {
+            data = true;
+          }
+
+          return data;
         });
       }
 
@@ -622,7 +130,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/promotion-platform/quotes-campaigns', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -630,16 +138,25 @@ module.exports = ({ config, db }) => {
       module.getActivePromotionPlatformCampaign = function () {
         const customerToken = getToken(req);
 
-        let url = `promotionPlatform/quotesCampaigns?token=${customerToken}`;
+        let url = `/promotionPlatform/quotesCampaigns`;
+        const queryParams = new URLSearchParams();
 
         const cartId = req.query.cartId;
 
         if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+          queryParams.append('cartId', cartId);
         }
 
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
+        if (queryParams.toString() !== '') {
+          url += '?' + queryParams.toString();
+        }
+
+        return restClient.get(url, customerToken).then((data) => {
+          if (Array.isArray(data)) {
+            return data[0];
+          }
+
+          return data;
         });
       }
 
@@ -654,7 +171,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/promotion-platform/active-campaign-update-requests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -662,28 +179,33 @@ module.exports = ({ config, db }) => {
       module.updateActivePromotionPlatformCampaign = function () {
         const customerToken = getToken(req);
 
-        let url = `promotionPlatform/activeCampaignUpdateRequests?token=${customerToken}`;
+        let url = `/promotionPlatform/activeCampaignUpdateRequests`;
+        const bodyParams = {};
 
         const campaignToken = req.query.campaignToken;
 
         if (campaignToken !== undefined) {
-          url += `&campaignToken=${campaignToken}`;
+          bodyParams['campaignToken'] = campaignToken;
         }
 
         const data = req.query.data;
 
         if (data !== undefined) {
-          url += `&data=${data}`;
+          bodyParams['data'] = data;
         }
 
         const cartId = req.query.cartId;
 
         if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+          bodyParams['cartId'] = cartId;
         }
 
-        return restClient.post(url).then((data) => {
-          return getResponse(data);
+        return restClient.post(url, bodyParams, customerToken).then(data => {
+          if (Array.isArray(data)) {
+            return data[0];
+          }
+
+          return data;
         });
       }
 
@@ -698,20 +220,21 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/carts/recovery-requests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.sendCartRecoveryRequest = function () {
-        const params = new URLSearchParams({
-          recoveryId: req.query.recoveryId,
-          recoveryCode: req.query.recoveryCode,
-          token: getToken(req)
-        });
+        const customerToken = getToken(req);
 
-        return restClient.post(`carts/recoveryRequests?${params.toString()}`, req.body).then((data) => {
-          return getResponse(data);
+        const bodyParams = {
+          key: req.query.recoveryCode,
+          currentQuoteId: req.body.quoteId
+        };
+
+        return restClient.post(`/carts/recovery-requests`, bodyParams, customerToken).then((data) => {
+          return data.quote_id;
         });
       }
 
@@ -724,13 +247,33 @@ module.exports = ({ config, db }) => {
       apiStatus(res, err, err.code);
     });
   });
-
+  
   budsiesApi.post('/carts/personal-details-update-requests', (req, res) => {
-    apiStatus(res, true, 200);
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendCartPersonalDetailsUpdateRequest = function () {
+        const customerToken = getToken(req);
+
+        let url = `/carts/personal-details-update-requests`;
+
+        return restClient.post(url, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.sendCartPersonalDetailsUpdateRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
   });
 
   budsiesApi.get('/stores/ratings', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -752,23 +295,22 @@ module.exports = ({ config, db }) => {
 
         const customerToken = getToken(req);
 
-        let url = `stores/ratings?token=${customerToken}`;
+        let url = `/stores/ratings`;
 
         if (storeId !== undefined) {
-          url += `&storeId=${storeId}`;
+          url += `?storeId=${storeId}`;
         }
 
-        const data = await restClient.get(url);
+        let data = await restClient.get(url, customerToken);
 
-        const responseData = getResponse(data);
-
-        if (responseData) {
-          await bridgeRequestsCache.setWithTtl(cacheKey, responseData, 300);
+        if (data) {
+          data = { 'storeRating': data[0] };
+          await bridgeRequestsCache.setWithTtl(cacheKey, data, 300);
         } else {
           await bridgeRequestsCache.del(cacheKey);
         }
 
-        return responseData;
+        return data;
       }
 
       return module;
@@ -781,40 +323,8 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/giftcards/templates', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getGiftcardsTemplates = function () {
-        const customerToken = getToken(req);
-
-        let url = `giftcards/templates?token=${customerToken}`;
-
-        const storeId = req.query.storeId;
-
-        if (storeId !== undefined) {
-          url += `&storeId=${storeId}`;
-        }
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getGiftcardsTemplates().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
   budsiesApi.post('/giftcards/apply', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -822,17 +332,16 @@ module.exports = ({ config, db }) => {
       module.sendGiftcardsApplyRequest = function () {
         const customerToken = getToken(req);
 
-        let url = `giftcards/apply?token=${customerToken}`;
-
-        const cartId = req.query.cartId;
-
-        if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+        let url;
+        if (customerToken) {
+          url = `/carts/mine/gift-card/`;
+        } else {
+          url = `/guest-carts/${req.query.cartId}/gift-card/`;
         }
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        });
+        url += req.body.code;
+
+        return restClient.put(url, {}, customerToken);
       }
 
       return module;
@@ -846,25 +355,24 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/giftcards/remove', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.sendGiftcardsRemoveRequest = function () {
+      module.sendGiftcardsRemoveRequest = async function () {
         const customerToken = getToken(req);
 
-        let url = `giftcards/remove?token=${customerToken}`;
-
-        const cartId = req.query.cartId;
-
-        if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+        let url;
+        if (customerToken) {
+          url = `/carts/mine/gift-card/bulk-removal-requests/`;
+        } else {
+          url = `/guest-carts/${req.query.cartId}/gift-card/bulk-removal-requests/`;
         }
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        });
+        const codes = req.body.codes;
+
+        return restClient.post(url, { codes }, customerToken);
       }
 
       return module;
@@ -877,40 +385,8 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.post('/giftcards/change-value', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.sendGiftcardsChangeValueRequest = function () {
-        const customerToken = getToken(req);
-
-        let url = `giftcards/changeValue?token=${customerToken}`;
-
-        const cartId = req.query.cartId;
-
-        if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
-        }
-
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.sendGiftcardsChangeValueRequest().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
   budsiesApi.get('/giftcards/pull', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -918,16 +394,20 @@ module.exports = ({ config, db }) => {
       module.sendGiftcardsPullRequest = function () {
         const customerToken = getToken(req);
 
-        let url = `giftcards/pull?token=${customerToken}`;
-
-        const cartId = req.query.cartId;
-
-        if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+        let url;
+        if (customerToken) {
+          url = `/carts/mine/gift-card/applied-cards`;
+        } else {
+          url = `/guest-carts/${req.query.cartId}/gift-card/applied-cards`;
         }
 
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
+        return restClient.get(url, customerToken).then((data) => {
+          const result = {};
+          for (const card of data) {
+            result[card.code] = card.amount;
+          }
+
+          return result;
         });
       }
 
@@ -942,25 +422,22 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/affirm/get-checkout-object', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.sendAffirmGetCheckoutObjectRequest = function () {
         const customerToken = getToken(req);
-
-        let url = `affirm/getCheckoutObject?token=${customerToken}`;
-
         const cartId = req.query.cartId;
 
+        let url = `/affirm/checkout-requests`;
+
         if (cartId !== undefined) {
-          url += `&cartId=${cartId}`;
+          url += `?cartId=${cartId}`;
         }
 
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
+        return restClient.get(url, customerToken);
       }
 
       return module;
@@ -974,19 +451,25 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/newsletter/subscriptions', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.sendNewsletterSubscriptionsRequest = function () {
-        const customerToken = getToken(req);
+        let bodyParams = req.body;
 
-        let url = `newsletter/subscriptions?token=${customerToken}`;
+        if (req.body.email) {
+          bodyParams = {
+            subscriber: {
+              subscriber_email: req.body.email
+            }
+          };
+        }
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        });
+        let url = `/subscriber`;
+
+        return restClient.post(url, bodyParams);
       }
 
       return module;
@@ -1000,7 +483,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/mailing-list-subscriptions', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1008,11 +491,9 @@ module.exports = ({ config, db }) => {
       module.sendMailchimpSubscriptionsRequest = function () {
         const customerToken = getToken(req);
 
-        let url = `mailingList/subscriptions?token=${customerToken}`;
+        let url = `/mailingList/subscriptions`;
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        });
+        return restClient.post(url, req.body, customerToken);
       }
 
       return module;
@@ -1026,7 +507,7 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/share/artists', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
@@ -1034,11 +515,9 @@ module.exports = ({ config, db }) => {
       module.sendShareArtistsRequest = function () {
         const customerToken = getToken(req);
 
-        let url = `share/artists?token=${customerToken}`;
+        let url = `/budsies_artists`;
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        })
+        return restClient.post(url, req.body, customerToken);
       }
 
       return module;
@@ -1052,17 +531,15 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/share/customer-stories', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.sendShareCustomerStoriesRequest = function () {
-        let url = `share/customerStories`;
+        let url = `/customer_stories`;
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        })
+        return restClient.post(url, req.body);
       }
 
       return module;
@@ -1076,13 +553,13 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/settings/retrieve', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.getSettings = async function () {
-        let url = 'settings/retrieve';
+        let url = '/settings';
 
         const cachedData = await bridgeRequestsCache.get(backendSettingsRequestCacheKey);
 
@@ -1090,17 +567,15 @@ module.exports = ({ config, db }) => {
           return cachedData;
         }
 
-        const data = await restClient.get(url);
+        const data = (await restClient.get(url)).shift();
 
-        const responseData = getResponse(data);
-
-        if (responseData) {
-          await bridgeRequestsCache.setWithTtl(backendSettingsRequestCacheKey, responseData, 300);
+        if (data) {
+          await bridgeRequestsCache.setWithTtl(backendSettingsRequestCacheKey, data, 300);
         } else {
           await bridgeRequestsCache.del(backendSettingsRequestCacheKey);
         }
 
-        return responseData;
+        return data;
       }
 
       return module;
@@ -1114,22 +589,20 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/order/creditcard-processing-error-notifications', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.sendCreditCardProcessingErrorNotifications = function () {
-        const params = new URLSearchParams({
-          token: getToken(req),
-          cartId: req.query.cartId
-        });
+        const customerToken = getToken(req);
 
-        let url = `order/creditCardProcessingErrorNotifications?${params.toString()}`
+        const bodyParams = req.body;
+        bodyParams.cartId = req.query.cartId;
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        });
+        let url = `/paymentErrorHelpRequests`
+
+        return restClient.post(url, bodyParams, customerToken);
       }
 
       return module;
@@ -1173,16 +646,32 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/address/create', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
-    client.addMethods('budsies', (restClient) => {
+    client.addMethods('budsies', () => {
       let module = {};
 
       module.createAddress = function () {
         const customerToken = getToken(req);
+        const userProxy = _getUserProxy(req);
 
-        return restClient.post(`address/create?token=${customerToken}`, req.body).then((data) => {
-          return getResponse(data);
+        let existingAddressesIds = [];
+
+        return userProxy.me(customerToken).then((result) => {
+          existingAddressesIds = result.addresses.map((address) => address.id);
+
+          return updateUserAddresses(
+            customerToken,
+            userProxy,
+            result,
+            [...result.addresses, req.body.address]
+          );
+        }).then((data) => {
+          const addedAddress = data.addresses.find(
+            (address) => !existingAddressesIds.includes(address.id)
+          );
+
+          return addedAddress;
         });
       }
 
@@ -1197,16 +686,60 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/address/update', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
-    client.addMethods('budsies', (restClient) => {
+    client.addMethods('budsies', () => {
       let module = {};
 
       module.updateAddress = function () {
         const customerToken = getToken(req);
+        const userProxy = _getUserProxy(req);
+        const addressForUpdate = req.body.address;
 
-        return restClient.post(`address/update?token=${customerToken}`, req.body).then((data) => {
-          return getResponse(data);
+        return userProxy.me(customerToken).then((result) => {
+          let isAddressForUpdateFound = false;
+          const updatedAddresses = [];
+
+          result.addresses.forEach(
+            (address) => {
+              if (addressForUpdate.id === address.id) {
+                isAddressForUpdateFound = true;
+                updatedAddresses.push(addressForUpdate);
+                return;
+              }
+
+              if (addressForUpdate.default_shipping) {
+                address.default_shipping = false;
+              }
+
+              if (addressForUpdate.default_billing) {
+                address.default_billing = false
+              }
+
+              updatedAddresses.push(address);
+            }
+          );
+
+          if (!isAddressForUpdateFound) {
+            const error = {
+              code: 404,
+              result: 'Not Found'
+            }
+            throw error;
+          }
+
+          return updateUserAddresses(
+            customerToken,
+            userProxy,
+            result,
+            updatedAddresses
+          );
+        }).then((data) => {
+          const updatedAddress = data.addresses.find(
+            (address) => addressForUpdate.id === address.id
+          );
+
+          return updatedAddress;
         });
       }
 
@@ -1220,69 +753,40 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/address/get', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.getAddress = function () {
-        const customerToken = getToken(req);
-
-        let url = `address/get?token=${customerToken}`;
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.getAddress().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
-  budsiesApi.get('/address/list', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.listAddress = function () {
-        const customerToken = getToken(req);
-
-        let url = `address/list?token=${customerToken}`;
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
-      }
-
-      return module;
-    });
-
-    client.budsies.listAddress().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
-  });
-
   budsiesApi.post('/address/delete', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
-    client.addMethods('budsies', (restClient) => {
+    client.addMethods('budsies', () => {
       let module = {};
 
       module.deleteAddress = function () {
+        const userProxy = _getUserProxy(req);
         const customerToken = getToken(req);
 
-        return restClient.post(`address/delete?token=${customerToken}`, req.body).then((data) => {
-          return getResponse(data);
+        return userProxy.me(customerToken).then((result) => {
+          const addressToDeleteIndex = result.addresses.findIndex(
+            (address) => address.id === req.body.address.id
+          );
+
+          if (addressToDeleteIndex === -1) {
+            const error = {
+              code: 404,
+              result: 'Not Found'
+            };
+
+            throw error;
+          }
+
+          result.addresses.splice(addressToDeleteIndex, 1)
+
+          return updateUserAddresses(
+            customerToken,
+            userProxy,
+            result,
+            result.addresses
+          );
+        }).then(() => {
+          return req.body.address.id;
         });
       }
 
@@ -1297,75 +801,101 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/bulk-orders/client-types', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.getBulkOrderClientTypes = function () {
-        let url = 'bulkOrders/clientTypes';
+        let url = '/bulkRequests/clientTypes';
 
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
+        return restClient.get(url);
       }
 
       return module;
     });
 
     client.budsies.getBulkOrderClientTypes().then((result) => {
-      apiStatus(res, result, 200);
+      const responseData = {};
+
+      for (let item of result.items) {
+        responseData[item.id] = item.name;
+      }
+
+      apiStatus(res, responseData, 200);
     }).catch(err => {
       apiStatus(res, err, err.code);
     });
   });
 
   budsiesApi.post('/bulk-orders/create', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.createBulkOrder = function () {
-        return restClient.post('bulkOrders/create', req.body).then((data) => {
-          return getResponse(data);
-        });
+        const customerToken = getToken(req);
+
+        return restClient.post('/bulkRequests', req.body, customerToken);
       }
 
       return module;
     });
 
     client.budsies.createBulkOrder().then((result) => {
-      apiStatus(res, result, 200);
+      if (result.status_id) {
+        result.statusId = result.status_id;
+      }
+
+      if (result.main_image) {
+        result.mainImage = result.main_image;
+      }
+
+      if (result.bulkrequest_product_id) {
+        result.bulkorderProductId = result.bulkrequest_product_id;
+      }
+
+      apiStatus(res, result.id, 200);
     }).catch(err => {
       apiStatus(res, err, err.code);
     });
   });
 
   budsiesApi.get('/bulk-orders/info', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.getBulkOrderInfo = function () {
-        let url = 'bulkOrders/info';
+        let url = '/bulkRequests/';
 
-        const bulkOrderId = req.query.bulkOrderId;
+        const bulkRequestId = req.query.bulkOrderId;
 
-        if (bulkOrderId !== undefined) {
-          url += `?bulkOrderId=${bulkOrderId}`;
+        if (bulkRequestId !== undefined) {
+          url += bulkRequestId;
         }
 
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
+        return restClient.get(url);
       }
 
       return module;
     });
 
     client.budsies.getBulkOrderInfo().then((result) => {
+      if (result.status_id) {
+        result.statusId = result.status_id;
+      }
+
+      if (result.main_image) {
+        result.mainImage = result.main_image;
+      }
+
+      if (result.bulkrequest_product_id) {
+        result.bulkorderProductId = result.bulkrequest_product_id;
+      }
+
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, err.code);
@@ -1373,29 +903,33 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/bulk-orders/quotes', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.getBulkOrderQuotes = function () {
-        let url = 'bulkOrders/quotes';
+        let url = '/bulkRequests/quotes';
 
-        const bulkOrderId = req.query.bulkOrderId;
+        const bulkRequestId = req.query.bulkOrderId;
 
-        if (bulkOrderId !== undefined) {
-          url += `?bulkOrderId=${bulkOrderId}`;
+        if (bulkRequestId !== undefined) {
+          url += `?bulkRequestId=${bulkRequestId}`;
         }
 
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
+        return restClient.get(url);
       }
 
       return module;
     });
 
     client.budsies.getBulkOrderQuotes().then((result) => {
+      for (let item of result) {
+        if (item.bulkrequest_id) {
+          item.bulkorder_id = item.bulkrequest_id;
+        }
+      }
+
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, err.code);
@@ -1403,22 +937,22 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/bulk-orders/quote-choose', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.chooseBulkOrderQuote = function () {
-        const params = new URLSearchParams({
-          token: getToken(req),
-          cartId: req.query.cartId
-        });
+        const customerToken = getToken(req);
 
-        const url = `bulkOrders/quoteChoose?${params.toString()}`;
+        const bodyParams = {
+          cartId: req.query.cartId,
+          quoteId: req.body.quoteId
+        };
 
-        return restClient.post(url, req.body).then((data) => {
-          return getResponse(data);
-        });
+        const url = `/bulkRequests/quotes/chosen/`;
+
+        return restClient.post(url, bodyParams, customerToken);
       }
 
       return module;
@@ -1432,15 +966,20 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/bulk-orders/question', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.createBulkOrderQuestion = function () {
-        return restClient.post('bulkOrders/question', req.body).then((data) => {
-          return getResponse(data);
-        });
+        const bodyParams = req.body;
+        if (bodyParams.bulkOrderId) {
+          bodyParams.bulkRequestId = bodyParams.bulkOrderId;
+        }
+
+        const customerToken = getToken(req);
+
+        return restClient.post('/bulkRequests/questions', bodyParams, customerToken);
       }
 
       return module;
@@ -1478,19 +1017,16 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/inspirationMachine/themes', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.getInspirationMachineThemes = function () {
         const customerToken = getToken(req);
+        let url = `/inspirationMachine/themes`;
 
-        let url = `inspirationMachine/themes?token=${customerToken}`;
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
+        return restClient.get(url, customerToken);
       }
 
       return module;
@@ -1504,19 +1040,16 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/inspirationMachine/extras', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.getInspirationMachineExtras = function () {
         const customerToken = getToken(req);
+        let url = `/inspirationMachine/extras`;
 
-        let url = `inspirationMachine/extras?token=${customerToken}`;
-
-        return restClient.get(url).then((data) => {
-          return getResponse(data);
-        });
+        return restClient.get(url, customerToken);
       }
 
       return module;
@@ -1530,15 +1063,16 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.post('/inspirationMachine/kitRequests', (req, res) => {
-    const client = Magento1Client(multiStoreConfig(config.magento1.api, req));
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
       module.inspirationMachineSendKitRequest = function () {
-        return restClient.post('inspirationMachine/kitRequests', req.body).then((data) => {
-          return getResponse(data);
-        });
+        const customerToken = getToken(req);
+        let url = `/inspirationMachine/kitRequests`;
+
+        return restClient.post(url, req.body, customerToken);
       }
 
       return module;
@@ -1678,43 +1212,6 @@ module.exports = ({ config, db }) => {
     }).catch(err => {
       apiStatus(res, err, err.code);
     });
-  });
-
-  budsiesApi.get('/hospitals', async (req, res) => {
-    const query = {
-      index: config.elasticsearch.index,
-      type: 'hospital',
-      body: {
-        query: {
-          match_all: {}
-        }
-      }
-    };
-
-    try {
-      const response = await es.search(query)
-      const hits = response.body ? response.body.hits : response.hits;
-
-      if (hits.total === 0) {
-        apiStatus(res, 'Not found', 404);
-
-        return;
-      }
-
-      const stories = [];
-
-      hits.hits.forEach(hit => {
-        stories.push({
-          id: hit._source.id,
-          name: hit._source.name
-        });
-      });
-
-      apiStatus(res, stories);
-    } catch (error) {
-      console.log(error);
-      apiStatus(res, error.toString(), error.code);
-    }
   });
 
   budsiesApi.get('/statistic-values', async (req, res) => {

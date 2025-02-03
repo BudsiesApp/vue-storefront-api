@@ -21,6 +21,31 @@ function addUserGroupToken (config, result) {
   result.groupToken = jwt.encode(data, config.authHashSecret ? config.authHashSecret : config.objHashSecret)
 }
 
+function validateUserData (data): {
+  isValid: boolean,
+  errors: any
+} {
+  const ajv = new Ajv();
+  const userProfileSchema = require('../models/userProfileUpdate.schema.json')
+  let userProfileSchemaExtension = {};
+  if (fs.existsSync(path.resolve(__dirname, '../models/userProfileUpdate.schema.extension.json'))) {
+    userProfileSchemaExtension = require('../models/userProfileUpdate.schema.extension.json');
+  }
+  const validate = ajv.compile(merge(userProfileSchema, userProfileSchemaExtension))
+
+  if (!validate(data)) {
+    return {
+      isValid: false,
+      errors: validate.errors
+    }
+  }
+
+  return {
+    isValid: true,
+    errors: undefined
+  }
+}
+
 function validateAddresses (currentAddresses = [], newAddresses = []) {
   for (let address of newAddresses) {
     if (!address.customer_id && !address.id) {
@@ -34,7 +59,54 @@ function validateAddresses (currentAddresses = [], newAddresses = []) {
   }
 }
 
-export default ({config, db}) => {
+export function updateUserAddresses (
+  customerToken,
+  userProxy,
+  customerData,
+  addresses
+) {
+  const addressesValidation = validateAddresses(
+    customerData.addresses,
+    addresses
+  );
+
+  if (addressesValidation) {
+    const error = {
+      code: 403,
+      result: addressesValidation
+    }
+    throw error;
+  }
+
+  const data: any = {
+    customer: {
+      email: customerData.email,
+      firstname: customerData.firstname,
+      lastname: customerData.lastname,
+      addresses
+    }
+  };
+
+  const validationResult = validateUserData(data);
+
+  if (!validationResult.isValid) {
+    const error = {
+      errors: validationResult.errors,
+      code: 500
+    }
+
+    throw error;
+  }
+
+  data.customer.website_id = customerData.website_id;
+
+  return userProxy.update({
+    token: customerToken,
+    body: data
+  });
+}
+
+export default ({ config, db }) => {
   let userApi = Router();
 
   const _getProxy = (req) => {
@@ -83,7 +155,7 @@ export default ({config, db}) => {
       /**
       * Second request for more user info
       */
-      apiStatus(res, result, 200, {refreshToken: encryptToken(jwt.encode(req.body, config.authHashSecret ? config.authHashSecret : config.objHashSecret), config.authHashSecret ? config.authHashSecret : config.objHashSecret)});
+      apiStatus(res, result, 200, { refreshToken: encryptToken(jwt.encode(req.body, config.authHashSecret ? config.authHashSecret : config.objHashSecret), config.authHashSecret ? config.authHashSecret : config.objHashSecret) });
     }).catch(err => {
       apiError(res, err);
     })
@@ -106,7 +178,7 @@ export default ({config, db}) => {
       }
 
       userProxy.login(decodedToken).then((result) => {
-        apiStatus(res, result, 200, {refreshToken: encryptToken(jwt.encode(decodedToken, config.authHashSecret ? config.authHashSecret : config.objHashSecret), config.authHashSecret ? config.authHashSecret : config.objHashSecret)});
+        apiStatus(res, result, 200, { refreshToken: encryptToken(jwt.encode(decodedToken, config.authHashSecret ? config.authHashSecret : config.objHashSecret), config.authHashSecret ? config.authHashSecret : config.objHashSecret) });
       }).catch(err => {
         apiError(res, err);
       })
@@ -186,21 +258,14 @@ export default ({config, db}) => {
    * POST for updating user
    */
   userApi.post('/me', async (req, res) => {
-    const ajv = new Ajv();
-    const userProfileSchema = require('../models/userProfileUpdate.schema.json')
-    let userProfileSchemaExtension = {};
-    if (fs.existsSync(path.resolve(__dirname, '../models/userProfileUpdate.schema.extension.json'))) {
-      userProfileSchemaExtension = require('../models/userProfileUpdate.schema.extension.json');
-    }
-    const validate = ajv.compile(merge(userProfileSchema, userProfileSchemaExtension))
-
     if (req.body.customer && req.body.customer.groupToken) {
       delete req.body.customer.groupToken
     }
 
-    if (!validate(req.body)) {
-      console.dir(validate.errors);
-      apiStatus(res, validate.errors, 500);
+    const validationResult = validateUserData(req.body);
+
+    if (!validationResult.isValid) {
+      apiStatus(res, validationResult.errors, 500);
       return;
     }
 
@@ -255,7 +320,7 @@ export default ({config, db}) => {
   userApi.post('/change-password', (req, res) => {
     const userProxy = _getProxy(req)
     const token = getToken(req)
-    userProxy.changePassword({token, body: req.body}).then((result) => {
+    userProxy.changePassword({ token, body: req.body }).then((result) => {
       apiStatus(res, result, 200)
     }).catch(err => {
       apiStatus(res, err, 500)
@@ -290,7 +355,23 @@ export default ({config, db}) => {
   userApi.post('/password-reset-confirm', (req, res) => {
     const userProxy = _getProxy(req);
 
-    userProxy.passwordResetConfirm(req.body)
+    if (!req.body.email) {
+      return apiStatus(res, 'email is not provided', 500);
+    }
+    if (!req.body.token) {
+      return apiStatus(res, 'reset token is not provided', 500);
+    }
+    if (!req.body.password) {
+      return apiStatus(res, 'password is not provided', 500);
+    }
+
+    const params = {
+      email: req.body.email,
+      resetToken: req.body.token,
+      newPassword: req.body.password
+    };
+
+    userProxy.resetPasswordUsingResetToken(params)
       .then(result => {
         apiStatus(res, result, 200);
       })

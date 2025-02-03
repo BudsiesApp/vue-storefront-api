@@ -185,7 +185,7 @@
       "promoCampaignsDatasourceSlug": "promo-campaigns"
     }
   },
-  "platform": "magento1",
+  "platform": "magento2",
   "registeredExtensions": [
     "elastic-stock",
     "budsies",
@@ -212,19 +212,31 @@
     }
   },
   "magento1": {
-    "url": "https://${MAGENTO_DOMAIN}",
-    "imgUrl": "https://${MAGENTO_DOMAIN}/media",
+    "url": "http://${MAGENTO_DOMAIN}",
+    "imgUrl": "http://${MAGENTO_DOMAIN}/media",
     "assetPath": "",
     "magentoUserName": "${MAGENTO_USER_NAME}",
     "magentoUserPassword": "${MAGENTO_USER_PASSWORD}",
     "httpUserName": "",
     "httpUserPassword": "",
     "api": {
-      "url": "https://${MAGENTO_DOMAIN}/vsbridge",
+      "url": "http://${MAGENTO_DOMAIN}/vsbridge",
       "consumerKey": "",
       "consumerSecret": "",
       "accessToken": "",
       "accessTokenSecret": ""
+    }
+  },
+  "magento2": {
+    "imgUrl": "https://${MAGENTO_DOMAIN}/pub/media",
+    "assetPath": "",
+    "api": {
+      "url": "https://${MAGENTO_DOMAIN}/rest/${DEFAULT_STORE_CODE}",
+      "consumerKey": "${MAGENTO_CONSUMER_KEY}",
+      "consumerSecret": "${MAGENTO_CONSUMER_SECRET}",
+      "accessToken": "${MAGENTO_ACCESS_TOKEN}",
+      "accessTokenSecret": "${MAGENTO_ACCESS_TOKEN_SECRET}",
+      "signatureMethod": "HMAC-SHA256"
     }
   },
   "imageable": {
@@ -322,7 +334,11 @@
           "slug",
           "disabled_upgrades",
           "customizations",
-          "visibility"
+          "visibility",
+          "gift_card_images_data",
+          "am_gift_card_prices",
+          "am_open_amount_min",
+          "am_open_amount_max"
         ],
         "filterFieldMapping": {
           "category.name": "category.name.keyword"

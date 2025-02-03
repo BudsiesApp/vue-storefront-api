@@ -1,5 +1,3 @@
-import { productsEquals } from 'vsf-utilities'
-
 const Magento2Client = require('magento2-rest-client').Magento2Client;
 
 const config = require('config')
@@ -18,7 +16,27 @@ if (fs.existsSync('../../models/order.schema.extension.json')) {
 const validate = ajv.compile(merge(orderSchema, orderSchemaExtension));
 
 function isNumeric (val) {
-  return Number(parseFloat(val)).toString() === val;
+  return Number(parseFloat(val)).toString() === val.toString();
+}
+
+function isClientAndServerItemsEquals (clientItems, serverItems) {
+  if (clientItems.length !== serverItems.length) {
+    return false;
+  }
+
+  return clientItems.every(
+    (clientItem) => {
+      const relatedServerItem = serverItems.find(
+        (serverItem) => serverItem.item_id === clientItem.server_item_id
+      );
+
+      if (!relatedServerItem) {
+        return false;
+      }
+
+      return relatedServerItem.qty === clientItem.qty;
+    }
+  );
 }
 
 /**
@@ -30,7 +48,7 @@ function isNumeric (val) {
  * @param {Object} config global CLI configuration
  * @param {Function} done callback - @example done(new Error()) - to acknowledge problems
  */
-function processSingleOrder (orderData, config, job, done, logger = console) {
+function processSingleOrder (orderData, config, job, done, customerToken = null, logger = console) {
   const TOTAL_STEPS = 4;
   const THREAD_ID = 'ORD:' + (job ? job.id : 1) + ' - '; // job id
   let currentStep = 1;
@@ -69,7 +87,8 @@ function processSingleOrder (orderData, config, job, done, logger = console) {
     if (job) job.progress(currentStep++, TOTAL_STEPS);
     return;
   }
-  let isThisAuthOrder = parseInt(orderData.user_id) > 0
+
+  let isAdminRequest = parseInt(orderData.user_id) > 0 && customerToken === null
   const userId = orderData.user_id
 
   let apiConfig = config.magento2.api
@@ -84,13 +103,13 @@ function processSingleOrder (orderData, config, job, done, logger = console) {
   const api = Magento2Client(apiConfig);
 
   logger.info('> Order Id', orderData.order_id)
-  logger.info('> Is order authorized?', isThisAuthOrder)
+  logger.info('> Is order authorized?', isAdminRequest)
   logger.info('> User Id', userId)
 
   let cartId = orderData.cart_id
-  const cartIdPrepare = isThisAuthOrder ? api.cart.create(null, userId) : (cartId ? new Promise((resolve, reject) => {
+  const cartIdPrepare = isAdminRequest ? api.cart.create(null, userId) : (cartId ? new Promise((resolve, reject) => {
     resolve(cartId)
-  }) : api.cart.create(null))
+  }) : api.cart.create(customerToken))
 
   logger.info(THREAD_ID + '> Cart Id', cartId)
 
@@ -100,77 +119,60 @@ function processSingleOrder (orderData, config, job, done, logger = console) {
     logger.info(THREAD_ID + '< Cart Id', cartId)
 
     // load current cart from the Magento to synchronize elements
-    api.cart.pull(null, cartId, null, isThisAuthOrder).then((serverItems) => {
+    api.cart.pull(customerToken, cartId, null, isAdminRequest).then((serverItems) => {
       const clientItems = orderData.products
-      const syncPromises = []
 
       logger.info(THREAD_ID + '> Sync between clientItems', clientItems.map((item) => { return { sku: item.sku, qty: item.qty, server_item_id: item.server_item_id, product_option: item.product_option } }))
       logger.info(THREAD_ID + '> ... and serverItems', serverItems)
 
-      for (const clientItem of clientItems) {
-        const serverItem = serverItems.find(itm => productsEquals(itm, clientItem))
-        if (!serverItem) {
-          logger.info(THREAD_ID + '< No server item for ' + clientItem.sku)
-          syncPromises.push(api.cart.update(null, cartId, { // use magento API
-            sku: clientItem.parentSku && config.cart.setConfigurableProductOptions ? clientItem.parentSku : clientItem.sku,
-            qty: clientItem.qty,
-            product_option: clientItem.product_option,
-            quote_id: cartId
-          }, isThisAuthOrder))
-        } else if (serverItem.qty !== clientItem.qty) {
-          logger.info(THREAD_ID + '< Wrong qty for ' + clientItem.sku, clientItem.qty, serverItem.qty)
-          syncPromises.push(api.cart.update(null, cartId, { // use magento API
-            sku: clientItem.parentSku && config.cart.setConfigurableProductOptions ? clientItem.parentSku : clientItem.sku,
-            qty: clientItem.qty,
-            product_option: clientItem.product_option,
-            item_id: serverItem.item_id,
-            quote_id: cartId
-          }, isThisAuthOrder))
-        } else {
-          logger.info(THREAD_ID + '< Server and client items synced for ' + clientItem.sku) // here we need just update local item_id
-        }
+      if (!isClientAndServerItemsEquals(clientItems, serverItems)) {
+        return done({ code: 409, errorMessage: 'Cart items were changed' });
       }
 
-      for (const serverItem of serverItems) {
-        if (serverItem) {
-          const clientItem = clientItems.find(itm => productsEquals(itm, serverItem))
-          if (!clientItem) {
-            logger.info(THREAD_ID + '< No client item for ' + serverItem.sku + ', removing from server cart') // use magento API
-            syncPromises.push(api.cart.delete(null, cartId, { // delete server side item if not present if client's cart
-              sku: serverItem.sku,
-              item_id: serverItem.item_id
-            }, isThisAuthOrder))
-          }
-        }
-      }
+      if (job) job.progress(currentStep++, TOTAL_STEPS);
+      logger.info(THREAD_ID + '< Server cart in sync')
 
-      Promise.all(syncPromises).then((results) => {
-        if (job) job.progress(currentStep++, TOTAL_STEPS);
-        logger.info(THREAD_ID + '< Server cart in sync')
-        logger.debug(THREAD_ID + results)
+      const billingAddr = orderData.addressInformation.billingAddress;
+      const shippingAddr = orderData.addressInformation.shippingAddress;
+      let mappedShippingRegion = 0
+      let mappedBillingRegion = 0
 
-        const billingAddr = orderData.addressInformation.billingAddress;
-        const shippingAddr = orderData.addressInformation.shippingAddress;
-        let mappedShippingRegion = 0
-        let mappedBillingRegion = 0
-
-        api.directory.countries().then((countryList) => {
-          if (typeof shippingAddr !== 'undefined' && shippingAddr !== null) {
-            if (shippingAddr.region_id > 0) {
-              mappedShippingRegion = { regionId: shippingAddr.region_id, regionCode: shippingAddr.region_code }
-            } else {
-              mappedShippingRegion = countryMapper.mapCountryRegion(countryList, shippingAddr.country_id, shippingAddr.region_code ? shippingAddr.region_code : shippingAddr.region)
-            }
-          }
-
-          if (billingAddr.region_id > 0) {
-            mappedBillingRegion = { regionId: billingAddr.region_id, regionCode: billingAddr.region_code }
+      api.directory.countries().then((countryList) => {
+        if (typeof shippingAddr !== 'undefined' && shippingAddr !== null) {
+          if (shippingAddr.region_id > 0) {
+            mappedShippingRegion = { regionId: shippingAddr.region_id, regionCode: shippingAddr.region_code }
           } else {
-            mappedBillingRegion = countryMapper.mapCountryRegion(countryList, billingAddr.country_id, billingAddr.region_code ? billingAddr.region_code : billingAddr.region)
+            mappedShippingRegion = countryMapper.mapCountryRegion(countryList, shippingAddr.country_id, shippingAddr.region_code ? shippingAddr.region_code : shippingAddr.region)
           }
+        }
 
-          const billingAddressInfo = { // sum up totals
-            'address': {
+        if (billingAddr.region_id > 0) {
+          mappedBillingRegion = { regionId: billingAddr.region_id, regionCode: billingAddr.region_code }
+        } else {
+          mappedBillingRegion = countryMapper.mapCountryRegion(countryList, billingAddr.country_id, billingAddr.region_code ? billingAddr.region_code : billingAddr.region)
+        }
+
+        const billingAddressInfo = { // sum up totals
+          'address': {
+            'countryId': billingAddr.country_id,
+            'street': billingAddr.street,
+            'telephone': billingAddr.telephone,
+            'postcode': billingAddr.postcode,
+            'city': billingAddr.city,
+            'firstname': billingAddr.firstname,
+            'lastname': billingAddr.lastname,
+            'email': billingAddr.email,
+            'regionCode': mappedBillingRegion.regionCode,
+            'regionId': mappedBillingRegion.regionId,
+            'company': billingAddr.company,
+            'vatId': billingAddr.vat_id,
+            'save_in_address_book': billingAddr.save_address
+          }
+        }
+
+        const shippingAddressInfo = { // sum up totals
+          'addressInformation': {
+            'billingAddress': {
               'countryId': billingAddr.country_id,
               'street': billingAddr.street,
               'telephone': billingAddr.telephone,
@@ -179,121 +181,97 @@ function processSingleOrder (orderData, config, job, done, logger = console) {
               'firstname': billingAddr.firstname,
               'lastname': billingAddr.lastname,
               'email': billingAddr.email,
-              'regionCode': mappedBillingRegion.regionCode,
               'regionId': mappedBillingRegion.regionId,
+              'regionCode': mappedBillingRegion.regionCode,
+              'region': billingAddr.region,
               'company': billingAddr.company,
               'vatId': billingAddr.vat_id,
               'save_in_address_book': billingAddr.save_address
-            }
+            },
+            'shippingMethodCode': orderData.addressInformation.shipping_method_code,
+            'shippingCarrierCode': orderData.addressInformation.shipping_carrier_code,
+            'extensionAttributes': orderData.addressInformation.shippingExtraFields
           }
+        }
 
-          const shippingAddressInfo = { // sum up totals
-            'addressInformation': {
-              'billingAddress': {
-                'countryId': billingAddr.country_id,
-                'street': billingAddr.street,
-                'telephone': billingAddr.telephone,
-                'postcode': billingAddr.postcode,
-                'city': billingAddr.city,
-                'firstname': billingAddr.firstname,
-                'lastname': billingAddr.lastname,
-                'email': billingAddr.email,
-                'regionId': mappedBillingRegion.regionId,
-                'regionCode': mappedBillingRegion.regionCode,
-                'region': billingAddr.region,
-                'company': billingAddr.company,
-                'vatId': billingAddr.vat_id,
-                'save_in_address_book': billingAddr.save_address
-              },
-              'shippingMethodCode': orderData.addressInformation.shipping_method_code,
-              'shippingCarrierCode': orderData.addressInformation.shipping_carrier_code,
-              'extensionAttributes': orderData.addressInformation.shippingExtraFields
-            }
+        if (typeof shippingAddr !== 'undefined' && shippingAddr !== null) {
+          shippingAddressInfo['addressInformation']['shippingAddress'] = {
+            'countryId': shippingAddr.country_id,
+            'street': shippingAddr.street,
+            'telephone': shippingAddr.telephone,
+            'postcode': shippingAddr.postcode,
+            'city': shippingAddr.city,
+            'firstname': shippingAddr.firstname,
+            'lastname': shippingAddr.lastname,
+            'email': shippingAddr.email,
+            'regionId': mappedShippingRegion.regionId,
+            'regionCode': mappedShippingRegion.regionCode,
+            'region': shippingAddr.region,
+            'company': shippingAddr.company,
+            'save_in_address_book': shippingAddr.save_address
           }
+        } else {
+          shippingAddressInfo['addressInformation']['shippingAddress'] = shippingAddressInfo['addressInformation']['billingAddress']
+        }
 
-          if (typeof shippingAddr !== 'undefined' && shippingAddr !== null) {
-            shippingAddressInfo['addressInformation']['shippingAddress'] = {
-              'countryId': shippingAddr.country_id,
-              'street': shippingAddr.street,
-              'telephone': shippingAddr.telephone,
-              'postcode': shippingAddr.postcode,
-              'city': shippingAddr.city,
-              'firstname': shippingAddr.firstname,
-              'lastname': shippingAddr.lastname,
-              'email': shippingAddr.email,
-              'regionId': mappedShippingRegion.regionId,
-              'regionCode': mappedShippingRegion.regionCode,
-              'region': shippingAddr.region,
-              'company': shippingAddr.company,
-              'save_in_address_book': shippingAddr.save_address
-            }
-          } else {
-            shippingAddressInfo['addressInformation']['shippingAddress'] = shippingAddressInfo['addressInformation']['billingAddress']
-          }
+        logger.info(THREAD_ID + '< Billing info', billingAddressInfo)
+        api.cart.billingAddress(customerToken, cartId, billingAddressInfo, isAdminRequest).then((result) => {
+          logger.info(THREAD_ID + '< Billing address assigned', result)
+          logger.info(THREAD_ID + '< Shipping info', shippingAddressInfo)
+          api.cart.shippingInformation(customerToken, cartId, shippingAddressInfo, isAdminRequest).then((result) => {
+            logger.info(THREAD_ID + '< Shipping address assigned', result)
 
-          logger.info(THREAD_ID + '< Billing info', billingAddressInfo)
-          api.cart.billingAddress(null, cartId, billingAddressInfo, isThisAuthOrder).then((result) => {
-            logger.info(THREAD_ID + '< Billing address assigned', result)
-            logger.info(THREAD_ID + '< Shipping info', shippingAddressInfo)
-            api.cart.shippingInformation(null, cartId, shippingAddressInfo, isThisAuthOrder).then((result) => {
-              logger.info(THREAD_ID + '< Shipping address assigned', result)
+            if (job) job.progress(currentStep++, TOTAL_STEPS);
 
+            api.cart.order(customerToken, cartId, {
+              'paymentMethod': {
+                'method': orderData.addressInformation.payment_method_code,
+                'additional_data': orderData.addressInformation.payment_method_additional
+              }
+            }, isAdminRequest).then(result => {
+              logger.info(THREAD_ID, result)
               if (job) job.progress(currentStep++, TOTAL_STEPS);
 
-              api.cart.order(null, cartId, {
-                'paymentMethod': {
-                  'method': orderData.addressInformation.payment_method_code,
-                  'additional_data': orderData.addressInformation.payment_method_additional
-                }
-              }, isThisAuthOrder).then(result => {
-                logger.info(THREAD_ID, result)
-                if (job) job.progress(currentStep++, TOTAL_STEPS);
-
-                logger.info(THREAD_ID + '[OK] Order placed with ORDER ID', result);
-                logger.debug(THREAD_ID + result)
-                if (orderData.order_id) {
-                  redisClient.set('order$$id$$' + orderData.order_id, JSON.stringify({
-                    platform_order_id: result,
-                    transmited: true,
-                    transmited_at: new Date(),
-                    platform: 'magento2',
-                    order: orderData
-                  }));
-                  redisClient.set('order$$totals$$' + orderData.order_id, JSON.stringify(result[1]));
-                }
-                let orderIncrementId = null;
-                api.orders.incrementIdById(result).then(result => {
-                  orderIncrementId = result.increment_id
-                }).catch(err => {
-                  logger.warn('could not fetch increment_id for Order', err, typeof err)
-                }).finally(() => {
-                  if (job) job.progress(currentStep++, TOTAL_STEPS);
-                  return done(null, { magentoOrderId: result, orderNumber: orderIncrementId, backendOrderId: result, transferedAt: new Date() });
-                })
+              logger.info(THREAD_ID + '[OK] Order placed with ORDER ID', result);
+              logger.debug(THREAD_ID + result)
+              if (orderData.order_id) {
+                redisClient.set('order$$id$$' + orderData.order_id, JSON.stringify({
+                  platform_order_id: result,
+                  transmited: true,
+                  transmited_at: new Date(),
+                  platform: 'magento2',
+                  order: orderData
+                }));
+                redisClient.set('order$$totals$$' + orderData.order_id, JSON.stringify(result[1]));
+              }
+              let orderIncrementId = null;
+              api.orders.incrementIdById(result).then(result => {
+                orderIncrementId = result.increment_id
               }).catch(err => {
-                logger.error('Error placing an order', err, typeof err)
-                if (job) job.attempts(6).backoff({delay: 30 * 1000, type: 'fixed'}).save()
-                return done(composeError('Error placing an order.', err));
+                logger.warn('could not fetch increment_id for Order', err, typeof err)
+              }).finally(() => {
+                if (job) job.progress(currentStep++, TOTAL_STEPS);
+                return done(null, { magentoOrderId: result, orderNumber: orderIncrementId, backendOrderId: result, transferedAt: new Date() });
               })
-            }).catch((errors) => {
-              logger.error('Error while adding shipping address', errors)
-              if (job) job.attempts(3).backoff({ delay: 60 * 1000, type: 'fixed' }).save()
-              return done(composeError('Error while adding shipping address.', errors));
+            }).catch(err => {
+              logger.error('Error placing an order', err, typeof err)
+              if (job) job.attempts(6).backoff({delay: 30 * 1000, type: 'fixed'}).save()
+              return done(composeError('Error placing an order.', err));
             })
           }).catch((errors) => {
-            logger.error('Error while adding billing address', errors)
+            logger.error('Error while adding shipping address', errors)
             if (job) job.attempts(3).backoff({ delay: 60 * 1000, type: 'fixed' }).save()
-            return done(composeError('Error while adding billing address.', errors));
+            return done(composeError('Error while adding shipping address.', errors));
           })
         }).catch((errors) => {
-          logger.error('Error while synchronizing country list', errors)
-          if (job) job.attempts(3).backoff({ delay: 30 * 1000, type: 'fixed' }).save()
-          return done(composeError('Error while syncing country list.', errors));
+          logger.error('Error while adding billing address', errors)
+          if (job) job.attempts(3).backoff({ delay: 60 * 1000, type: 'fixed' }).save()
+          return done(composeError('Error while adding billing address.', errors));
         })
       }).catch((errors) => {
-        logger.error('Error while adding products', errors)
+        logger.error('Error while synchronizing country list', errors)
         if (job) job.attempts(3).backoff({ delay: 30 * 1000, type: 'fixed' }).save()
-        return done(composeError('Error while adding products.', errors));
+        return done(composeError('Error while syncing country list.', errors));
       })
     })
   }
@@ -301,7 +279,7 @@ function processSingleOrder (orderData, config, job, done, logger = console) {
   cartIdPrepare.then(processCart).catch((error) => { // cannot create a quote for specific user, so bypass by placing anonymous order
     logger.error(THREAD_ID, error)
     logger.info('< Bypassing to anonymous order')
-    isThisAuthOrder = false
+    isAdminRequest = false
 
     if (isNumeric(cartId)) { // we have numeric id - assigned to the user provided
       api.cart.create(null, null).then((result) => {
