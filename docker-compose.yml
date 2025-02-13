@@ -45,6 +45,8 @@ services:
       - LOG_LEVEL
       - LOG_COLORIZE
       - LOG_HTTP_FORMAT
+      - NODEJS_INSTANCE_MAX_MEMORY
+      - NODEJS_INSTANCE_MAX_OLD_SPACE
 
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
@@ -94,7 +96,7 @@ services:
 
     volumes:
       - './config/local.json.template:/var/www/config/local.json.template'
-      - './ecosystem.json:/var/www/ecosystem.json'
+      - './ecosystem.json.template:/var/www/ecosystem.json.template'
       - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
       - './yarn.lock:/var/www/yarn.lock'
@@ -127,6 +129,8 @@ services:
       - LOG_LEVEL
       - LOG_COLORIZE
       - LOG_HTTP_FORMAT
+      - NODEJS_INSTANCE_MAX_MEMORY
+      - NODEJS_INSTANCE_MAX_OLD_SPACE
 
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
@@ -176,7 +180,7 @@ services:
       
     volumes:
       - './config/local.json.template:/var/www/config/local.json.template'
-      - './ecosystem.json:/var/www/ecosystem.json'
+      - './ecosystem.json.template:/var/www/ecosystem.json.template'
       - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
       - './yarn.lock:/var/www/yarn.lock'
@@ -209,6 +213,8 @@ services:
       - LOG_LEVEL
       - LOG_COLORIZE
       - LOG_HTTP_FORMAT
+      - NODEJS_INSTANCE_MAX_MEMORY
+      - NODEJS_INSTANCE_MAX_OLD_SPACE
 
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
@@ -258,7 +264,7 @@ services:
       
     volumes:
       - './config/local.json.template:/var/www/config/local.json.template'
-      - './ecosystem.json:/var/www/ecosystem.json'
+      - './ecosystem.json.template:/var/www/ecosystem.json.template'
       - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
       - './yarn.lock:/var/www/yarn.lock'
@@ -291,6 +297,8 @@ services:
       - LOG_LEVEL
       - LOG_COLORIZE
       - LOG_HTTP_FORMAT
+      - NODEJS_INSTANCE_MAX_MEMORY
+      - NODEJS_INSTANCE_MAX_OLD_SPACE
 
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
@@ -340,7 +348,7 @@ services:
       
     volumes:
       - './config/local.json.template:/var/www/config/local.json.template'
-      - './ecosystem.json:/var/www/ecosystem.json'
+      - './ecosystem.json.template:/var/www/ecosystem.json.template'
       - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
       - './yarn.lock:/var/www/yarn.lock'
