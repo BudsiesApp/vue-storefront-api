@@ -171,6 +171,7 @@ export const checkStoryExist = async (db, index, path) => {
     return false;
   }
 }
+
 export const getStoriesMatchedToId = async (db, index, id) => {
   const response = await db.search({
     index: index,
@@ -229,8 +230,8 @@ export const validateEditor = (config, params) => {
 function getStoryParent (story) {
   return (
     story.content &&
-      story.content.parent &&
-      story.content.parent.full_slug
+    story.content.parent &&
+    story.content.parent.full_slug
       ? story.content.parent
       : undefined
   );
