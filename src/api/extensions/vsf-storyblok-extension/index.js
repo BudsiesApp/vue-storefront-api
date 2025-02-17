@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { apiStatus } from '../../../lib/util'
 import { getClient } from '../../../lib/elastic'
 import { fullSync, handleHook } from './sync'
-import { getStory, log, cacheInvalidate, validateEditor } from './helpers'
+import { checkStoryExist, getStory, log, cacheInvalidate, validateEditor } from './helpers'
 import { initStoryblokClients } from './storyblok'
 import protectRoute from './middleware/protectRoute'
 
@@ -27,6 +27,22 @@ module.exports = ({ config }) => {
     }
     const story = await getStory(db, config.storyblok.storiesIndex, path)
     apiStatus(res, story)
+  })
+
+  api.get('/check-exist/', async (req, res) => {
+    const response = await checkStoryExist(db, config.storyblok.storiesIndex, 'home')
+    apiStatus(res, { exist: !!response })
+  })
+
+  api.get('/check-exist/:story*', async (req, res) => {
+    let path = req.params.story + req.params[0]
+
+    if (config.storeViews[path]) {
+      path += '/home'
+    }
+
+    const response = await checkStoryExist(db, config.storyblok.storiesIndex, path)
+    apiStatus(res, { exist: !!response });
   })
 
   api.get('/validate-editor', async (req, res) => {
