@@ -143,6 +143,34 @@ export const getStory = async (db, index, path) => {
   }
 }
 
+export const checkStoryExist = async (db, index, path) => {
+  try {
+    const query = {
+      index: index,
+      type: 'story',
+      _source: ['id'],
+      body: {
+        query: {
+          constant_score: {
+            filter: {
+              term: {
+                'full_slug.keyword': path
+              }
+            }
+          }
+        }
+      }
+    }
+
+    const response = await db.search(query)
+    const hits = getHits(response)
+    const story = getHitsAsStory(hits)
+
+    return !!story;
+  } catch (error) {
+    return false;
+  }
+}
 export const getStoriesMatchedToId = async (db, index, id) => {
   const response = await db.search({
     index: index,
@@ -201,8 +229,8 @@ export const validateEditor = (config, params) => {
 function getStoryParent (story) {
   return (
     story.content &&
-    story.content.parent &&
-    story.content.parent.full_slug
+      story.content.parent &&
+      story.content.parent.full_slug
       ? story.content.parent
       : undefined
   );
