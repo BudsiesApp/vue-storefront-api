@@ -242,7 +242,6 @@ function processSingleOrder (orderData, config, job, done, customerToken = null,
                   platform: 'magento2',
                   order: orderData
                 }));
-                redisClient.set('order$$totals$$' + orderData.order_id, JSON.stringify(result[1]));
               }
               let orderIncrementId = null;
               api.orders.incrementIdById(result).then(result => {
