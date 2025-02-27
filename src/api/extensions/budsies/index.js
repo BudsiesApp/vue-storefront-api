@@ -129,7 +129,7 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.get('/promotion-platform/fetch-default-active-campaign', async (req, res) => {
+  budsiesApi.get('/promotion-platform/campaigns/default', async (req, res) => {
     const query = {
       index: config.elasticsearch.index,
       type: 'promotion_platform_campaign',
