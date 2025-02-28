@@ -79,8 +79,7 @@
                                 "minLength": 1
                             },
                             "vat_id": {
-                                "type": "string",
-                                "minLength": 3
+                                "type": "string"
                             },
                             "telephone": {
                                 "type": ["string", "number"]
