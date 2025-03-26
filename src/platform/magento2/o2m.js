@@ -2,7 +2,6 @@ const Magento2Client = require('magento2-rest-client').Magento2Client;
 
 const config = require('config')
 const redis = require('../../lib/redis');
-const redisClient = redis.getClient(config)
 const countryMapper = require('../../lib/countrymapper')
 const Ajv = require('ajv'); // json validator
 const fs = require('fs');
@@ -52,6 +51,7 @@ function processSingleOrder (orderData, config, job, done, customerToken = null,
   const TOTAL_STEPS = 4;
   const THREAD_ID = 'ORD:' + (job ? job.id : 1) + ' - '; // job id
   let currentStep = 1;
+  const redisClient = redis.getClient(config)
 
   /**
    * Internal function to compose Error object using messages about other errors.
@@ -254,7 +254,7 @@ function processSingleOrder (orderData, config, job, done, customerToken = null,
               })
             }).catch(err => {
               logger.error('Error placing an order', err, typeof err)
-              if (job) job.attempts(6).backoff({delay: 30 * 1000, type: 'fixed'}).save()
+              if (job) job.attempts(6).backoff({ delay: 30 * 1000, type: 'fixed' }).save()
               return done(composeError('Error placing an order.', err));
             })
           }).catch((errors) => {

@@ -247,7 +247,7 @@ module.exports = ({ config, db }) => {
       apiStatus(res, err, err.code);
     });
   });
-  
+
   budsiesApi.post('/carts/personal-details-update-requests', (req, res) => {
     const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
@@ -287,10 +287,14 @@ module.exports = ({ config, db }) => {
           cacheKey += `_${storeId}`;
         }
 
-        const cachedData = await bridgeRequestsCache.get(cacheKey);
+        try {
+          const cachedData = await bridgeRequestsCache.get(cacheKey);
 
-        if (cachedData) {
-          return cachedData;
+          if (cachedData) {
+            return cachedData;
+          }
+        } catch (error) {
+          console.error(error);
         }
 
         const customerToken = getToken(req);
@@ -303,11 +307,15 @@ module.exports = ({ config, db }) => {
 
         let data = await restClient.get(url, customerToken);
 
-        if (data) {
-          data = { 'storeRating': data[0] };
-          await bridgeRequestsCache.setWithTtl(cacheKey, data, 300);
-        } else {
-          await bridgeRequestsCache.del(cacheKey);
+        try {
+          if (data) {
+            data = { 'storeRating': data[0] };
+            await bridgeRequestsCache.setWithTtl(cacheKey, data, 300);
+          } else {
+            await bridgeRequestsCache.del(cacheKey);
+          }
+        } catch (error) {
+          console.error(error);
         }
 
         return data;
@@ -561,18 +569,26 @@ module.exports = ({ config, db }) => {
       module.getSettings = async function () {
         let url = '/settings';
 
-        const cachedData = await bridgeRequestsCache.get(backendSettingsRequestCacheKey);
+        try {
+          const cachedData = await bridgeRequestsCache.get(backendSettingsRequestCacheKey);
 
-        if (cachedData) {
-          return cachedData;
+          if (cachedData) {
+            return cachedData;
+          }
+        } catch (error) {
+          console.error(error);
         }
 
         const data = (await restClient.get(url)).shift();
 
-        if (data) {
-          await bridgeRequestsCache.setWithTtl(backendSettingsRequestCacheKey, data, 300);
-        } else {
-          await bridgeRequestsCache.del(backendSettingsRequestCacheKey);
+        try {
+          if (data) {
+            await bridgeRequestsCache.setWithTtl(backendSettingsRequestCacheKey, data, 300);
+          } else {
+            await bridgeRequestsCache.del(backendSettingsRequestCacheKey);
+          }
+        } catch (error) {
+          console.error(error);
         }
 
         return data;

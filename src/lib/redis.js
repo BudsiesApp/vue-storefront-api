@@ -4,22 +4,35 @@ import Redis from 'redis'
  * Return Redis Client
  * @param {config} config
  */
- let globalRedisClient = null
+let globalRedisClient = null
+
+function createClient (config) {
+  if (globalRedisClient) {
+    globalRedisClient.quit();
+    globalRedisClient = null;
+  }
+
+  globalRedisClient = Redis.createClient(config.redis);
+
+  globalRedisClient.on('error', (err) => { // workaround for https://github.com/NodeRedis/node_redis/issues/713
+    console.log('ERROR', err);
+  });
+
+  globalRedisClient.on('end', () => {
+    createClient(config);
+  });
+
+  if (config.redis.auth) {
+    globalRedisClient.auth(config.redis.auth);
+  }
+
+  return globalRedisClient;
+}
 
 export function getClient (config) {
   if (globalRedisClient) {
     return globalRedisClient;
   }
 
-  let redisClient = Redis.createClient(config.redis); // redis client
-  redisClient.on('error', (err) => { // workaround for https://github.com/NodeRedis/node_redis/issues/713
-    redisClient = Redis.createClient(config.redis); // redis client
-  });
-  if (config.redis.auth) {
-    redisClient.auth(config.redis.auth);
-  }
-
-  globalRedisClient = redisClient;
-  
-  return redisClient
+  return createClient(config);
 }
