@@ -9,7 +9,7 @@ export default ({ db }) => ({
         JSON.stringify(value),
         (err) => {
           if (err) {
-            reject(err);
+            return reject(err);
           }
 
           resolve()
@@ -28,7 +28,7 @@ export default ({ db }) => ({
         JSON.stringify(value),
         (err) => {
           if (err) {
-            reject(err);
+            return reject(err);
           }
 
           resolve()
@@ -43,7 +43,7 @@ export default ({ db }) => ({
 
       redisClient.get(key, (err, cachedData) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
 
         resolve(cachedData ? JSON.parse(cachedData) : undefined)
@@ -58,7 +58,7 @@ export default ({ db }) => ({
       redisClient.del(key,
         (err) => {
           if (err) {
-            reject(err);
+            return reject(err);
           }
 
           resolve()
