@@ -1,37 +1,49 @@
 export default ({ db }) => ({
 
   set (key: string, value: any): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const redisClient = db.getRedisClient();
 
       redisClient.set(
         key,
         JSON.stringify(value),
-        () => resolve()
+        (err) => {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve()
+        }
       );
     });
   },
 
   setWithTtl (key: string, value: any, ttl?: number): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const redisClient = db.getRedisClient();
 
       redisClient.setex(
         key,
         ttl,
         JSON.stringify(value),
-        () => resolve()
+        (err) => {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve()
+        }
       );
     });
   },
 
   get (key): Promise<any> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const redisClient = db.getRedisClient();
 
       redisClient.get(key, (err, cachedData) => {
         if (err) {
-          throw new Error(err);
+          return reject(err);
         }
 
         resolve(cachedData ? JSON.parse(cachedData) : undefined)
@@ -40,10 +52,18 @@ export default ({ db }) => ({
   },
 
   del (key): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const redisClient = db.getRedisClient();
 
-      redisClient.del(key, () => resolve());
+      redisClient.del(key,
+        (err) => {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve()
+        }
+      );
     })
-  } 
+  }
 })
