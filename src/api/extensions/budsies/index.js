@@ -129,6 +129,37 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/promotion-platform/campaigns/default', async (req, res) => {
+    const query = {
+      index: config.elasticsearch.index,
+      type: 'default_promotion_campaign',
+      body: {
+        query: {
+          match_all: {}
+        }
+      }
+    };
+
+    try {
+      const response = await es.search(query)
+      const hits = response.body ? response.body.hits : response.hits;
+
+      if (!hits.hits.length) {
+        apiStatus(res, false);
+        return;
+      }
+
+      const campaigns = hits.hits.map((hit) => {
+        delete hit._source.tsk;
+        return hit._source;
+      });
+
+      apiStatus(res, campaigns[0]);
+    } catch (error) {
+      apiStatus(res, error.toString(), error.code);
+    }
+  });
+
   budsiesApi.get('/promotion-platform/quotes-campaigns', (req, res) => {
     const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
