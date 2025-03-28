@@ -132,7 +132,7 @@ module.exports = ({ config, db }) => {
   budsiesApi.get('/promotion-platform/campaigns/default', async (req, res) => {
     const query = {
       index: config.elasticsearch.index,
-      type: 'promotion_platform_campaign',
+      type: 'default_promotion_campaign',
       body: {
         query: {
           match_all: {}
@@ -154,9 +154,7 @@ module.exports = ({ config, db }) => {
         return hit._source;
       });
 
-      apiStatus(res, {
-        campaignContent: campaigns[0]
-      });
+      apiStatus(res, campaigns[0]);
     } catch (error) {
       apiStatus(res, error.toString(), error.code);
     }
