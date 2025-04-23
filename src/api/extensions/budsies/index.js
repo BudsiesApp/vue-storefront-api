@@ -1294,5 +1294,28 @@ module.exports = ({ config, db }) => {
     }
   });
 
+  budsiesApi.get('/customers/me/orders', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getOrdersHistory = function () {
+        const customerToken = getToken(req);
+        let url = `/customers/me/orders`;
+
+        return restClient.get(url, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.getOrdersHistory().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   return budsiesApi;
 }
