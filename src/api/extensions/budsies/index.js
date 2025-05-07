@@ -1317,5 +1317,28 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/customers/me/suggested-products/active-orders', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getSuggestedProducts = function () {
+        const customerToken = getToken(req);
+        let url = `/customers/me/suggested-products/active-orders`;
+
+        return restClient.get(url, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.getSuggestedProducts().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   return budsiesApi;
 }
