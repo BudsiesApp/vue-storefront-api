@@ -1327,6 +1327,10 @@ module.exports = ({ config, db }) => {
         const customerToken = getToken(req);
         let url = `/customers/me/suggested-products/active-orders`;
 
+        if (req.query.page_size) {
+          url += `?page_size=${req.query.page_size}`;
+        }
+
         return restClient.get(url, customerToken);
       }
 
