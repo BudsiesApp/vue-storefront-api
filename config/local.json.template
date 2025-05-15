@@ -338,7 +338,8 @@
           "gift_card_images_data",
           "am_gift_card_prices",
           "am_open_amount_min",
-          "am_open_amount_max"
+          "am_open_amount_max",
+          "turnaround_time"
         ],
         "filterFieldMapping": {
           "category.name": "category.name.keyword"
