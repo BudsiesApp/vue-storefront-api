@@ -1367,5 +1367,81 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/currencies/list', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.fetchCurrenciesList = function () {
+        let url = `/directory/currency`;
+
+        // TODO: mock, replace with values from ElasticSearch
+        return Promise.resolve({
+          currencies: [
+            {code: 'USD', symbol: '$', name: 'US Dollar'},
+            {code: 'AUD', symbol: 'AU$', name: 'Australian Dollar'},
+            {code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar'},
+            {code: 'EUR', symbol: '€', name: 'Euro'}
+
+          ]
+        });
+
+        // return restClient.get(url)
+      }
+
+      return module;
+    });
+
+    client.budsies.fetchCurrenciesList().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
+  budsiesApi.get('/currencies/rates', async (req, res) => {
+    const query = {
+      index: config.elasticsearch.index,
+      type: 'currency_rate',
+      body: {
+        size: 1000,
+        query: {
+          bool: {
+            must: [
+              {
+                term: {
+                  currency_from: 'USD'
+                }
+              }
+            ],
+            must_not: [
+              {
+                term: {
+                  currency_to: 'USD'
+                }
+              }
+            ]
+          }
+        }
+      }
+    };
+
+    try {
+      const response = await es.search(query)
+      const hits = response.body ? response.body.hits : response.hits;
+
+      const rates = hits.hits.map((hit) => {
+        delete hit._source.tsk;
+        return hit._source;
+      });
+
+      apiStatus(res, rates);
+    } catch (error) {
+      console.log(error);
+      apiStatus(res, error.toString(), error.code);
+    }
+  });
+
   return budsiesApi;
 }
