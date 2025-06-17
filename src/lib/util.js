@@ -70,10 +70,16 @@ export function sgnSrc (sgnObj, item) {
  *  @param {json} [result='OK']    Text message or result information object
  */
 export function apiStatus (res, result = 'OK', code = 200, meta = null) {
+  if (Number.isNaN(Number(code))) {
+    code = 500;
+  }
+
   let apiResult = { code: code, result: result };
+
   if (meta !== null) {
     apiResult.meta = meta;
   }
+
   res.status(code).json(apiResult);
   return result;
 }
