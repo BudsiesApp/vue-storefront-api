@@ -1367,6 +1367,85 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/currencies/list', async (req, res) => {
+    const query = {
+      index: config.elasticsearch.index,
+      type: 'currency',
+      size: 1000,
+      body: {
+        query: {
+          match_all: {}
+        },
+        sort: [
+          {
+            _uid: {
+              order: 'asc'
+            }
+          }
+        ]
+      }
+    };
+
+    try {
+      const response = await es.search(query)
+      const hits = response.body ? response.body.hits : response.hits;
+
+      const currencies = hits.hits.map((hit) => ({
+        code: hit._id,
+        name: hit._source.name,
+        symbol: hit._source.currency_symbol
+      }));
+
+      apiStatus(res, currencies);
+    } catch (error) {
+      console.log(error);
+      apiStatus(res, error.toString(), error.code);
+    }
+  });
+
+  budsiesApi.get('/currencies/rates', async (req, res) => {
+    const query = {
+      index: config.elasticsearch.index,
+      type: 'currency_rate',
+      body: {
+        size: 1000,
+        query: {
+          bool: {
+            must: [
+              {
+                term: {
+                  currency_from: 'USD'
+                }
+              }
+            ],
+            must_not: [
+              {
+                term: {
+                  currency_to: 'USD'
+                }
+              }
+            ]
+          }
+        }
+      }
+    };
+
+    try {
+      const response = await es.search(query)
+      const hits = response.body ? response.body.hits : response.hits;
+
+      const rates = hits.hits.map((hit) => {
+        delete hit._source.tsk;
+        return hit._source;
+      });
+
+      apiStatus(res, rates);
+    } catch (error) {
+      console.log(error);
+      apiStatus(res, error.toString(), error.code);
+    }
+  });
+
   budsiesApi.post('/customer/authenticate-requests', async (req, res) => {
     const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
