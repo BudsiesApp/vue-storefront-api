@@ -1368,36 +1368,39 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/currencies/list', async (req, res) => {
-    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
-
-    client.addMethods('budsies', (restClient) => {
-      let module = {};
-
-      module.fetchCurrenciesList = function () {
-        let url = `/directory/currency`;
-
-        // TODO: mock, replace with values from ElasticSearch
-        return Promise.resolve({
-          currencies: [
-            {code: 'USD', symbol: '$', name: 'US Dollar'},
-            {code: 'AUD', symbol: 'AU$', name: 'Australian Dollar'},
-            {code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar'},
-            {code: 'EUR', symbol: '€', name: 'Euro'}
-
-          ]
-        });
-
-        // return restClient.get(url)
+    const query = {
+      index: config.elasticsearch.index,
+      type: 'currency',
+      size: 1000,
+      body: {
+        query: {
+          match_all: {}
+        },
+        sort: [
+          {
+            _uid: {
+              order: 'asc'
+            }
+          }
+        ]
       }
+    };
 
-      return module;
-    });
+    try {
+      const response = await es.search(query)
+      const hits = response.body ? response.body.hits : response.hits;
 
-    client.budsies.fetchCurrenciesList().then((result) => {
-      apiStatus(res, result, 200);
-    }).catch(err => {
-      apiStatus(res, err, err.code);
-    });
+      const currencies = hits.hits.map((hit) => ({
+        code: hit._id,
+        name: hit._source.name,
+        symbol: hit._source.currency_symbol
+      }));
+
+      apiStatus(res, currencies);
+    } catch (error) {
+      console.log(error);
+      apiStatus(res, error.toString(), error.code);
+    }
   });
 
   budsiesApi.get('/currencies/rates', async (req, res) => {
