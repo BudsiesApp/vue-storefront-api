@@ -1446,5 +1446,105 @@ module.exports = ({ config, db }) => {
     }
   });
 
+  budsiesApi.get('/customizations/order-items/states', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getOrderItemsCustomizationState = function () {
+        const customerToken = getToken(req);
+        const orderItemId = req.query.orderItemId;
+
+        // TODO: mock
+        // if (!orderItemId) {
+        //  return Promise.reject({
+        //    code: 400,
+        //    result: {
+        //      errorMessage: 'Field `orderItemId` is missing'
+        //    }
+        //  });
+        // }
+
+        // TODO: mock
+        // return Promise.resolve({
+        //  id: '1234',
+        //  customization_state: [
+        //    {
+        //      customization_id: 'afce7d69-5d5a-4c48-8f37-c24ca433d2ef',
+        //      value: '0c622f18-ecb1-4a2f-98da-7c8b50e3e9b8'
+        //    }
+        //  ]
+        // });
+
+        let url = `/customizations/order-items/${orderItemId}/states`;
+
+        return restClient.get(url, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.getOrderItemsCustomizationState().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
+  budsiesApi.post('/customizations/order-items/states', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.saveOrderItemsCustomizationState = function () {
+        const customerToken = getToken(req);
+
+        let url = `/customizations/order-items/states`;
+
+        // TODO: mock
+        // return Promise.resolve(true);
+
+        return restClient.post(url, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.saveOrderItemsCustomizationState().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
+  budsiesApi.post('/customizations/order-items/submit-requests', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.orderItemsSubmitRequests = function () {
+        const customerToken = getToken(req);
+
+        let url = `/customizations/order-items/submit-requests`;
+
+        // TODO: mock
+        // return Promise.resolve(true);
+
+        return restClient.post(url, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.orderItemsSubmitRequests().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   return budsiesApi;
 }
