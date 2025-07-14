@@ -1446,5 +1446,74 @@ module.exports = ({ config, db }) => {
     }
   });
 
+  budsiesApi.post('/customer/authenticate-requests', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.customerAuthenticateRequests = function () {
+        const customerToken = getToken(req);
+        let url = `/customer/authenticate-requests`;
+
+        return restClient.post(url, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.customerAuthenticateRequests().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
+  budsiesApi.post('/customer/login-requests', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.customerLoginRequests = function () {
+        const customerToken = getToken(req);
+        let url = `/customer/login-requests`;
+
+        return restClient.post(url, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.customerLoginRequests().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
+  budsiesApi.post('/customer/registration-requests', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.customerRegistrationRequests = function () {
+        const customerToken = getToken(req);
+        let url = `/customer/registration-requests`;
+
+        return restClient.post(url, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.customerRegistrationRequests().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   return budsiesApi;
 }
