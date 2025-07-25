@@ -1525,27 +1525,6 @@ module.exports = ({ config, db }) => {
         const customerToken = getToken(req);
         const orderItemId = req.query.orderItemId;
 
-        // TODO: mock
-        // if (!orderItemId) {
-        //  return Promise.reject({
-        //    code: 400,
-        //    result: {
-        //      errorMessage: 'Field `orderItemId` is missing'
-        //    }
-        //  });
-        // }
-
-        // TODO: mock
-        // return Promise.resolve({
-        //  id: '1234',
-        //  customization_state: [
-        //    {
-        //      customization_id: 'afce7d69-5d5a-4c48-8f37-c24ca433d2ef',
-        //      value: '0c622f18-ecb1-4a2f-98da-7c8b50e3e9b8'
-        //    }
-        //  ]
-        // });
-
         let url = `/customizations/order-items/${orderItemId}/states`;
 
         return restClient.get(url, customerToken);
@@ -1572,9 +1551,6 @@ module.exports = ({ config, db }) => {
 
         let url = `/customizations/order-items/states`;
 
-        // TODO: mock
-        // return Promise.resolve(true);
-
         return restClient.post(url, req.body, customerToken);
       }
 
@@ -1598,9 +1574,6 @@ module.exports = ({ config, db }) => {
         const customerToken = getToken(req);
 
         let url = `/customizations/order-items/submit-requests`;
-
-        // TODO: mock
-        // return Promise.resolve(true);
 
         return restClient.post(url, req.body, customerToken);
       }
