@@ -1523,9 +1523,12 @@ module.exports = ({ config, db }) => {
 
       module.getOrderItemsCustomizationState = function () {
         const customerToken = getToken(req);
-        const orderItemId = req.query.orderItemId;
 
-        let url = `/customizations/order-items/${orderItemId}/states`;
+        const params = new URLSearchParams({
+          orderItemId: req.query.orderItemId
+        });
+
+        let url = `/customizations/order-items/states?${params.toString()}`;
 
         return restClient.get(url, customerToken);
       }
