@@ -1515,5 +1515,81 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/customizations/order-items/states', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getOrderItemsCustomizationState = function () {
+        const customerToken = getToken(req);
+
+        const params = new URLSearchParams({
+          orderItemId: req.query.orderItemId
+        });
+
+        let url = `/customizations/order-items/states?${params.toString()}`;
+
+        return restClient.get(url, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.getOrderItemsCustomizationState().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
+  budsiesApi.post('/customizations/order-items/states', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.saveOrderItemsCustomizationState = function () {
+        const customerToken = getToken(req);
+
+        let url = `/customizations/order-items/states`;
+
+        return restClient.post(url, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.saveOrderItemsCustomizationState().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
+  budsiesApi.post('/customizations/order-items/submit-requests', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.orderItemsSubmitRequests = function () {
+        const customerToken = getToken(req);
+
+        let url = `/customizations/order-items/submit-requests`;
+
+        return restClient.post(url, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.orderItemsSubmitRequests().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   return budsiesApi;
 }
