@@ -1591,5 +1591,29 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.get('/customizations/order-items/deliverables', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getOrderItemDeliverables = function () {
+        const customerToken = getToken(req);
+        const orderItemId = req.query.order_item_id;
+        const url = `/customizations/order-items/deliverables?order_item_id=${orderItemId}`;
+
+        return restClient.get(url, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.getOrderItemDeliverables().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   return budsiesApi;
 }
