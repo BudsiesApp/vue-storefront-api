@@ -1592,43 +1592,27 @@ module.exports = ({ config, db }) => {
   });
 
   budsiesApi.get('/customizations/order-items/deliverables', async (req, res) => {
-    // const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
-    //
-    // client.addMethods('budsies', (restClient) => {
-    //   let module = {};
-    //
-    //   module.getOrderItemDeliverables = function () {
-    //     const customerToken = getToken(req);
-    //     const orderItemId = req.query.order_item_id;
-    //     const url = `/customizations/order-items/deliverables?order_item_id=${orderItemId}`;
-    //
-    //     return restClient.get(url, customerToken);
-    //   }
-    //
-    //   return module;
-    // });
-    //
-    // client.budsies.getOrderItemDeliverables().then((result) => {
-    //   apiStatus(res, result, 200);
-    // }).catch(err => {
-    //   apiStatus(res, err, err.code);
-    // });
-    const mockData = [
-      {
-        custom_product_id: 12345,
-        storage_item_id: 67890,
-        storage_item_url: '/budsies-staging-artworks/da8cc7a2-b79f-464e-892c-51b7a07e65d4.jpg',
-        created_at: '2025-10-15 14:30:00'
-      },
-      {
-        custom_product_id: 23456,
-        storage_item_id: 78901,
-        storage_item_url: '/budsies-staging-artworks/494234c4-f6b9-415a-a6eb-b6cfaa6e8220.jpg',
-        created_at: '2025-10-16 09:15:00'
-      }
-    ];
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
-    apiStatus(res, mockData, 200);
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getOrderItemDeliverables = function () {
+        const customerToken = getToken(req);
+        const orderItemId = req.query.order_item_id;
+        const url = `/customizations/order-items/deliverables?order_item_id=${orderItemId}`;
+
+        return restClient.get(url, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.getOrderItemDeliverables().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
   });
 
   return budsiesApi;
