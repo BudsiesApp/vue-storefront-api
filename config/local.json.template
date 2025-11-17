@@ -167,6 +167,9 @@
   "corsHeaders": [
     "Link"
   ],
+  "address": {
+    "validationApiKey": "${ADDRESS_VALIDATION_API_KEY}"
+  },
   "storyblok": {
     "storiesIndex": "storyblok_stories_${DEFAULT_STORE_ID}",
     "previewToken": "${STORYBLOK_TOKEN}",
