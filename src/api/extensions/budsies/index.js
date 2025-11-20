@@ -5,7 +5,6 @@ import { multiStoreConfig } from '../../../platform/magento1/util';
 import { getClient } from '../../../lib/elastic';
 import PlatformFactory from '../../../platform/factory';
 import { updateUserAddresses } from '../../user';
-import axios from 'axios';
 
 const Magento1Client = require('magento1-vsbridge-client').Magento1Client
 const Magento2Client = require('magento2-rest-client').Magento2Client
@@ -1616,31 +1615,28 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.post('/addresses/validate', async (req, res) => {
-    const validationApiKey = config.address?.validationApiKey;
+  budsiesApi.post('/address-validation-requests', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
-    if (!validationApiKey) {
-      apiStatus(res, 'Address validation API key is not configured', 500);
-      return;
-    }
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
 
-    const apiUrl = `https://addressvalidation.googleapis.com/v1:validateAddress?key=${validationApiKey}`;
+      module.sendAddressValidationRequest = function () {
+        const customerToken = getToken(req);
 
-    try {
-      const response = await axios.post(apiUrl, req.body, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+        let url = `/address-validation-requests`;
 
-      apiStatus(res, response.data, 200);
-    } catch (error) {
-      const errorMessage = error.response?.data || error.message;
-      const errorCode = error.response?.status || 500;
+        return restClient.post(url, req.body, customerToken);
+      }
 
-      console.error('Address validation error:', errorMessage);
-      apiStatus(res, errorMessage, errorCode);
-    }
+      return module;
+    });
+
+    client.budsies.sendAddressValidationRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
   });
 
   return budsiesApi;
