@@ -1615,5 +1615,29 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.post('/address-validation-requests', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendAddressValidationRequest = function () {
+        const customerToken = getToken(req);
+
+        let url = `/address-validation-requests`;
+
+        return restClient.post(url, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.sendAddressValidationRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   return budsiesApi;
 }
