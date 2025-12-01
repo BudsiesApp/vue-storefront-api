@@ -53,7 +53,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "^7.3.0",
     "@google-cloud/storage": "^3.0.3",
-    "@vue-storefront-api/amazon-pay": "https://gitpkg.now.sh/BudsiesApp/vsf-amazon-pay/API/amazon-pay?d9f6fcd224938bbcb7472306946d2a947c3ae5e6",
+    "@vue-storefront-api/amazon-pay": "https://gitpkg-budsies-xi.vercel.app/BudsiesApp/vsf-amazon-pay/API/amazon-pay?d9f6fcd224938bbcb7472306946d2a947c3ae5e6",
     "ajv": "^6.4.0",
     "ajv-keywords": "^3.4.0",
     "body-parser": "^1.18.2",
