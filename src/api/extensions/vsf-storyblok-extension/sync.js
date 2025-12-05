@@ -427,7 +427,7 @@ const seedStoryblokDatasources = async (db, config) => {
     for (const product of products) {
       requests.push(storyblokManagementClient.post(`spaces/${config.storyblok.spaceId}/datasource_entries`, {
         datasource_entry: {
-          name: product._source.name,
+          name: product._source.sku,
           value: product._source.id,
           datasource_id: newProductsDatasourceResponse.data.datasource.id
         }
@@ -451,7 +451,7 @@ const seedStoryblokDatasources = async (db, config) => {
     log('Storyblok Datasources synced!')
   } catch (error) {
     log('Storyblok Datasources not synced!')
-    log(error)
+    log(JSON.stringify(error))
   }
 }
 
