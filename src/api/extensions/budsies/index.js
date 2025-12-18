@@ -1300,17 +1300,54 @@ module.exports = ({ config, db }) => {
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getOrdersHistory = function () {
+      module.getOrdersHistory = async function () {
         const customerToken = getToken(req);
+        const orderId = req.query?.orderId;
         let url = `/customers/me/orders`;
 
-        return restClient.get(url, customerToken);
+        // TODO: temporary
+        // if (orderId !== undefined) {
+        //   url += `/${orderId}`;
+        // }
+
+        let result = await restClient.get(url, customerToken);
+
+        // TODO: temporary
+        if (orderId) {
+          const order = result.items.find((item) => item.entity_id === Number.parseInt(orderId, 10));
+          result = order;
+        }
+
+        return result;
       }
 
       return module;
     });
 
     client.budsies.getOrdersHistory().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
+  budsiesApi.post('/order/tax-id-request', (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.taxIdRequest = function () {
+        const customerToken = getToken(req);
+        const orderId = req.body?.orderId;
+
+        return restClient.post(`/orders/${orderId}/taxid-update-requests`, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.taxIdRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, err.code);
