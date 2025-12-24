@@ -1294,6 +1294,30 @@ module.exports = ({ config, db }) => {
     }
   });
 
+  budsiesApi.get('/customers/me/orders/:id', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getOrdersHistoryItem = async function () {
+        const customerToken = getToken(req);
+
+        let result = await restClient.get(`/customers/me/orders/${req.params.id}`, customerToken);
+
+        return result;
+      }
+
+      return module;
+    });
+
+    client.budsies.getOrdersHistoryItem().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   budsiesApi.get('/customers/me/orders', async (req, res) => {
     const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
@@ -1302,21 +1326,7 @@ module.exports = ({ config, db }) => {
 
       module.getOrdersHistory = async function () {
         const customerToken = getToken(req);
-        const orderId = req.query?.orderId;
-        let url = `/customers/me/orders`;
-
-        // TODO: temporary
-        // if (orderId !== undefined) {
-        //   url += `/${orderId}`;
-        // }
-
-        let result = await restClient.get(url, customerToken);
-
-        // TODO: temporary
-        if (orderId) {
-          const order = result.items.find((item) => item.entity_id === Number.parseInt(orderId, 10));
-          result = order;
-        }
+        let result = await restClient.get(`/customers/me/orders`, customerToken);
 
         return result;
       }
@@ -1331,7 +1341,7 @@ module.exports = ({ config, db }) => {
     });
   });
 
-  budsiesApi.post('/order/tax-id-request', (req, res) => {
+  budsiesApi.post('/order/taxid-update-requests', (req, res) => {
     const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
