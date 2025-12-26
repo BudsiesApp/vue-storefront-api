@@ -1686,5 +1686,27 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.post('/order/address/update-requests', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.addressUpdateRequests = function () {
+        const customerToken = getToken(req);
+
+        return restClient.post('/order/address/update-requests', req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.addressUpdateRequests().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   return budsiesApi;
 }
