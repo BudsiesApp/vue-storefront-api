@@ -1294,23 +1294,70 @@ module.exports = ({ config, db }) => {
     }
   });
 
+  budsiesApi.get('/customers/me/orders/:id', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.getOrdersHistoryItem = async function () {
+        const customerToken = getToken(req);
+
+        let result = await restClient.get(`/customers/me/orders/${req.params.id}`, customerToken);
+
+        return result;
+      }
+
+      return module;
+    });
+
+    client.budsies.getOrdersHistoryItem().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   budsiesApi.get('/customers/me/orders', async (req, res) => {
     const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
     client.addMethods('budsies', (restClient) => {
       let module = {};
 
-      module.getOrdersHistory = function () {
+      module.getOrdersHistory = async function () {
         const customerToken = getToken(req);
-        let url = `/customers/me/orders`;
+        let result = await restClient.get(`/customers/me/orders`, customerToken);
 
-        return restClient.get(url, customerToken);
+        return result;
       }
 
       return module;
     });
 
     client.budsies.getOrdersHistory().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
+  budsiesApi.post('/order/taxid-update-requests', (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.taxIdRequest = function () {
+        const customerToken = getToken(req);
+        const orderId = req.body?.orderId;
+
+        return restClient.post(`/orders/${orderId}/taxid-update-requests`, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.taxIdRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, err.code);
