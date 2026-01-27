@@ -16,6 +16,7 @@ import { makeExecutableSchema } from 'graphql-tools';
 import resolvers from './graphql/resolvers';
 import typeDefs from './graphql/schema';
 import * as path from 'path'
+import gracefulShutdown from 'http-graceful-shutdown';
 
 const app = express();
 app.enable('trust proxy');
@@ -73,9 +74,20 @@ initializeDb(db => {
 
   const port = process.env.PORT || config.get('server.port')
   const host = process.env.HOST || config.get('server.host')
-  app.listen(parseInt(port), host, () => {
+  const keepAliveTimeoutRaw = process.env.KEEP_ALIVE_TIMEOUT || config.get('server.keepAliveTimeout')
+  const keepAliveTimeout = parseInt(keepAliveTimeoutRaw) || 5000
+
+  const server = app.listen(parseInt(port), host, () => {
     console.log(`Vue Storefront API started at http://${host}:${port}`);
+
+    if (process && typeof process.send === 'function') {
+      process.send('ready');
+    }
   });
+
+  server.keepAliveTimeout = keepAliveTimeout;
+  server.headersTimeout = keepAliveTimeout + 1000;
+  gracefulShutdown(server);
 });
 
 // graphQl Server part
