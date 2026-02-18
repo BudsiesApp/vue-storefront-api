@@ -1326,7 +1326,13 @@ module.exports = ({ config, db }) => {
 
       module.getOrdersHistory = async function () {
         const customerToken = getToken(req);
-        let result = await restClient.get(`/customers/me/orders`, customerToken);
+        let url = `/customers/me/orders`;
+
+        if (req.query.excludeAlterationProducts) {
+          url += `?excludeAlterationProducts=${req.query.excludeAlterationProducts}`;
+        }
+
+        let result = await restClient.get(url, customerToken);
 
         return result;
       }
