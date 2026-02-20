@@ -1328,8 +1328,15 @@ module.exports = ({ config, db }) => {
         const customerToken = getToken(req);
         let url = `/customers/me/orders`;
 
-        if (req.query.excludeAlterationProducts) {
-          url += `?filters[excludeAlterationProducts]=true`;
+        const queryParams = []
+        if (req.query.filters) {
+          Object.keys(req.query.filters).forEach(key => {
+            queryParams.push(`filters[${key}]=${req.query.filters[key]}`)
+          })
+        }
+
+        if (queryParams.length > 0) {
+          url += `?${queryParams.join('&')}`
         }
 
         let result = await restClient.get(url, customerToken);
