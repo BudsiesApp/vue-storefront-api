@@ -1329,7 +1329,7 @@ module.exports = ({ config, db }) => {
         let url = `/customers/me/orders`;
 
         if (req.query.excludeAlterationProducts) {
-          url += `?excludeAlterationProducts=${req.query.excludeAlterationProducts}`;
+          url += `?filters[excludeAlterationProducts]=true`;
         }
 
         let result = await restClient.get(url, customerToken);
