@@ -1326,7 +1326,20 @@ module.exports = ({ config, db }) => {
 
       module.getOrdersHistory = async function () {
         const customerToken = getToken(req);
-        let result = await restClient.get(`/customers/me/orders`, customerToken);
+        let url = `/customers/me/orders`;
+
+        const queryParams = []
+        if (req.query.filters) {
+          Object.keys(req.query.filters).forEach(key => {
+            queryParams.push(`filters[${key}]=${req.query.filters[key]}`)
+          })
+        }
+
+        if (queryParams.length > 0) {
+          url += `?${queryParams.join('&')}`
+        }
+
+        let result = await restClient.get(url, customerToken);
 
         return result;
       }
