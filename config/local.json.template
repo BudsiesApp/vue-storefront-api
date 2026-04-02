@@ -342,7 +342,8 @@
           "am_giftcard_type",
           "am_open_amount_max",
           "turnaround_time",
-          "is_alteration_product"
+          "is_alteration_product",
+          "is_custom_product"
         ],
         "filterFieldMapping": {
           "category.name": "category.name.keyword"
