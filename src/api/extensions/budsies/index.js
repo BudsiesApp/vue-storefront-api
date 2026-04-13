@@ -1721,5 +1721,27 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.post('/order/address/confirmation-requests', async (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.addressConfirmationRequests = function () {
+        const customerToken = getToken(req);
+
+        return restClient.post('/order/address/confirmation-requests', req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.addressConfirmationRequests().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   return budsiesApi;
 }
