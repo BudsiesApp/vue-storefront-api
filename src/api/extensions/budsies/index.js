@@ -303,6 +303,30 @@ module.exports = ({ config, db }) => {
     });
   });
 
+  budsiesApi.post('/carts/traffic-attributions', (req, res) => {
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendCartTrafficAttributions = function () {
+        const customerToken = getToken(req);
+
+        let url = `/carts/${req.query.cartId}/traffic-attributions/`;
+
+        return restClient.post(url, req.body, customerToken);
+      }
+
+      return module;
+    });
+
+    client.budsies.sendCartTrafficAttributions().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
   budsiesApi.get('/stores/ratings', (req, res) => {
     const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
