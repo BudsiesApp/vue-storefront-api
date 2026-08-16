@@ -261,7 +261,8 @@ module.exports = ({ config, db }) => {
 
         const bodyParams = {
           key: req.query.recoveryCode,
-          currentQuoteId: req.body.quoteId
+          currentQuoteId: req.body.quoteId,
+          applyPromoCode: req.body.applyPromoCode
         };
 
         return restClient.post(`/carts/recovery-requests`, bodyParams, customerToken).then((data) => {
