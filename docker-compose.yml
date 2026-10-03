@@ -2,7 +2,7 @@ version: '3.0'
 services:
   es1:
     container_name: elasticsearch
-    build: docker/elasticsearch/
+    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/elasticsearch:2022-04-28
     ulimits:
       memlock:
         soft: -1
@@ -19,7 +19,7 @@ services:
       - "ES_JAVA_OPTS=-Xmx512m -Xms512m"
 
   kibana:
-    build: docker/kibana/
+    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/kibana:2026-10-03
     volumes:
       - ./docker/kibana/config/:/usr/share/kibana/config:ro
     ports:
@@ -33,9 +33,7 @@ services:
       - '6379:6379'
 
   app-budsies:
-    build:
-      context: .
-      dockerfile: docker/vue-storefront-api/Dockerfile
+    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-03
     depends_on:
       - es1
       - redis
@@ -97,7 +95,7 @@ services:
       - LETSENCRYPT_EMAIL
 
     volumes:
-      - './config/local.json.template:/var/www/config/local.json.template'
+      - './config:/var/www/config-source:ro'
       - './ecosystem.json.template:/var/www/ecosystem.json.template'
       - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
@@ -119,9 +117,7 @@ services:
       - 8080
 
   app-petsies:
-    build:
-      context: .
-      dockerfile: docker/vue-storefront-api/Dockerfile
+    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-03
     depends_on:
       - es1
       - redis
@@ -183,7 +179,7 @@ services:
       - LETSENCRYPT_EMAIL
 
     volumes:
-      - './config/local.json.template:/var/www/config/local.json.template'
+      - './config:/var/www/config-source:ro'
       - './ecosystem.json.template:/var/www/ecosystem.json.template'
       - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
@@ -205,9 +201,7 @@ services:
       - 8080
 
   app-bulkorders:
-    build:
-      context: .
-      dockerfile: docker/vue-storefront-api/Dockerfile
+    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-03
     depends_on:
       - es1
       - redis
@@ -269,7 +263,7 @@ services:
       - LETSENCRYPT_EMAIL
 
     volumes:
-      - './config/local.json.template:/var/www/config/local.json.template'
+      - './config:/var/www/config-source:ro'
       - './ecosystem.json.template:/var/www/ecosystem.json.template'
       - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
@@ -291,9 +285,7 @@ services:
       - 8080
 
   app-waggables:
-    build:
-      context: .
-      dockerfile: docker/vue-storefront-api/Dockerfile
+    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-03
     depends_on:
       - es1
       - redis
@@ -355,7 +347,7 @@ services:
       - LETSENCRYPT_EMAIL
 
     volumes:
-      - './config/local.json.template:/var/www/config/local.json.template'
+      - './config:/var/www/config-source:ro'
       - './ecosystem.json.template:/var/www/ecosystem.json.template'
       - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
