@@ -1,13 +1,7 @@
-function getHits (result) {
-  if (result.body) { // differences between ES5 andd ES7
-    return result.body.hits;
-  } else {
-    return result.hits;
-  }
-}
+import { adjustIndexName } from '../../../lib/opensearch'
 
 function getHitsAsRewrite (hits) {
-  if (hits.total === 0) {
+  if (hits.hits.length === 0) {
     return;
   }
 
@@ -17,12 +11,11 @@ function getHitsAsRewrite (hits) {
 }
 
 export const getUrlRewriteByRequestPath = async (db, config, requestPath) => {
-  const indexName = config.elasticsearch.index;
+  const indexName = adjustIndexName(config.opensearch.index, 'url_rewrite');
 
   try {
     const response = await db.search({
       index: indexName,
-      type: 'url_rewrite',
       size: 1,
       body: {
         query: {
@@ -33,7 +26,7 @@ export const getUrlRewriteByRequestPath = async (db, config, requestPath) => {
       }
     });
 
-    const hits = getHits(response);
+    const hits = response.body.hits;
 
     return getHitsAsRewrite(hits);
   } catch (error) {

@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { apiStatus } from '../../../lib/util'
-import { getClient } from '../../../lib/elastic'
+import { getClient } from '../../../lib/opensearch'
 import { fullSync, handleHook } from './sync'
 import { checkStoryExist, getStory, log, cacheInvalidate, validateEditor } from './helpers'
 import { initStoryblokClients } from './storyblok'
@@ -70,10 +70,15 @@ module.exports = ({ config }) => {
   })
 
   api.get('/full', protectRoute(config), async (req, res) => {
-    await fullSync(db, config)
-    await cacheInvalidate(config.storyblok, 'storyblok')
-    log('Stories synced!')
-    apiStatus(res)
+    try {
+      await fullSync(db, config)
+      await cacheInvalidate(config.storyblok, 'storyblok')
+      log('Stories synced!')
+      apiStatus(res)
+    } catch (error) {
+      log(error.stack)
+      apiStatus(res, { error: 'Story sync failed!' }, 500)
+    }
   })
 
   return api
