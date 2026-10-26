@@ -5,7 +5,7 @@
   "description": "vue-storefront API and data services",
   "main": "dist",
   "engines": {
-    "node": ">=10.x"
+    "node": ">=14.15.0"
   },
   "scripts": {
     "dev": "nodemon",
@@ -51,8 +51,8 @@
   "author": "Piotr Karwatka <pkarwatka@divante.pl>",
   "license": "MIT",
   "dependencies": {
-    "@elastic/elasticsearch": "^7.3.0",
     "@google-cloud/storage": "^3.0.3",
+    "@opensearch-project/opensearch": "^2.4.0",
     "@vue-storefront-api/amazon-pay": "https://gitpkg-budsies-xi.vercel.app/BudsiesApp/vsf-amazon-pay/API/amazon-pay?d9f6fcd224938bbcb7472306946d2a947c3ae5e6",
     "ajv": "^6.4.0",
     "ajv-keywords": "^3.4.0",
@@ -88,14 +88,14 @@
     "morgan": "^1.9.0",
     "nodemailer": "^4.6.8",
     "oauth-1.0a": "^1.0.1",
-    "pm2": "^2.10.4",
+    "pm2": "^5.4.3",
     "query-string": "^6.8.3",
     "redis": "2.6.5",
     "redis-tag-cache": "^1.2.1",
     "request": "^2.85.0",
     "request-promise-native": "^1.0.5",
     "resource-router-middleware": "^0.6.0",
-    "sharp": "^0.23.4",
+    "sharp": "^0.32.6",
     "soap": "^0.25.0",
     "storefront-query-builder": "https://github.com/vuestorefront/storefront-query-builder.git",
     "syswide-cas": "latest",

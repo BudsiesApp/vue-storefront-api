@@ -2,7 +2,7 @@ const path = require('path')
 const _ = require('lodash')
 const fs = require('fs');
 const jsonFile = require('jsonfile')
-const es = require('@elastic/elasticsearch')
+const es = require('@opensearch-project/opensearch')
 const querystring = require('querystring')
 
 function _updateQueryStringParameter (uri, key, value) {
