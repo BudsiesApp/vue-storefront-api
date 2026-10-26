@@ -1,31 +1,36 @@
 version: '3.0'
 services:
-  es1:
-    container_name: elasticsearch
-    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/elasticsearch:2022-04-28
+  os1:
+    container_name: opensearch-vsf-api
+    image: opensearchproject/opensearch:2.19.0
     ulimits:
       memlock:
         soft: -1
         hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
     volumes:
-      - ./docker/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - osdat1:/usr/share/opensearch/data
     ports:
       - '9200:9200'
-      - '9300:9300'
     environment:
       - discovery.type=single-node
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xmx512m -Xms512m"
+      - "OPENSEARCH_JAVA_OPTS=-Xmx512m -Xms512m"
+      - DISABLE_INSTALL_DEMO_CONFIG=true
+      - DISABLE_SECURITY_PLUGIN=true
 
-  kibana:
-    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/kibana:2026-10-03
-    volumes:
-      - ./docker/kibana/config/:/usr/share/kibana/config:ro
+  dashboards:
+    image: opensearchproject/opensearch-dashboards:2.19.0
+    environment:
+      - 'OPENSEARCH_HOSTS=["http://os1:9200"]'
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
     ports:
       - '5601:5601'
     depends_on:
-      - es1
+      - os1
 
   redis:
     image: 'redis:4-alpine'
@@ -35,7 +40,7 @@ services:
   app-budsies:
     image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-03
     depends_on:
-      - es1
+      - os1
       - redis
     environment:
       - VS_ENV
@@ -48,9 +53,9 @@ services:
       - NODEJS_KEEP_ALIVE_TIMEOUT
       - PM2_WORKER_INTERVAL
 
-      - ELASTICSEARCH_HOST=elasticsearch
-      - ELASTICSEARCH_PORT=9200
-      - ELASTICSEARCH_PROTOCOL=http
+      - OPENSEARCH_HOST=os1
+      - OPENSEARCH_PORT=9200
+      - OPENSEARCH_PROTOCOL=http
 
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -97,7 +102,6 @@ services:
     volumes:
       - './config:/var/www/config-source:ro'
       - './ecosystem.json.template:/var/www/ecosystem.json.template'
-      - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
       - './yarn.lock:/var/www/yarn.lock'
       - './babel.config.js:/var/www/babel.config.js'
@@ -119,7 +123,7 @@ services:
   app-petsies:
     image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-03
     depends_on:
-      - es1
+      - os1
       - redis
     environment:
       - VS_ENV
@@ -132,9 +136,9 @@ services:
       - NODEJS_KEEP_ALIVE_TIMEOUT
       - PM2_WORKER_INTERVAL
 
-      - ELASTICSEARCH_HOST=elasticsearch
-      - ELASTICSEARCH_PORT=9200
-      - ELASTICSEARCH_PROTOCOL=http
+      - OPENSEARCH_HOST=os1
+      - OPENSEARCH_PORT=9200
+      - OPENSEARCH_PROTOCOL=http
 
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -181,7 +185,6 @@ services:
     volumes:
       - './config:/var/www/config-source:ro'
       - './ecosystem.json.template:/var/www/ecosystem.json.template'
-      - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
       - './yarn.lock:/var/www/yarn.lock'
       - './babel.config.js:/var/www/babel.config.js'
@@ -203,7 +206,7 @@ services:
   app-bulkorders:
     image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-03
     depends_on:
-      - es1
+      - os1
       - redis
     environment:
       - VS_ENV
@@ -216,9 +219,9 @@ services:
       - NODEJS_KEEP_ALIVE_TIMEOUT
       - PM2_WORKER_INTERVAL
 
-      - ELASTICSEARCH_HOST=elasticsearch
-      - ELASTICSEARCH_PORT=9200
-      - ELASTICSEARCH_PROTOCOL=http
+      - OPENSEARCH_HOST=os1
+      - OPENSEARCH_PORT=9200
+      - OPENSEARCH_PROTOCOL=http
 
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -265,7 +268,6 @@ services:
     volumes:
       - './config:/var/www/config-source:ro'
       - './ecosystem.json.template:/var/www/ecosystem.json.template'
-      - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
       - './yarn.lock:/var/www/yarn.lock'
       - './babel.config.js:/var/www/babel.config.js'
@@ -287,7 +289,7 @@ services:
   app-waggables:
     image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-03
     depends_on:
-      - es1
+      - os1
       - redis
     environment:
       - VS_ENV
@@ -300,9 +302,9 @@ services:
       - NODEJS_KEEP_ALIVE_TIMEOUT
       - PM2_WORKER_INTERVAL
 
-      - ELASTICSEARCH_HOST=elasticsearch
-      - ELASTICSEARCH_PORT=9200
-      - ELASTICSEARCH_PROTOCOL=http
+      - OPENSEARCH_HOST=os1
+      - OPENSEARCH_PORT=9200
+      - OPENSEARCH_PROTOCOL=http
 
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -349,7 +351,6 @@ services:
     volumes:
       - './config:/var/www/config-source:ro'
       - './ecosystem.json.template:/var/www/ecosystem.json.template'
-      - './migrations:/var/www/migrations'
       - './package.json:/var/www/package.json'
       - './yarn.lock:/var/www/yarn.lock'
       - './babel.config.js:/var/www/babel.config.js'
@@ -374,4 +375,4 @@ networks:
     name: webdevelopmentreverseproxy_default
 
 volumes:
-  esdat1:
+  osdat1:

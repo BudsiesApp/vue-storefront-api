@@ -18,12 +18,16 @@ Products, categories, cmsPages, cmsBlocks, customAttributeMetadata, taxrule and 
 - **WHEN** a supported query accepts a source include/exclude argument
 - **THEN** it uses plural snake-case OpenSearch client parameters rather than camel-case or singular engine parameters, retaining the existing GraphQL argument names
 
-### Requirement: Numeric product totals and body aggregations
-The products resolver MUST set `body.track_total_hits=true`, use the shared total normalizer for numeric `total_count`, read `response.body.aggregations` and retain attribute metadata enrichment, sort/page information and product processing. It SHALL pass explicit entity product to processors rather than reading removed indexTypes. Other current resolvers that expose no exact count SHALL not add count tracking.
+### Requirement: Numeric public totals and body aggregations
+The products resolver MUST set `body.track_total_hits=true`, use the shared total normalizer for numeric `total_count`, read `response.body.aggregations` and retain attribute metadata enrichment, sort/page information and product processing. It SHALL pass explicit entity product to processors rather than reading removed indexTypes. Every GraphQL response that exposes `hits.total` MUST return a number using the shared total normalizer. Resolvers other than products SHALL not add count tracking.
 
 #### Scenario: Products with aggregations
 - **WHEN** OpenSearch returns object total and aggregations for a products query
 - **THEN** total_count is a number, aggregation and attribute metadata fields are populated from the body, and processed items/page/sort information retain their existing shape
+
+#### Scenario: Raw response totals
+- **WHEN** categories, customAttributeMetadata, taxrule, reviews or a CMS query returns an engine response body with an object total
+- **THEN** `hits.total` is normalized to its numeric value without adding count tracking
 
 ### Requirement: CMS hierarchy query kept typeless
 The `cmsHierarchies` query, its resolver and the `CmsHierarchies`/`CmsHierarchy` schema types SHALL remain. All three CMS queries MUST resolve their alias from the query's `type` argument (defaults `cms_page`, `cms_block`, `cms_hierarchy`) through the shared alias helper. `cmsHierarchies` MUST NOT be redirected to another entity; while no producer exists it SHALL return the engine's missing-index error through the normal GraphQL error path.

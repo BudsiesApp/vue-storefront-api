@@ -23,7 +23,7 @@ The repository MUST remove package scripts db, mage2vs, restore, restore_it, res
 - **THEN** no ES client/tool dependency or deleted deployment asset remains and unrelated cache/queue/Storyblok capabilities remain available
 
 ### Requirement: Aligned examples and current documentation
-.env.example and docker-compose.override.yml.example SHALL use project/network naming `vue-storefront-api-es7` / `vue-storefront-api-es7_default`. README, doc/, model descriptions and retained Varnish tutorial SHALL describe OpenSearch-only setup, alias configuration, Magento prefix/reindex responsibility, supported GraphQL paths, Node 14 source validation and the unsupported promo datasource. The retained root Varnish example SHALL reference its actual Dockerfile path. Actual secret-bearing local settings SHALL not be copied or overwritten.
+.env.example SHALL keep the default project name `vue-storefront-api` (default network `vue-storefront-api_default`); no checkout-specific suffix SHALL appear as a default project or network name. README, doc/, model descriptions and retained Varnish tutorial SHALL describe OpenSearch-only setup, alias configuration, Magento prefix/reindex responsibility, supported GraphQL paths, Node 14 source validation and the unsupported promo datasource. The retained root Varnish example SHALL reference its actual Dockerfile path. Actual secret-bearing local settings SHALL not be copied or overwritten.
 
 #### Scenario: Fresh local configuration
 - **WHEN** a developer follows the examples
