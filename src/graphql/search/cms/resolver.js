@@ -1,8 +1,7 @@
-import config from 'config';
 import client from '../client';
 import { buildQuery } from '../queryBuilder';
 import { getIndexName } from '../mapping'
-import { adjustQuery } from './../../../lib/elastic'
+import { adjustQuery, getTotal } from './../../../lib/opensearch'
 
 async function list (filter, currentPage, pageSize = 200, _sourceInclude, type, context) {
   let query = buildQuery({ filter, currentPage, pageSize, _sourceInclude, type });
@@ -10,8 +9,10 @@ async function list (filter, currentPage, pageSize = 200, _sourceInclude, type, 
   const response = await client.search(adjustQuery({
     index: getIndexName(context.req.url),
     body: query,
-    _sourceInclude
-  }, 'cms', config));
+    _source_includes: _sourceInclude
+  }, type));
+
+  response.body.hits.total = getTotal(response.body.hits.total)
 
   return buildItems(response.body)
 }

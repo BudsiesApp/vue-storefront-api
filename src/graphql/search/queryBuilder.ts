@@ -11,13 +11,15 @@ export function buildQuery ({
   type = 'product'
 }) {
   let queryChain = bodybuilder();
-  elasticsearch.buildQueryBodyFromFilterObject({ config: (config as ElasticsearchQueryConfig), queryChain, filter, search })
+  const opensearch = config.get<ElasticsearchQueryConfig['elasticsearch'] & { min_score: number }>('opensearch')
+  const queryConfig: ElasticsearchQueryConfig = { ...config, elasticsearch: opensearch }
+  elasticsearch.buildQueryBodyFromFilterObject({ config: queryConfig, queryChain, filter, search })
   queryChain = elasticsearch.applySort({ sort, queryChain });
   queryChain = queryChain.from((currentPage - 1) * pageSize).size(pageSize);
 
   let builtQuery = queryChain.build()
   if (search !== '') {
-    builtQuery['min_score'] = config.get('elasticsearch.min_score')
+    builtQuery['min_score'] = opensearch.min_score
   }
   return builtQuery;
 }

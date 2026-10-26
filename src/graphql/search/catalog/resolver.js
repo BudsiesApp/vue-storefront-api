@@ -1,9 +1,9 @@
 import config from 'config';
 import client from '../client';
 import { buildQuery } from '../queryBuilder';
-import esResultsProcessor from './processor'
+import searchResultsProcessor from './processor'
 import { getIndexName } from '../mapping'
-import { adjustQuery } from './../../../lib/elastic'
+import { adjustQuery, getTotal } from './../../../lib/opensearch'
 import AttributeService from './../../../api/attribute/service'
 
 const resolver = {
@@ -30,31 +30,31 @@ async function list (filter, sort, currentPage, pageSize, search, context, rootV
     type: 'product'
   });
 
-  let esIndex = getIndexName(context.req.url)
+  let indexName = getIndexName(context.req.url)
 
-  let esResponse = await client.search(adjustQuery({
-    index: esIndex,
-    body: query,
-    _sourceInclude,
-    _sourceExclude
-  }, 'product', config));
+  let searchResponse = await client.search(adjustQuery({
+    index: indexName,
+    body: { ...query, track_total_hits: true },
+    _source_includes: _sourceInclude,
+    _source_excludes: _sourceExclude
+  }, 'product'));
 
-  if (esResponse && esResponse.body.hits && esResponse.body.hits.hits) {
+  if (searchResponse && searchResponse.body.hits && searchResponse.body.hits.hits) {
     // process response result (caluclate taxes etc...)
-    esResponse.body.hits.hits = await esResultsProcessor(esResponse, _req, config.elasticsearch.indexTypes[0], esIndex);
+    searchResponse.body.hits.hits = await searchResultsProcessor(searchResponse, _req, 'product', indexName);
   }
 
   let response = {}
 
   // Process hits
   response.items = []
-  esResponse.body.hits.hits.forEach(hit => {
+  searchResponse.body.hits.hits.forEach(hit => {
     let item = hit._source
     item._score = hit._score
     response.items.push(item)
   });
 
-  response.total_count = esResponse.body.hits.total
+  response.total_count = getTotal(searchResponse.body.hits.total)
 
   // Process sort
   let sortOptions = []
@@ -67,11 +67,11 @@ async function list (filter, sort, currentPage, pageSize, search, context, rootV
     )
   }
 
-  response.aggregations = esResponse.aggregations
+  response.aggregations = searchResponse.body.aggregations
 
   if (response.aggregations && config.entities.attribute.loadByAttributeMetadata) {
     const attributeListParam = AttributeService.transformAggsToAttributeListParam(response.aggregations)
-    const attributeList = await AttributeService.list(attributeListParam, config, esIndex)
+    const attributeList = await AttributeService.list(attributeListParam, config, indexName)
     response.attribute_metadata = attributeList.map(AttributeService.transformToMetadata)
   }
 

@@ -1,8 +1,7 @@
-import config from 'config';
 import client from '../client';
 import { buildQuery } from '../queryBuilder';
 import { getIndexName } from '../mapping'
-import { adjustQuery } from './../../../lib/elastic'
+import { adjustQuery, getTotal } from './../../../lib/opensearch'
 
 async function taxrule (filter, context, rootValue) {
   let query = buildQuery({ filter, pageSize: 150, type: 'taxrule' });
@@ -10,7 +9,9 @@ async function taxrule (filter, context, rootValue) {
   const response = await client.search(adjustQuery({
     index: getIndexName(context.req.url),
     body: query
-  }, 'taxrule', config));
+  }, 'taxrule'));
+
+  response.body.hits.total = getTotal(response.body.hits.total)
 
   return response.body;
 }

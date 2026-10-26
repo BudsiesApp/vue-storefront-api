@@ -2,7 +2,7 @@ import config from 'config';
 import client from '../client';
 import { buildQuery } from '../queryBuilder';
 import { getIndexName } from '../mapping'
-import { adjustQuery } from './../../../lib/elastic'
+import { adjustQuery, getTotal } from './../../../lib/opensearch'
 
 async function listAttributes (attributes, context, rootValue, _sourceIncludes) {
   let query = buildQuery({ filter: attributes, pageSize: 150, type: 'attribute' });
@@ -11,13 +11,15 @@ async function listAttributes (attributes, context, rootValue, _sourceIncludes) 
     _sourceIncludes = config.entities.attribute.includeFields
   }
 
-  const esQuery = {
+  const searchQuery = {
     index: getIndexName(context.req.url),
     body: query,
-    _sourceIncludes
+    _source_includes: _sourceIncludes
   };
 
-  const response = await client.search(adjustQuery(esQuery, 'attribute', config));
+  const response = await client.search(adjustQuery(searchQuery, 'attribute'));
+
+  response.body.hits.total = getTotal(response.body.hits.total)
 
   return response.body;
 }
