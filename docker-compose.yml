@@ -2,7 +2,7 @@ version: '3.0'
 services:
   os1:
     container_name: opensearch-vsf-api
-    image: opensearchproject/opensearch:2.19.0
+    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/opensearch:2026-10-27
     ulimits:
       memlock:
         soft: -1
@@ -14,19 +14,9 @@ services:
       - osdat1:/usr/share/opensearch/data
     ports:
       - '9200:9200'
-    environment:
-      - discovery.type=single-node
-      - cluster.name=docker-cluster
-      - bootstrap.memory_lock=true
-      - "OPENSEARCH_JAVA_OPTS=-Xmx512m -Xms512m"
-      - DISABLE_INSTALL_DEMO_CONFIG=true
-      - DISABLE_SECURITY_PLUGIN=true
 
   dashboards:
-    image: opensearchproject/opensearch-dashboards:2.19.0
-    environment:
-      - 'OPENSEARCH_HOSTS=["http://os1:9200"]'
-      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
+    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/dashboards:2026-10-27
     ports:
       - '5601:5601'
     depends_on:
@@ -38,7 +28,7 @@ services:
       - '6379:6379'
 
   app-budsies:
-    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-03
+    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-27
     depends_on:
       - os1
       - redis
@@ -121,7 +111,7 @@ services:
       - 8080
 
   app-petsies:
-    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-03
+    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-27
     depends_on:
       - os1
       - redis
@@ -204,7 +194,7 @@ services:
       - 8080
 
   app-bulkorders:
-    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-03
+    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-27
     depends_on:
       - os1
       - redis
@@ -287,7 +277,7 @@ services:
       - 8080
 
   app-waggables:
-    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-03
+    image: 472532368511.dkr.ecr.us-east-1.amazonaws.com/budsies.com/store/ui/dev/api:2026-10-27
     depends_on:
       - os1
       - redis
