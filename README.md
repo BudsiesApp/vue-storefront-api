@@ -14,7 +14,7 @@ Build the current Node 14 sources for local validation:
 docker-compose -f docker-compose.yml -f docker-compose.nodejs.yml up -d --build os1 dashboards redis app
 ```
 
-For a brand service, supply a local override that builds `docker/vue-storefront-api/Dockerfile`; the root brand image is a prebuilt Node 10 image and is unsuitable for acceptance. The existing startup script installs dependencies on the mounted sources. Keep the shared development/production Dockerfile unchanged; refer local build failures to the environment supervisor. Do not publish an image for local testing.
+Brand services in `docker-compose.yml` use the prebuilt image with Node 14.21.3. A local source-build override is optional; to build a brand service locally, use `docker/vue-storefront-api/Dockerfile` in the override. The existing startup script installs dependencies on the mounted sources. Keep the shared development/production Dockerfile unchanged; refer local build failures to the environment supervisor. Do not publish an image for local testing.
 
 `config/local.json` is generated from `config/local.json.template` at startup. Do not commit generated settings or credentials. Connections use `OPENSEARCH_HOST=os1`, `OPENSEARCH_PORT=9200` and `OPENSEARCH_PROTOCOL=http` in containers (`localhost` for a host process). Optional existing `opensearch.user` / `password` settings are supported.
 
