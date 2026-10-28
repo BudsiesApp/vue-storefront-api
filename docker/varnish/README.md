@@ -1,27 +1,12 @@
-### Tutorial
-1. Create network with `docker network create <your_network>`
-2. Use `docker network ls` and find your network. It should have prefix!
-E.g. when I used `docker network create some-net`, I have network with name `vuestorefrontapi_some-net`
-3. Open docker-compose.yml:
-At the end:
-```yaml
-networks:
-  vuestorefrontapi_some-net:
-    external: true
-```
-Set vuestorefrontapi_some-net to your network name
+### Local setup
 
-4. Check each `docker-compose` file and set proper network name.
-5. In the docker-compose.nodejs.yml it should not have a prefix, e.g:
-```yaml
-    networks:
-      - some-net
+Run from the repository root with the Node 14 source build:
 
-networks:
-  some-net:
-    driver: bridge
+```sh
+docker-compose -f docker-compose.yml -f docker-compose.nodejs.yml -f docker-compose.varnish.yml up -d --build os1 dashboards redis app varnish
 ```
-You can find Docker Compose files with applied network settings inside docker/varnish/docker-compose
+
+The root Varnish Compose file builds `docker/varnish/Dockerfile` and uses the shared default network `vue-storefront-api_default`. Magento must join this network too. Configure Varnish to reach `app:8080` and enable the API's Varnish settings as required. Port 1234 exposes Varnish locally.
 
 ### How does it work?
 1. I add output tags to the VSF-API response:
@@ -68,7 +53,7 @@ if (req.url ~ "^\/api\/catalog\/") {
 ```
 
 I am caching request that starts with `/api/catalog/`. As you can see I cache both POST and GET.
-This is because in my project I use huge ES requests to compute Faceted Filters. I would exceed HTTP GET limit.
+This is because in my project I use large OpenSearch requests to compute Faceted Filters. I would exceed HTTP GET limit.
 
 Thanks to this line and `bodyaccess`, I can distinguish requests to the same URL by their body!
 ```vcl

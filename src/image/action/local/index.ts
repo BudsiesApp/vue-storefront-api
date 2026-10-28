@@ -1,11 +1,12 @@
 import ImageAction from '../abstract'
 import mime from 'mime-types'
+import { Metadata } from 'sharp'
 import { downloadImage, fit, identify, resize } from '../../../lib/image'
 
 export default class LocalImageAction extends ImageAction {
   public imageOptions
   public SUPPORTED_MIMETYPES = ['image/gif', 'image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
-  public imageBuffer: Buffer
+  public imageBuffer: Buffer | Metadata
 
   public get whitelistDomain (): string[] {
     return this.options.imageable.whitelist

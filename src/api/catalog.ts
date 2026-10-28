@@ -1,7 +1,7 @@
 import jwt from 'jwt-simple'
 import request from 'request'
 import ProcessorFactory from '../processor/factory'
-import { adjustBackendProxyUrl } from '../lib/elastic'
+import { adjustBackendProxyUrl, getTotal } from '../lib/opensearch'
 import cache from '../lib/cache-instance'
 import { sha3_224 } from 'js-sha3'
 import AttributeService from './attribute/service'
@@ -51,7 +51,7 @@ export default ({config, db}) => async function (req, res, body) {
   }
 
   let responseFormat = 'standard'
-  let requestBody = req.body
+  let requestBody = req.body || {}
   if (req.method === 'GET') {
     if (req.query.request) { // this is in fact optional
       try {
@@ -64,10 +64,10 @@ export default ({config, db}) => async function (req, res, body) {
     }
   }
 
-  if (req.query.request_format === 'search-query') { // search query and not Elastic DSL - we need to translate it
+  if (req.query.request_format === 'search-query') { // search query and not OpenSearch DSL - we need to translate it
     try {
       const customFilters = await loadCustomFilters(config)
-      requestBody = await elasticsearch.buildQueryBodyFromSearchQuery({ config, queryChain: bodybuilder(), searchQuery: new SearchQuery(requestBody), customFilters })
+      requestBody = await elasticsearch.buildQueryBodyFromSearchQuery({ config: { ...config, elasticsearch: config.opensearch }, queryChain: bodybuilder(), searchQuery: new SearchQuery(requestBody), customFilters })
     } catch (err) {
       console.error(err);
       apiError(res, err);
@@ -76,37 +76,20 @@ export default ({config, db}) => async function (req, res, body) {
   }
   if (req.query.response_format) responseFormat = req.query.response_format
 
-  const urlSegments = req.url.split('/')
-
-  let indexName = ''
-  let entityType = ''
-  if (urlSegments.length < 2) {
-    const errMessage = 'No index name given in the URL. Please do use following URL format: /api/catalog/<index_name>/<entity_type>_search';
-    console.error(errMessage);
-    apiError(res, errMessage);
-    return;
-  } else {
-    indexName = urlSegments[1]
-
-    if (urlSegments.length > 2) { entityType = urlSegments[2] }
-
-    if (config.elasticsearch.indices.indexOf(indexName) < 0) {
-      const errMessage = 'Invalid / inaccessible index name given in the URL. Please do use following URL format: /api/catalog/<index_name>/_search';
-      console.error(errMessage);
-      apiError(res, errMessage);
-      return;
-    }
-
-    if (urlSegments[urlSegments.length - 1].indexOf('_search') !== 0) {
-      const errMessage = 'Please do use following URL format: /api/catalog/<index_name>/_search';
-      console.error(errMessage);
-      apiError(res, errMessage);
-      return;
-    }
+  const urlSegments = req.url.split('?')[0].split('/')
+  const indexName = urlSegments[1]
+  const entityType = urlSegments[2]
+  const pathExample = '/api/catalog/<index_name>/<entity_type>/_search'
+  if (!indexName || urlSegments.length !== 4 || urlSegments[3] !== '_search' || !/^[a-z][a-z0-9_]*$/.test(entityType || '')) {
+    apiError(res, { errorMessage: `Invalid catalog path. Please use ${pathExample}`, code: 400 })
+    return
+  }
+  if (config.opensearch.indices.indexOf(indexName) < 0) {
+    apiError(res, `Invalid / inaccessible index name given in the URL. Please use ${pathExample}`)
+    return
   }
 
-  // pass the request to elasticsearch
-  const elasticBackendUrl = adjustBackendProxyUrl(req, indexName, entityType, config)
+  const backendUrl = adjustBackendProxyUrl(req, indexName, entityType, config)
   const userToken = requestBody.groupToken
 
   // Decode token and get group id
@@ -119,21 +102,22 @@ export default ({config, db}) => async function (req, res, body) {
 
   delete requestBody.groupToken
   delete requestBody.groupId
+  delete requestBody.track_total_hits
 
   let auth = null
 
   // Only pass auth if configured
-  if (config.elasticsearch.user || config.elasticsearch.password) {
+  if (config.opensearch.user || config.opensearch.password) {
     auth = {
-      user: config.elasticsearch.user,
-      pass: config.elasticsearch.password
+      user: config.opensearch.user,
+      pass: config.opensearch.password
     }
   }
   const s = Date.now()
   const reqHash = sha3_224(`${JSON.stringify(requestBody)}${req.url}`)
   const dynamicRequestHandler = () => {
-    request({ // do the elasticsearch request
-      uri: elasticBackendUrl,
+    request({ // do the OpenSearch request
+      uri: backendUrl,
       method: req.method,
       body: requestBody,
       json: true,
@@ -146,6 +130,7 @@ export default ({config, db}) => async function (req, res, body) {
       }
       try {
         if (_resBody && _resBody.hits && _resBody.hits.hits) { // we're signing up all objects returned to the client to be able to validate them when (for example order)
+          _resBody.hits.total = getTotal(_resBody.hits.total)
           const factory = new ProcessorFactory(config)
           const tagsArray = []
           if (config.server.useOutputCache && cache) {

@@ -2,7 +2,6 @@
   "server": {
     "host": "localhost",
     "port": 8080,
-    "searchEngine": "elasticsearch",
     "useOutputCacheTagging": false,
     "useOutputCache": false,
     "outputCacheDefaultTtl": 86400,
@@ -21,28 +20,16 @@
   "catalog": {
     "excludeDisabledProducts": false
   },
-  "elasticsearch": {
+  "opensearch": {
     "host": "localhost",
-    "index": "vue_storefront_catalog",
+    "index": "vue_storefront_catalog_1",
     "port": 9200,
     "protocol": "http",
     "requestTimeout": 5000,
     "min_score": 0.01,
     "indices": [
-      "vue_storefront_catalog",
-      "vue_storefront_catalog_de",
-      "vue_storefront_catalog_it"
+      "vue_storefront_catalog_1"
     ],
-    "indexTypes": [
-      "product",
-      "category",
-      "cms_block",
-      "cms_page",
-      "attribute",
-      "taxrule",
-      "review"
-    ],
-    "apiVersion": "5.6",
     "useRequestFilter": false,
     "overwriteRequestSourceParams": false,
     "requestParamsBlacklist": [],
@@ -178,7 +165,7 @@
     "mail-service",
     "example-processor",
     "example-custom-filter",
-    "elastic-stock"
+    "opensearch-stock"
   ],
   "extensions": {
     "mailchimp": {

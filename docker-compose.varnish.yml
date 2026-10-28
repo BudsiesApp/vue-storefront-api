@@ -3,7 +3,7 @@ services:
   varnish:
     build:
       context: .
-      dockerfile: varnish/Dockerfile
+      dockerfile: docker/varnish/Dockerfile
     volumes:
       - ./docker/varnish/config.vcl:/usr/local/etc/varnish/default.vcl
     ports:

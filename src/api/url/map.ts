@@ -1,73 +1,8 @@
 import { Router } from 'express'
 import { apiStatus, getCurrentStoreView, getCurrentStoreCode } from '../../lib/util'
-import { getClient as getElasticClient } from '../../lib/elastic'
+import { getClient as getOpenSearchClient, adjustIndexName } from '../../lib/opensearch'
 import ProcessorFactory from '../../processor/factory'
 import get from 'lodash/get'
-
-const adjustQueryForOldES = ({ config }) => {
-  const searchedEntities = get(config, 'urlModule.map.searchedEntities', [])
-    .map((entity) => ({ type: { value: entity } }))
-  if (parseInt(config.elasticsearch.apiVersion) < 6) {
-    return {
-      filter: {
-        bool: {
-          should: searchedEntities
-        }
-      }
-    }
-  } else {
-    return {}
-  }
-}
-
-/**
- * Builds ES query based on config
- */
-const buildQuery = ({ value, config }) => {
-  const searchedFields = get(config, 'urlModule.map.searchedFields', [])
-    .map((field) => ({ match_phrase: { [field]: { query: value } } }))
-
-  return {
-    query: {
-      bool: {
-        filter: {
-          bool: {
-            should: searchedFields,
-            ...adjustQueryForOldES({ config })
-          }
-        }
-      }
-    },
-    size: 1 // we need only one record
-  }
-}
-
-const buildIndex = ({ indexName, config }) => {
-  return parseInt(config.elasticsearch.apiVersion) < 6
-    ? indexName
-    : get(config, 'urlModule.map.searchedEntities', [])
-      .map(entity => `${indexName}_${entity}`)
-}
-
-const adjustResultType = ({ result, config, indexName }) => {
-  if (parseInt(config.elasticsearch.apiVersion) < 6) return result
-
-  // extract type from index for es 7
-  const type = result._index.replace(new RegExp(`^(${indexName}_)|(_[^_]*)$`, 'g'), '')
-  result._type = type
-
-  return result
-}
-
-/**
- * checks result equality because ES can return record even if searched value is not EXACLY what we want (check `match_phrase` in ES docs)
- */
-const checkFieldValueEquality = ({ config, result, value }) => {
-  const isEqualValue = get(config, 'urlModule.map.searchedFields', [])
-    .find((field) => result._source[field] === value)
-
-  return Boolean(isEqualValue)
-}
 
 const map = ({ config }) => {
   const router = Router()
@@ -77,45 +12,53 @@ const map = ({ config }) => {
       return apiStatus(res, 'Missing url', 500)
     }
 
-    const indexName = getCurrentStoreView(getCurrentStoreCode(req)).elasticsearch.index
-    const esQuery = {
-      index: buildIndex({ indexName, config }), // current index name
-      _source_includes: includeFields ? includeFields.concat(get(config, 'urlModule.map.includeFields', [])) : [],
-      _source_excludes: excludeFields,
-      body: buildQuery({ value: url, config })
+    const indexName = getCurrentStoreView(getCurrentStoreCode(req)).opensearch.index
+    const entities = get(config, 'urlModule.map.searchedEntities', [])
+    const fields = get(config, 'urlModule.map.searchedFields', [])
+    const source = {
+      ...(includeFields ? { includes: includeFields.concat(get(config, 'urlModule.map.includeFields', [])) } : {}),
+      ...(excludeFields ? { excludes: excludeFields } : {})
     }
+    const body = entities.reduce((body, entity) => body.concat([
+      { index: adjustIndexName(indexName, entity) },
+      {
+        query: {
+          bool: {
+            filter: {
+              bool: {
+                should: fields.map(field => ({ match_phrase: { [field]: { query: url } } }))
+              }
+            }
+          }
+        },
+        size: 1,
+        track_total_hits: false,
+        _source: source
+      }
+    ]), [])
 
     try {
-      const esResponse = await getElasticClient(config).search(esQuery)
-      let result = get(esResponse, 'body.hits.hits[0]', null)
+      const response = await getOpenSearchClient(config).msearch({ body })
+      const responses = response.body.responses
+      const failed = responses.find(result => result.error)
+      if (failed) throw new Error(JSON.stringify(failed.error))
 
-      if (result && checkFieldValueEquality({ config, result, value: req.body.url })) {
-        result = adjustResultType({ result, config, indexName })
+      for (let i = 0; i < entities.length; i++) {
+        const result = get(responses[i], 'hits.hits[0]', null)
+        if (!result || !fields.some(field => result._source[field] === url)) continue
+        result._type = entities[i]
         if (result._type === 'product') {
           const factory = new ProcessorFactory(config)
-          let resultProcessor = factory.getAdapter('product', indexName, req, res)
-          if (!resultProcessor) {
-            resultProcessor = factory.getAdapter('default', indexName, req, res)
-          }
-
-          resultProcessor
-            .process(esResponse.body.hits.hits, null)
-            .then(pResult => {
-              pResult = pResult.map(h => Object.assign(h, { _score: h._score }))
-              return res.json(pResult[0])
-            }).catch((err) => {
-              console.error(err)
-              return res.json()
-            })
-        } else {
-          return res.json(result)
+          const processor = factory.getAdapter('product', indexName, req, res) || factory.getAdapter('default', indexName, req, res)
+          const processed = await processor.process([result], null)
+          return res.json(Object.assign(processed[0], { _type: entities[i] }))
         }
-      } else {
-        return res.json(null)
+        return res.json(result)
       }
+      return res.json(null)
     } catch (err) {
       console.error(err)
-      return apiStatus(res, new Error('ES search error'), 500)
+      return apiStatus(res, new Error('OpenSearch search error'), 500)
     }
   })
 

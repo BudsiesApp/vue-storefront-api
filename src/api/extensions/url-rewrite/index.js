@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { apiStatus } from '../../../lib/util'
-import { getClient } from '../../../lib/elastic'
+import { getClient } from '../../../lib/opensearch'
 import { getUrlRewriteByRequestPath } from './helpers'
 
 module.exports = ({ config }) => {
