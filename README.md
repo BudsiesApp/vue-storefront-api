@@ -61,7 +61,7 @@ URL mapping retains `_type` for storefront dispatch, derived from the configured
 
 The Storyblok webhook and `storyblok:sync:stories`, `storyblok:sync:datasources` and `storyblok:sync:all` commands remain. Story rebuilds manage only the independent complete `storiesIndex`, using typeless documents/bulk actions and failing on partial bulk errors. This index is never suffixed with `_story`.
 
-Validate story rebuild/read/write/delete/bulk and product/category datasource behavior separately. Catalog datasources read aliases under `storyblok.sync.index`. No producer exists for `<base>_promo_campaign`: that phase must fail visibly until a replacement is separately approved. Do not claim full datasource or all-sync success, substitute default campaigns or silently skip the phase. Likewise GraphQL `cmsHierarchies` searches `<base>_cms_hierarchy`, which has no producer.
+Validate story rebuild/read/write/delete/bulk and product/category datasource behavior separately. Catalog datasources read aliases under `storyblok.sync.index`. No producer exists for `<base>_promo_campaign`: that phase must fail visibly until a replacement is separately approved. Do not claim full datasource or all-sync success, substitute default campaigns or silently skip the phase. `storyblok:sync:all` lets both phases finish before it reports any failure, so a failed datasource phase does not interrupt the stories rebuild; the command still exits non-zero. While the promo alias is unavailable, use `storyblok:sync:stories` for a successful stories rebuild. Likewise GraphQL `cmsHierarchies` searches `<base>_cms_hierarchy`, which has no producer.
 
 ## Development
 

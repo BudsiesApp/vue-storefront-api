@@ -45,7 +45,7 @@ Attribute metadata, stock, URL rewrite, both rush-upgrade searches, default camp
 - **THEN** existing missing-rewrite behavior is used without dereferencing a nonexistent hit
 
 ### Requirement: Typeless Storyblok lifecycle and datasource reads
-Storyblok scripts, webhook behavior and its independent stories index SHALL remain. Single-document operations MUST omit `type`; bulk actions MUST omit `_type` and retain `_index`/`_id` with alternating action/document bodies. Reads SHALL use `{body}` and hits-array existence checks. Own-index creation MUST use `body.settings` for shards, replicas and field limit. Deletion SHALL ignore only HTTP 404 using the client options argument. Bulk item failures MUST propagate rather than report successful sync. Catalog datasources SHALL resolve product, category and promo_campaign aliases through the shared helper.
+Storyblok scripts, webhook behavior and its independent stories index SHALL remain. Single-document operations MUST omit `type`; bulk actions MUST omit `_type` and retain `_index`/`_id` with alternating action/document bodies. Reads SHALL use `{body}` and hits-array existence checks. Own-index creation MUST use `body.settings` for shards, replicas and field limit. Deletion SHALL ignore only HTTP 404 using the client options argument. Bulk item failures MUST propagate rather than report successful sync. Catalog datasources SHALL resolve product, category and promo_campaign aliases through the shared helper. The sync command SHALL let every phase it started settle before it reports failures; any failed phase MUST make it exit non-zero without swallowing the error. It SHALL invalidate the Storyblok cache only when a phase succeeded and the stories phase did not fail.
 
 #### Scenario: Stories rebuild and incremental writes
 - **WHEN** Storyblok rebuilds an absent own index or indexes/deletes a story
@@ -58,3 +58,7 @@ Storyblok scripts, webhook behavior and its independent stories index SHALL rema
 #### Scenario: Unavailable promotion datasource
 - **WHEN** the promo datasource phase runs without a producer for `<base>_promo_campaign`
 - **THEN** it fails visibly against that alias, remains documented as unsupported, and never reads `default_promotion_campaign` as a substitute
+
+#### Scenario: All-target sync with a failing datasource phase
+- **WHEN** `sync --target=all` runs and the datasource phase fails while the stories rebuild is still running
+- **THEN** the stories rebuild completes and the cache is invalidated before the command reports the datasource error and exits non-zero
