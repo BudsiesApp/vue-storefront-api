@@ -4,7 +4,7 @@ Budsies' Vue Storefront 1 API reads the catalog from OpenSearch and proxies comm
 
 ## Local setup
 
-Use Node 14.21.3, Yarn, Docker and Docker Compose for this release. On the Docker host, configure `vm.max_map_count` to at least 262144 and provide enough memory for OpenSearch. The local images use OpenSearch and OpenSearch Dashboards 2.15.0, with security disabled for development. OpenSearch is available on port 9200 and Dashboards on port 5601.
+Use Node 14.21.3, Yarn, Docker and Docker Compose for this release. On the Docker host, configure `vm.max_map_count` to at least 262144 and provide enough memory for OpenSearch. Compose uses the official `opensearchproject/opensearch:2.15.0` and `opensearchproject/opensearch-dashboards:2.15.0` images directly; development settings, including disabled security and the 512 MB OpenSearch JVM heap, are configured in `docker-compose.yml`. No custom search image builds or ECR repositories are required. OpenSearch is available on port 9200 and Dashboards on port 5601.
 
 Copy `.env.example` to `.env` and supply your local domains and service credentials. Use `docker-compose.override.yml.example` as the basis of your local override. The default project name is `vue-storefront-api`; Magento must join the API network `vue-storefront-api_default` to reach `os1:9200`.
 
