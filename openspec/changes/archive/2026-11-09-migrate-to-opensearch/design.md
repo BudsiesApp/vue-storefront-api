@@ -142,7 +142,7 @@ Delete remaining `docker/elasticsearch/`, retain deletions of `docker-compose.el
 
 ### 8. Docker, documentation and final search audit
 
-Pin `os1` and `dashboards` to 2.19.0. Keep `container_name: opensearch-vsf-api`, disabled security/demo install, current resource settings and `osdat1`. Stop publishing 9300; keep current 9200/5601 development access. All four `app-*` services and `docker/vue-storefront-api/default.env`, `dev/docker/Dockerfile` use `OPENSEARCH_HOST=os1`, `OPENSEARCH_PORT=9200`, `OPENSEARCH_PROTOCOL=http`; no `ELASTICSEARCH_*` variables. Keep `docker-compose.nodejs.yml` source-build support. Leave `docker/vue-storefront-api/Dockerfile` unchanged: it also builds the production image, while `docker/vue-storefront-api/vue-storefront-api.sh:7` runs yarn install on mounted sources at startup. The supervisor decides how to handle any local build failure; no image publication. Remove dead volume mounts and preserve unrelated user changes.
+Use the release's `os1` and `dashboards` images based on 2.15.0. Keep `container_name: opensearch-vsf-api`, disabled security/demo install, current resource settings and `osdat1`. Stop publishing 9300; keep current 9200/5601 development access. All four `app-*` services and `docker/vue-storefront-api/default.env`, `dev/docker/Dockerfile` use `OPENSEARCH_HOST=os1`, `OPENSEARCH_PORT=9200`, `OPENSEARCH_PROTOCOL=http`; no `ELASTICSEARCH_*` variables. Keep `docker-compose.nodejs.yml` source-build support. Leave `docker/vue-storefront-api/Dockerfile` unchanged: it also builds the production image, while `docker/vue-storefront-api/vue-storefront-api.sh:7` runs yarn install on mounted sources at startup. The supervisor decides how to handle any local build failure; no image publication for local testing. Remove dead volume mounts and preserve unrelated user changes.
 
 Keep `.env.example`'s default `COMPOSE_PROJECT_NAME=vue-storefront-api` (a local `-es7` suffix is only the user's second checkout and must not appear as a default), so the default Compose network is `vue-storefront-api_default`. `docker-compose.override.yml.example` keeps the user's version: `os1` attached to the external `budsies-store-common-network`. Document Magento joining the API network. Do not edit the user's actual `.env` or local override secrets.
 
@@ -174,7 +174,7 @@ The user decided the following; the artifacts use these outcomes.
 - Dependency cleanup/client declarations may expose Node 14/TS 3.7 compatibility issues → supervisor installs/validates the locked dependency set in Node 14; do not upgrade runtime/libraries to bypass failures without revising scope.
 - Unsupported promo step and `cmsHierarchies` both fail with a missing-alias error until a producer exists → document both explicitly; exclude them from successful acceptance claims.
 - `/api/ext/elastic-stock` disappears in favor of `/api/ext/opensearch-stock` → no known consumer (UI uses `/api/stock`); mention in README/doc.
-- Docker version 2.19.0 differs from supervisor's current 2.15.0 fixture → supervisor validates the pinned environment as well; never reuse ES data volumes or delete data as an implementation side effect.
+- The release selects OpenSearch/Dashboards 2.15.0, superseding the original 2.19.0 proposal → never reuse ES data volumes or delete data as an implementation side effect.
 
 ## Migration Plan
 
@@ -185,5 +185,7 @@ The user decided the following; the artifacts use these outcomes.
 5. Rollback is a supervisor-operated return to the prior app/config/Compose revision and its matching search snapshot/config; never emulate ES behavior in the new code or automatically downgrade/reuse the OpenSearch data volume. Coordinate Magento alias/prefix settings separately; this proposal performs no data operations.
 
 ## Open Questions and Verification Limits
+
+Release preparation update (2026-11-09): the selected matrix is Node 14.21.3 / TypeScript 3.7, OpenSearch/Dashboards 2.15.0, JavaScript client 2.4.0, and Magento PHP client 2.4.2 on PHP 8.2. Earlier checkout observations below and above are historical, not release runtime assertions. The updated prebuilt brand image now uses Node 14.21.3. Source-only release preparation runs no live indexing or Storyblok synchronization. Tasks 10.3, 10.5 and 10.8 remain unchecked; the user explicitly approved archiving with these acceptance gaps preserved.
 
 There are no implementation questions beyond the explicit user decisions. `config/local.json` is absent. Installed client conventions were checked locally as recorded in decision 1; no live engine verification was performed. CodeGraph metadata exists but its CLI is unavailable, so references were verified by direct reads/search. No network, Docker, package installation or database operations were performed. Live aliases, Node version inside prebuilt images, engine rejection/acceptance facts and the populated-store inventory are supervisor-supplied, not independently reproduced.

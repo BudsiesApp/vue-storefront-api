@@ -4,7 +4,7 @@ Budsies' Vue Storefront 1 API reads the catalog from OpenSearch and proxies comm
 
 ## Local setup
 
-Use Node 14 (at least 14.15), Yarn, Docker and Docker Compose. On the Docker host, configure `vm.max_map_count` to at least 262144 and provide enough memory for OpenSearch. The local environment pins OpenSearch and OpenSearch Dashboards to 2.19.0, with security disabled for development. OpenSearch is available on port 9200 and Dashboards on port 5601.
+Use Node 14.21.3, Yarn, Docker and Docker Compose for this release. On the Docker host, configure `vm.max_map_count` to at least 262144 and provide enough memory for OpenSearch. The local images use OpenSearch and OpenSearch Dashboards 2.15.0, with security disabled for development. OpenSearch is available on port 9200 and Dashboards on port 5601.
 
 Copy `.env.example` to `.env` and supply your local domains and service credentials. Use `docker-compose.override.yml.example` as the basis of your local override. The default project name is `vue-storefront-api`; Magento must join the API network `vue-storefront-api_default` to reach `os1:9200`.
 
@@ -19,6 +19,8 @@ Brand services in `docker-compose.yml` use the prebuilt image with Node 14.21.3.
 `config/local.json` is generated from `config/local.json.template` at startup. Do not commit generated settings or credentials. Connections use `OPENSEARCH_HOST=os1`, `OPENSEARCH_PORT=9200` and `OPENSEARCH_PROTOCOL=http` in containers (`localhost` for a host process). Optional existing `opensearch.user` / `password` settings are supported.
 
 ## Catalog configuration and cutover
+
+The #37156 release matrix is API Node 14.21.3 / TypeScript 3.7, OpenSearch server 2.15.0, JavaScript client 2.4.0, and Magento PHP client `opensearch-project/opensearch-php` 2.4.2 on PHP 8.2. The PHP client is a Magento dependency, not an API dependency. These versions do not certify other runtime combinations.
 
 Set Magento's indexer `index_name` prefix to `vue_storefront_catalog`. Magento appends the store ID, so Petsies store 3 uses logical base `vue_storefront_catalog_3`. Align root `opensearch.index`, the proxy allowlist `opensearch.indices`, any `storeViews.<code>.opensearch.index` override and `storyblok.sync.index` with the intended store base. Defaults use store 1; the template uses `DEFAULT_STORE_ID`. Do not append the ID twice.
 
