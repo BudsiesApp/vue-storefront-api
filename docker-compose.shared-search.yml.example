@@ -1,0 +1,38 @@
+# Optional overlay: read the VSF catalog from the Magento project's OpenSearch
+# engine instead of running `os1` here. Layer it on top of your own
+# `docker-compose.override.yml`; copy it as `docker-compose.shared-search.yml`
+# and add it to COMPOSE_FILE in `.env` (see `.env.example`).
+#
+# The Magento Docker project provides the `magento-local-opensearch` alias on
+# `budsies-store-common-network` and points its VSBridge indexer at the same
+# engine; its overlay example does that side.
+#
+# Every brand needs the `depends_on` replacement, including brands you never
+# start: while `os1` sits behind an inactive profile, a brand that still depends
+# on it makes the whole project invalid. Changing `OPENSEARCH_HOST` alone also
+# leaves the base `depends_on: os1` in place and keeps starting a second engine.
+# `!override` and `!reset` need Compose 2.24.4 or newer.
+services:
+  os1:
+    profiles: [standalone-search]
+
+  dashboards:
+    profiles: [tools]
+    depends_on: !reset []
+    environment:
+      OPENSEARCH_HOSTS: '["http://magento-local-opensearch:9200"]'
+    networks: [default, budsies-store-common-network]
+
+  app-budsies: &shared-search
+    depends_on: !override [redis]
+    networks: [default, reverseproxy, budsies-store-common-network]
+    environment:
+      - OPENSEARCH_HOST=magento-local-opensearch
+  app-petsies: *shared-search
+  app-bulkorders: *shared-search
+  app-waggables: *shared-search
+
+networks:
+  budsies-store-common-network:
+    external: true
+    name: budsies-store-common-network
