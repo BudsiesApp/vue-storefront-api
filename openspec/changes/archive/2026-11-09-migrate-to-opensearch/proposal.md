@@ -9,7 +9,7 @@ The API still sends typed Elasticsearch requests and exposes incompatible totals
 - **BREAKING**: replace private `elasticsearch` configuration and `ELASTICSEARCH_*` environment variables with `opensearch` / `OPENSEARCH_*`; remove backend/version selectors.
 - Migrate internal readers, both Magento tax adapters, Storyblok operations, and GraphQL under `src/graphql/search/`; retain Apollo 1.x, GraphQL 0.13, Node 14 and TypeScript 3.7.
 - Per the user checkpoint: keep GraphQL `cmsHierarchies` as a typeless `<base>_cms_hierarchy` query (unsupported until Magento produces that entity), rename the private client module to `src/lib/opensearch.js`, and rename the `elastic-stock` extension to `opensearch-stock`.
-- **BREAKING**: remove API catalog import/dump/mapping/migration tools and Elasticsearch dependencies, Docker remnants and Kubernetes assets. Complete existing Docker work using the release's OpenSearch/Dashboards 2.15.0 images and document Magento reindexing.
+- **BREAKING**: remove API catalog import/dump/mapping/migration tools and Elasticsearch dependencies, Docker remnants and Kubernetes assets. Complete development Docker recipes using OpenSearch/Dashboards 2.15.0 images and document Magento reindexing. Production infrastructure already uses OpenSearch 2.19.7, with application acceptance pending; no production downgrade is selected.
 - Add two focused mocked unit suites and explicit supervisor lockfile regeneration and runtime validation. Keep the shared development/production Dockerfile unchanged. Storyblok `promo_campaign` remains an unavailable datasource with a documented failure, not a synonym for default campaigns.
 
 ## Capabilities

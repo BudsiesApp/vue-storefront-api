@@ -20,7 +20,7 @@ Brand services in `docker-compose.yml` use the prebuilt image with Node 14.21.3.
 
 ## Catalog configuration and cutover
 
-The #37156 release matrix is API Node 14.21.3 / TypeScript 3.7, OpenSearch server 2.15.0, JavaScript client 2.4.0, and Magento PHP client `opensearch-project/opensearch-php` 2.4.2 on PHP 8.2. The PHP client is a Magento dependency, not an API dependency. These versions do not certify other runtime combinations.
+The #37156 development/test matrix is API Node 14.21.3 / TypeScript 3.7, OpenSearch server 2.15.0, JavaScript client 2.4.0, and Magento PHP client `opensearch-project/opensearch-php` 2.4.2 on PHP 8.2. The PHP client is a Magento dependency, not an API dependency. Production OpenSearch infrastructure is already 2.19.7, as recorded in the ticket's 2026-11-08 access-only rollout notes; application acceptance against it remains pending. Development recipes and the tested 2.15.0 fixture do not select a production downgrade or certify production application compatibility.
 
 Set Magento's indexer `index_name` prefix to `vue_storefront_catalog`. Magento appends the store ID, so Petsies store 3 uses logical base `vue_storefront_catalog_3`. Align root `opensearch.index`, the proxy allowlist `opensearch.indices`, any `storeViews.<code>.opensearch.index` override and `storyblok.sync.index` with the intended store base. Defaults use store 1; the template uses `DEFAULT_STORE_ID`. Do not append the ID twice.
 

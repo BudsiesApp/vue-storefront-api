@@ -5,6 +5,8 @@ Define the supported OpenSearch development environment, retained tooling, docum
 
 ## Requirements
 
+Environment scope: the 2.15.0 images below are development recipes and a tested fixture, not a production version selection. Existing production OpenSearch infrastructure is 2.19.7 per the ticket's 2026-11-08 access-only rollout notes; application acceptance remains pending. These requirements do not authorize a production downgrade.
+
 ### Requirement: OpenSearch-only Docker development environment
 The Compose environment SHALL preserve existing os1/osdat1 changes, fixed container name `opensearch-vsf-api`, disabled local security and current resource settings. OpenSearch and Dashboards MUST use the release's 2.15.0 images; port 9300 MUST NOT be published. All four brand services, default.env and dev/docker/Dockerfile MUST supply `OPENSEARCH_HOST=os1`, `OPENSEARCH_PORT=9200`, `OPENSEARCH_PROTOCOL=http`. Local acceptance SHALL use the current sources with Node 14.21.3, including the updated prebuilt brand image or a local source build, without pushing an image for local testing. docker/vue-storefront-api/Dockerfile SHALL remain unchanged; the startup script runs yarn install on mounted sources, and any build failure SHALL be referred to the supervisor.
 
