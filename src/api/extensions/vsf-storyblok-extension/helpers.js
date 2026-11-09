@@ -5,15 +5,11 @@ import { promisify } from 'util'
 const rp = promisify(request)
 
 export function getHits (result) {
-  if (result.body) { // differences between ES5 andd ES7
-    return result.body.hits
-  } else {
-    return result.hits
-  }
+  return result.body.hits
 }
 
 export function getHitsAsStory (hits) {
-  if (hits.total === 0) {
+  if (hits.hits.length === 0) {
     throw new Error('Missing story')
   }
   const story = hits.hits[0]._source
@@ -24,7 +20,7 @@ export function getHitsAsStory (hits) {
 }
 
 function getHitsAsStories (hits) {
-  if (hits.total === 0) {
+  if (hits.hits.length === 0) {
     log('Missing stories')
     return []
   }
@@ -48,7 +44,6 @@ export const transformStory = (index, story, forIndexing = true) => {
   story.full_slug = story.full_slug.replace(/^\/|\/$/g, '')
   const result = {
     index: index,
-    type: 'story', // XXX: Change to _doc once VSF supports Elasticsearch 6
     id: story.id + '_' + story.full_slug
   }
 
@@ -63,8 +58,7 @@ function mapStoryToBulkAction ({ index, story: { id, full_slug } }) {
   return {
     index: {
       _id: id + '_' + full_slug,
-      _index: index,
-      _type: 'story'
+      _index: index
     }
   }
 }
@@ -84,14 +78,10 @@ export function createIndex (config) {
   return {
     index: config.storyblok.storiesIndex,
     body: {
-      number_of_shards: 1,
-      number_of_replicas: 0,
-      index: {
-        mapping: {
-          total_fields: {
-            limit: config.storyblok.fieldLimit || 1000
-          }
-        }
+      settings: {
+        number_of_shards: 1,
+        number_of_replicas: 0,
+        'index.mapping.total_fields.limit': config.storyblok.fieldLimit || 1000
       }
     }
   }
@@ -100,7 +90,6 @@ export function createIndex (config) {
 export function queryByPath (index, path) {
   return {
     index: index,
-    type: 'story',
     body: {
       query: {
         constant_score: {
@@ -147,7 +136,6 @@ export const checkStoryExist = async (db, index, path) => {
   try {
     const query = {
       index: index,
-      type: 'story',
       _source: ['id'],
       body: {
         query: {
@@ -175,7 +163,6 @@ export const checkStoryExist = async (db, index, path) => {
 export const getStoriesMatchedToId = async (db, index, id) => {
   const response = await db.search({
     index: index,
-    type: 'story',
     body: {
       query: {
         bool: {
@@ -195,7 +182,6 @@ export const getStoriesMatchedToId = async (db, index, id) => {
 export const getStoriesWithIdReference = async (db, index, id) => {
   const response = await db.search({
     index: index,
-    type: 'story',
     size: 1000,
     body: {
       query: {

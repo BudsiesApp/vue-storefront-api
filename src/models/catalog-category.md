@@ -1,7 +1,7 @@
 Category model
 ==============
 
-Categories are stored in ElasticSearch repository in the following format:
+Categories are stored in OpenSearch repository in the following format:
 
 ```json
 {  

@@ -25,7 +25,7 @@ app.use(compression());
 const httpLogFormat = process.env.LOG_HTTP_FORMAT || 'dev'
 
 // logger
-morgan.token('response-time-in-seconds', function getResponseTimeInSecondsToken (req, res, digits) {
+morgan.token('response-time-in-seconds', (req, res, digits) => {
   if (!req._startAt || !res._startAt) {
     // missing request and/or response start time
     return
@@ -34,7 +34,7 @@ morgan.token('response-time-in-seconds', function getResponseTimeInSecondsToken 
   // calculate diff
   const ms = (res._startAt[0] - req._startAt[0]) * 1e3 +
     (res._startAt[1] - req._startAt[1]) * 1e-6
-  
+
   const seconds = ms / 1000.0;
 
   // return truncated value

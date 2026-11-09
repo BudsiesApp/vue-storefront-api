@@ -1,7 +1,7 @@
 Product model
 =============
 
-Products are stored in ElasticSearch repository in the following format:
+Products are stored in OpenSearch repository in the following format:
 
 ```json
 {  

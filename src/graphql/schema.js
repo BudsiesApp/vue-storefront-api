@@ -1,9 +1,8 @@
 import path from 'path';
-import config from 'config';
 import { fileLoader, mergeTypes } from 'merge-graphql-schemas';
 
 const coreSchemas = fileLoader(
-  path.join(__dirname, `./${config.server.searchEngine}/**/*.graphqls`)
+  path.join(__dirname, `./search/**/*.graphqls`)
 );
 const extensionsSchemas = fileLoader(
   path.join(__dirname, `../api/extensions/**/*.graphqls`)

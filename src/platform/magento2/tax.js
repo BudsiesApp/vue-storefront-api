@@ -1,7 +1,7 @@
 import AbstractTaxProxy from '../abstract/tax'
 import { calculateProductTax, checkIfTaxWithUserGroupIsActive, getUserGroupIdToUse } from 'vsf-utilities';
 import TierHelper from '../../helpers/priceTiers'
-import es from '../../lib/elastic'
+import opensearch from '../../lib/opensearch'
 import bodybuilder from 'bodybuilder'
 
 class TaxProxy extends AbstractTaxProxy {
@@ -18,8 +18,8 @@ class TaxProxy extends AbstractTaxProxy {
       for (let storeCode in this._config.storeViews) {
         const store = this._config.storeViews[storeCode]
         if (typeof store === 'object') {
-          if (store.elasticsearch && store.elasticsearch.index) { // workaround to map stores
-            if (store.elasticsearch.index === indexName) {
+          if (store.opensearch && store.opensearch.index) { // workaround to map stores
+            if (store.opensearch.index === indexName) {
               taxRegion = store.tax.defaultRegion
               taxCountry = store.tax.defaultCountry
               sourcePriceInclTax = store.tax.sourcePriceIncludesTax
@@ -80,13 +80,13 @@ class TaxProxy extends AbstractTaxProxy {
       inst.applyTierPrices(productList, groupId)
 
       if (this._config.tax.calculateServerSide) {
-        const client = es.getClient(this._config)
-        const esQuery = es.adjustQuery({
+        const client = opensearch.getClient(this._config)
+        const searchQuery = opensearch.adjustQuery({
           index: this._indexName,
-          body: bodybuilder()
-        }, 'taxrule', this._config)
-        client.search(esQuery).then((body) => { // we're always trying to populate cache - when online
-          inst._taxClasses = es.getHits(body).map(el => { return el._source })
+          body: bodybuilder().build()
+        }, 'taxrule')
+        client.search(searchQuery).then((body) => { // we're always trying to populate cache - when online
+          inst._taxClasses = opensearch.getHits(body).map(el => { return el._source })
           for (let item of productList) {
             const isActive = checkIfTaxWithUserGroupIsActive(inst._storeConfigTax)
             if (isActive) {

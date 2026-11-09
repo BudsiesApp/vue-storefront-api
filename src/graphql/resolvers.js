@@ -1,9 +1,8 @@
 import path from 'path';
-import config from 'config';
 import { fileLoader, mergeResolvers } from 'merge-graphql-schemas';
 
 const coreResolvers = fileLoader(
-  path.join(__dirname, `./${config.server.searchEngine}/**/resolver.js`)
+  path.join(__dirname, `./search/**/resolver.js`)
 );
 const extensionsResolvers = fileLoader(
   path.join(__dirname, `../api/extensions/**/resolver.js`)

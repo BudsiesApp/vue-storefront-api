@@ -1,12 +1,16 @@
+import { adjustIndexName } from '../../../lib/opensearch'
 import { storyblokClient } from './storyblok'
 import { storyblokManagementClient } from './storyblok'
 import { log, createIndex, createBulkOperations, transformStory, cacheInvalidate, getStoriesMatchedToId, getStoriesWithIdReference, resolveParentData } from './helpers'
 
-function indexStories ({ db, config, stories = [] }) {
+async function indexStories ({ db, config, stories = [] }) {
   const bulkOps = createBulkOperations(config.storyblok.storiesIndex, stories)
-  return db.bulk({
-    body: bulkOps
-  })
+  const response = await db.bulk({ body: bulkOps })
+  if (response.body.errors) {
+    const failures = response.body.items.filter(item => Object.values(item).some(action => action.error))
+    throw new Error(`Story indexing failed: ${JSON.stringify(failures)}`)
+  }
+  return response
 }
 
 function getCacheTagsByStoriesSlugs (slugs) {
@@ -65,21 +69,19 @@ async function syncStories ({ db, config, page = 1, perPage = 100, languages = [
     }
   })
 
-  const promise = indexStories({ db, config, stories: newStories })
+  await indexStories({ db, config, stories: newStories })
 
   const lastPage = Math.ceil((total / perPage))
 
   if (page < lastPage) {
     page += 1
-    return syncStories({ db, config, page, perPage })
+    return syncStories({ db, config, page, perPage, languages })
   }
-
-  return promise
 }
 
 const fullSync = async (db, config) => {
   log('Syncing published stories!')
-  await db.indices.delete({ ignore_unavailable: true, index: config.storyblok.storiesIndex })
+  await db.indices.delete({ index: config.storyblok.storiesIndex }, { ignore: [404] })
   await db.indices.create(createIndex(config))
   const languages = config.storeViews.multistore ? config.storeViews.mapStoreUrlsFor : [];
   await syncStories({ db, config, perPage: config.storyblok.perPage, languages })
@@ -240,7 +242,7 @@ const seedDatabase = async (db, config) => {
     log('Stories synced!')
   } catch (error) {
     log('Stories not synced!')
-    log(error)
+    throw error
   }
 }
 
@@ -263,8 +265,7 @@ const seedStoryblokDatasources = async (db, config) => {
       'pillowSideDesign'
     ];
     const { body: { hits: { hits: products } } } = await db.search({
-      index: config.storyblok.sync.index,
-      type: 'product',
+      index: adjustIndexName(config.storyblok.sync.index, 'product'),
       body: {
         'size': 1000,
         'sort': [
@@ -324,8 +325,7 @@ const seedStoryblokDatasources = async (db, config) => {
     });
 
     const { body: { hits: { hits: categories } } } = await db.search({
-      index: config.storyblok.sync.index,
-      type: 'category',
+      index: adjustIndexName(config.storyblok.sync.index, 'category'),
       body: {
         'size': 1000,
         'sort': [
@@ -346,14 +346,13 @@ const seedStoryblokDatasources = async (db, config) => {
     });
 
     const { body: { hits: { hits: promoCampaigns } } } = await db.search({
-      index: config.storyblok.sync.index,
-      type: 'promo_campaign',
+      index: adjustIndexName(config.storyblok.sync.index, 'promo_campaign'),
       body: {
         'size': 1000,
         'sort': [
           { 'name.keyword': 'asc' }
         ],
-        'query': {}
+        'query': { 'match_all': {} }
       }
     });
 
@@ -451,7 +450,7 @@ const seedStoryblokDatasources = async (db, config) => {
     log('Storyblok Datasources synced!')
   } catch (error) {
     log('Storyblok Datasources not synced!')
-    log(JSON.stringify(error))
+    throw error
   }
 }
 

@@ -2,7 +2,7 @@
 import TagCache from 'redis-tag-cache'
 import get from 'lodash/get';
 import cache from '../../lib/cache-instance'
-import { adjustQuery, getClient as getElasticClient } from './../../lib/elastic'
+import { adjustQuery, getClient as getOpenSearchClient } from './../../lib/opensearch'
 import bodybuilder from 'bodybuilder'
 
 export interface AttributeListParam {
@@ -119,10 +119,9 @@ async function list (attributesParam: AttributeListParam, config, indexName: str
   try {
     const query = adjustQuery({
       index: indexName,
-      type: 'attribute',
       body: bodybuilder().filter('terms', 'attribute_code', attributeCodes).build()
-    }, 'attribute', config)
-    const response = await getElasticClient(config).search(query)
+    }, 'attribute')
+    const response = await getOpenSearchClient(config).search(query)
     const fetchedAttributeList = get(response.body, 'hits.hits', []).map(hit => hit._source)
 
     // save atrributes in cache

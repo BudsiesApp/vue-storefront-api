@@ -2,7 +2,7 @@ import BridgeRequestsCache from '../../../helpers/bridgeRequestsCache';
 import { apiStatus, getToken } from '../../../lib/util';
 import { Router } from 'express';
 import { multiStoreConfig } from '../../../platform/magento1/util';
-import { getClient } from '../../../lib/elastic';
+import { getClient, adjustIndexName } from '../../../lib/opensearch';
 import PlatformFactory from '../../../platform/factory';
 import { updateUserAddresses } from '../../user';
 
@@ -30,7 +30,7 @@ module.exports = ({ config, db }) => {
   let budsiesApi = Router();
   let bridgeRequestsCache = BridgeRequestsCache({ db })
 
-  const es = getClient(config);
+  const opensearch = getClient(config);
 
   budsiesApi.get('/plushies/rush-upgrades', async (req, res) => {
     if (req.query.productId === undefined) {
@@ -38,8 +38,7 @@ module.exports = ({ config, db }) => {
     }
 
     const query = {
-      index: config.elasticsearch.index,
-      type: 'rush_upgrade',
+      index: adjustIndexName(config.opensearch.index, 'rush_upgrade'),
       body: {
         query: {
           terms: {
@@ -50,8 +49,8 @@ module.exports = ({ config, db }) => {
     };
 
     try {
-      const response = await es.search(query)
-      const hits = response.body ? response.body.hits : response.hits;
+      const response = await opensearch.search(query)
+      const hits = response.body.hits;
 
       const rushUpgrades = hits.hits.map((hit) => {
         delete hit._source.tsk;
@@ -67,8 +66,7 @@ module.exports = ({ config, db }) => {
 
   budsiesApi.get('/plushies/products-rush-upgrades', async (req, res) => {
     const query = {
-      index: config.elasticsearch.index,
-      type: 'rush_upgrade',
+      index: adjustIndexName(config.opensearch.index, 'rush_upgrade'),
       size: 1000,
       body: {
         query: {
@@ -78,8 +76,8 @@ module.exports = ({ config, db }) => {
     };
 
     try {
-      const response = await es.search(query)
-      const hits = response.body ? response.body.hits : response.hits;
+      const response = await opensearch.search(query)
+      const hits = response.body.hits;
 
       const rushUpgrades = {};
 
@@ -131,8 +129,7 @@ module.exports = ({ config, db }) => {
 
   budsiesApi.get('/promotion-platform/campaigns/default', async (req, res) => {
     const query = {
-      index: config.elasticsearch.index,
-      type: 'default_promotion_campaign',
+      index: adjustIndexName(config.opensearch.index, 'default_promotion_campaign'),
       body: {
         query: {
           match_all: {}
@@ -141,8 +138,8 @@ module.exports = ({ config, db }) => {
     };
 
     try {
-      const response = await es.search(query)
-      const hits = response.body ? response.body.hits : response.hits;
+      const response = await opensearch.search(query)
+      const hits = response.body.hits;
 
       if (!hits.hits.length) {
         apiStatus(res, false);
@@ -1292,8 +1289,7 @@ module.exports = ({ config, db }) => {
     }
 
     const query = {
-      index: config.elasticsearch.index,
-      type: 'statistic_value',
+      index: adjustIndexName(config.opensearch.index, 'statistic_value'),
       body: {
         query: {
           match: {
@@ -1304,8 +1300,8 @@ module.exports = ({ config, db }) => {
     };
 
     try {
-      const response = await es.search(query)
-      const hits = response.body ? response.body.hits : response.hits;
+      const response = await opensearch.search(query)
+      const hits = response.body.hits;
 
       const metrics = hits.hits.map((hit) => {
         delete hit._source.tsk;
@@ -1454,32 +1450,24 @@ module.exports = ({ config, db }) => {
 
   budsiesApi.get('/currencies/list', async (req, res) => {
     const query = {
-      index: config.elasticsearch.index,
-      type: 'currency',
+      index: adjustIndexName(config.opensearch.index, 'currency'),
       size: 1000,
       body: {
         query: {
           match_all: {}
-        },
-        sort: [
-          {
-            _uid: {
-              order: 'asc'
-            }
-          }
-        ]
+        }
       }
     };
 
     try {
-      const response = await es.search(query)
-      const hits = response.body ? response.body.hits : response.hits;
+      const response = await opensearch.search(query)
+      const hits = response.body.hits;
 
       const currencies = hits.hits.map((hit) => ({
         code: hit._id,
         name: hit._source.name,
         symbol: hit._source.currency_symbol
-      }));
+      })).sort((a, b) => a.code < b.code ? -1 : a.code > b.code ? 1 : 0);
 
       apiStatus(res, currencies);
     } catch (error) {
@@ -1490,8 +1478,7 @@ module.exports = ({ config, db }) => {
 
   budsiesApi.get('/currencies/rates', async (req, res) => {
     const query = {
-      index: config.elasticsearch.index,
-      type: 'currency_rate',
+      index: adjustIndexName(config.opensearch.index, 'currency_rate'),
       body: {
         size: 1000,
         query: {
@@ -1516,8 +1503,8 @@ module.exports = ({ config, db }) => {
     };
 
     try {
-      const response = await es.search(query)
-      const hits = response.body ? response.body.hits : response.hits;
+      const response = await opensearch.search(query)
+      const hits = response.body.hits;
 
       const rates = hits.hits.map((hit) => {
         delete hit._source.tsk;

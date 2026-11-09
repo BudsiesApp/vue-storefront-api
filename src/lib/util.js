@@ -24,7 +24,7 @@ export function getCurrentStoreView (storeCode = null) {
   let storeView = { // current, default store
     tax: config.tax,
     i18n: config.i18n,
-    elasticsearch: config.elasticsearch,
+    opensearch: config.opensearch,
     storeCode: null,
     storeId: config.defaultStoreCode && config.defaultStoreCode !== '' ? config.storeViews[config.defaultStoreCode].storeId : 1
   }

@@ -1,4 +1,4 @@
-FROM node:10-alpine
+FROM node:14-alpine
 
 ENV VS_ENV prod
 
@@ -9,7 +9,7 @@ RUN apk add --no-cache curl git
 #COPY package.json ./
 #COPY yarn.lock ./
 
-RUN apk add --no-cache --virtual .build-deps ca-certificates wget python make g++ && \
+RUN apk add --no-cache --virtual .build-deps ca-certificates wget python3 make g++ && \
     yarn install --no-cache && \
     apk del .build-deps
 
