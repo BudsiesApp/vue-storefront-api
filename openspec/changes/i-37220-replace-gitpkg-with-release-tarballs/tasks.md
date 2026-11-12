@@ -8,8 +8,8 @@
 
 ## 2. Explicit preview consumption
 
-- [ ] 2.1 Update the dependency/router contract to accept supported immutable preview identities and separate generic selected-preview checks from initial-pin/version regression expectations; verify release/preview cases retain repository/asset, lock, no-GitPkg and non-payment router-loading checks without changing the accepted final manifest/lock pin.
-- [ ] 2.2 Document the source command and exact handoff, feature iteration and merged-source selection, explicit Node 14 container URL/lock updates and isolated testing/restoration; verify examples need no publisher config/test commit or manually prepared tag and retain historical assets and payment-handler boundaries.
+- [x] 2.1 Update the dependency/router contract to accept supported immutable preview identities and separate generic selected-preview checks from initial-pin/version regression expectations; verify release/preview cases retain repository/asset, lock, no-GitPkg and non-payment router-loading checks without changing the accepted final manifest/lock pin.
+- [x] 2.2 Document the source command and exact handoff, feature iteration and merged-source selection, explicit Node 14 container URL/lock updates and isolated testing/restoration; verify examples need no publisher config/test commit or manually prepared tag and retain historical assets and payment-handler boundaries.
 
 ## Workflow follow-up
 
