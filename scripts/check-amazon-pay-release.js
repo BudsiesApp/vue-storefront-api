@@ -6,8 +6,10 @@ const root = path.resolve(__dirname, '..')
 const manifest = require(path.join(root, 'package.json'))
 const url = manifest.dependencies['@vue-storefront-api/amazon-pay']
 const lock = fs.readFileSync(path.join(root, 'yarn.lock'), 'utf8')
-const supported = /^https:\/\/github\.com\/BudsiesApp\/vsf-amazon-pay\/releases\/download\/(?:packages-[^/]+|package-preview-[a-f0-9]{64})\/amazon-pay\.tgz$/
+const supported = /^https:\/\/github\.com\/BudsiesApp\/vsf-amazon-pay\/releases\/download\/(?:packages-[^/]+|package-preview-[a-f0-9]{64}|optimuspro_[a-f0-9]{7})\/amazon-pay\.tgz$/
 assert(supported.test(url))
+assert(supported.test('https://github.com/BudsiesApp/vsf-amazon-pay/releases/download/optimuspro_123abcd/amazon-pay.tgz'))
+assert(!supported.test('https://github.com/BudsiesApp/vsf-amazon-pay/releases/download/optimuspro_123abcg/amazon-pay.tgz'))
 assert(supported.test(`https://github.com/BudsiesApp/vsf-amazon-pay/releases/download/package-preview-${'a'.repeat(64)}/amazon-pay.tgz`))
 assert(!supported.test('https://gitpkg-budsies-xi.vercel.app/BudsiesApp/vsf-amazon-pay/API/amazon-pay?branch'))
 assert(!supported.test('https://github.com/BudsiesApp/vsf-amazon-pay/archive/refs/heads/feature.tar.gz'))

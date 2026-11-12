@@ -42,7 +42,7 @@
   "dependencies": {
     "@google-cloud/storage": "^3.0.3",
     "@opensearch-project/opensearch": "^2.4.0",
-    "@vue-storefront-api/amazon-pay": "https://github.com/BudsiesApp/vsf-amazon-pay/releases/download/packages-37220-v1/amazon-pay.tgz",
+    "@vue-storefront-api/amazon-pay": "https://github.com/BudsiesApp/vsf-amazon-pay/releases/download/optimuspro_b3e910d/amazon-pay.tgz",
     "ajv": "^6.4.0",
     "ajv-keywords": "^3.4.0",
     "body-parser": "^1.18.2",
