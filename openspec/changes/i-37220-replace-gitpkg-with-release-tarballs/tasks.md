@@ -2,9 +2,9 @@
 
 ## 1. Amazon Pay dependency transport
 
-- [ ] 1.1 Replace the Amazon Pay direct URL with the verified source repository release asset and regenerate its Yarn Classic lock entry in the existing API container/Node 14 toolchain; verify the scoped diff preserves source pin, package/runtime identity, unrelated locked versions and lockfile format with no active GitPkg dependency references.
-- [ ] 1.2 Add a focused dependency/entry-loading contract check using existing tooling; verify the manifest/lock select the release asset and the installed `@vue-storefront-api/amazon-pay@0.1.0` entry creates its existing router with non-production configuration without invoking payment handlers.
-- [ ] 1.3 Document published provenance/checksum inspection, container lockfile updates and retained historical URLs; verify examples match actual release assets and distinguish packaging revision from package source commit.
+- [x] 1.1 Replace the Amazon Pay direct URL with the verified source repository release asset and regenerate its Yarn Classic lock entry in the existing API container/Node 14 toolchain; verify the scoped diff preserves source pin, package/runtime identity, unrelated locked versions and lockfile format with no active GitPkg dependency references.
+- [x] 1.2 Add a focused dependency/entry-loading contract check using existing tooling; verify the manifest/lock select the release asset and the installed `@vue-storefront-api/amazon-pay@0.1.0` entry creates its existing router with non-production configuration without invoking payment handlers.
+- [x] 1.3 Document published provenance/checksum inspection, container lockfile updates and retained historical URLs; verify examples match actual release assets and distinguish packaging revision from package source commit.
 
 ## Workflow follow-up
 

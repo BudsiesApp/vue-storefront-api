@@ -1,0 +1,18 @@
+const assert = require('assert')
+const fs = require('fs')
+const path = require('path')
+
+const root = path.resolve(__dirname, '..')
+const manifest = require(path.join(root, 'package.json'))
+const url = manifest.dependencies['@vue-storefront-api/amazon-pay']
+const lock = fs.readFileSync(path.join(root, 'yarn.lock'), 'utf8')
+assert(/^https:\/\/github\.com\/BudsiesApp\/vsf-amazon-pay\/releases\/download\/packages-[^/]+\/amazon-pay\.tgz$/.test(url))
+assert(lock.includes(url))
+assert(!lock.includes('gitpkg-budsies-xi.vercel.app'))
+const installed = require('@vue-storefront-api/amazon-pay/package.json')
+assert.strictEqual(installed.name, '@vue-storefront-api/amazon-pay')
+assert.strictEqual(installed.version, '0.1.0')
+const router = require('@vue-storefront-api/amazon-pay')({ config: { extensions: { amazonPay: {} } } })
+assert.strictEqual(typeof router, 'function')
+assert(router.stack.length > 0)
+console.log('Amazon Pay release dependency and router contract passed')
