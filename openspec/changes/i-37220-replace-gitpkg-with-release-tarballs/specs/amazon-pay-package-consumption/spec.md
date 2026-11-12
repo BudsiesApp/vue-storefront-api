@@ -37,3 +37,21 @@ Maintenance documentation SHALL explain selecting a published asset, verifying i
 #### Scenario: Maintainer updates the package
 - **WHEN** a maintainer follows the documented procedure
 - **THEN** the API can consume the new prepared asset without GitPkg, a package-manager migration or removal of historical releases
+
+### Requirement: Explicit immutable preview consumption
+The API SHALL accept the publisher's immutable public preview asset through explicit manifest and Yarn Classic lock updates. Dependency checks MUST accept supported release and preview identities while retaining package provenance, no-GitPkg and router-loading checks. Preview testing MUST NOT require moving branch URLs or consumer-wide lifecycle suppression.
+
+#### Scenario: Returned preview is tested
+- **WHEN** a maintainer selects the returned Amazon Pay URL in an intended API feature/testing graph and regenerates its lockfile using the existing Node 14 container workflow
+- **THEN** frozen installation and targeted compatibility checks can use that source package and initialize the existing router without invoking payment handlers
+
+#### Scenario: Maintainer iterates and selects merged sources
+- **WHEN** a maintainer requests a later feature or merged source revision through the publisher command
+- **THEN** documentation directs them to verify returned provenance/checksums and explicitly update the package URL and lockfile, rather than track a moving source branch
+
+### Requirement: Preserve accepted final graph and evidence
+Preview acceptance SHALL remain separate from the already-accepted pinned migration. Arbitrary preview source changes MUST stay in the intended feature/testing graph and MUST NOT silently replace accepted final dependency pins. Completed unchanged migration evidence and historical assets SHALL remain valid; regression checks MUST cover the affected preview-consumption behavior.
+
+#### Scenario: Preview validation finishes
+- **WHEN** preview consumption is demonstrated and the mounted API configuration is restored
+- **THEN** the accepted final dependency pin remains unchanged unless a separate intentional dependency update was requested, and preview evidence is reported separately from retained pinned-migration evidence

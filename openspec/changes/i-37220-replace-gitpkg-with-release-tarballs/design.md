@@ -44,3 +44,25 @@ The tester owns anonymous download/checksum verification, cache-empty `yarn inst
 ## Migration Plan
 
 Review/implement source packaging and publish with lead authorization. Verify the public archive and provenance, then update the API dependency and lockfile and hand off maintained build/check/loading acceptance. The Storefront UI pair is independent and can be prepared in parallel. This change does not authorize merges or production operations; a later authorized rollback selects the previous consumer dependency commit without changing published assets.
+
+## Approved preview-consumption extension
+
+### Retained baseline and explicit handoff
+
+The original targeted migration is implemented and accepted (D18–D21); PR #144 head `70c58053` consumes `packages-37220-v1`. Preserve that final dependency pin, its published provenance/assets and completed unchanged acceptance. The extension adds feature-testing convenience; it does not negate the original evidence or select an unrelated dependency upgrade.
+
+The source publisher provides `python3 scripts/preview-packages.py --source-ref <branch-or-full-commit>` from a committed, pushed packaging checkout using supported existing Python/Git/authenticated `gh`. It resolves the source once, manages a `package-preview-<identity digest>` release/tag, and returns the exact archive URL and source/packaging/checksum handoff including the exact toolchain without per-iteration config/test commits or manually prepared tags. No workflow-dispatch/default-branch setup is required. After verifying provenance/checksums, maintainers still explicitly update the API manifest and regenerate its Classic lock using the existing Node 14 container.
+
+Document selecting an unmerged feature, another iteration and finally the actual merged SHA using that same command. Use the returned immutable URL, not a branch alias. Keep this a manual consumer step; no automatic API commit/PR or publication-on-push is added.
+
+### Contract check and generic source compatibility
+
+`scripts/check-amazon-pay-release.js` currently accepts only `packages-*`. Extend it to the companion repository's supported explicit-release and `package-preview-<64 lowercase hex>` identities, retaining asset/repository restrictions, lock presence, no-GitPkg, package-name and router-initialization checks. Separate initial version/pin regression expectations from generic selected-preview checks so a maintainer never edits a hard-coded initial expectation per invocation. A preview's identity/version comes from its resolved source and published provenance, not an implicit source upgrade or the packaging checkout.
+
+Focused regression cases cover release/preview URLs and unsupported old/moving dependency references. API entry loading stays non-production and does not execute payment handlers. No production configuration, package-manager version, runtime payment code or credentials change is planned.
+
+### Acceptance without replacing final pins
+
+Tester consumes the returned asset in an identified temporary API feature/testing graph, verifies frozen installation and targeted build/loading compatibility, and restores temporary manifest/lock/environment/dependency changes while preserving unrelated user edits. Do not commit arbitrary preview sources as the accepted final pin. Report preview evidence separately from retained original publication/cache-empty/build/router-mount evidence and its existing caveats; rerun checks actually affected by the eventual code diff rather than declaring every unchanged result invalid.
+
+The publisher owns live command publication, branch advancement, identical reuse/conflict/partial handling and post-merge selection tests. Input-10 authorizes later preview tags/releases/assets after source checks pass in both source repositories, supplementing input-4 without authorizing merge/deployment/archive/issue transitions. Missing access must be surfaced to the lead; this specification revision performs no publication.
