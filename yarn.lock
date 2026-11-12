@@ -657,9 +657,9 @@
     semver "^6.3.0"
     tsutils "^3.17.1"
 
-"@vue-storefront-api/amazon-pay@https://github.com/BudsiesApp/vsf-amazon-pay/releases/download/packages-37220-v1/amazon-pay.tgz":
+"@vue-storefront-api/amazon-pay@https://github.com/BudsiesApp/vsf-amazon-pay/releases/download/optimuspro_b3e910d/amazon-pay.tgz":
   version "0.1.0"
-  resolved "https://github.com/BudsiesApp/vsf-amazon-pay/releases/download/packages-37220-v1/amazon-pay.tgz#9eb179a8d71e751d5c9be8e4fe854df0bac0a466"
+  resolved "https://github.com/BudsiesApp/vsf-amazon-pay/releases/download/optimuspro_b3e910d/amazon-pay.tgz#9eb179a8d71e751d5c9be8e4fe854df0bac0a466"
   dependencies:
     "@types/express" "^4.17.6"
     "@types/node" "^14.0.5"
