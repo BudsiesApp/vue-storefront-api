@@ -45,6 +45,10 @@ The API SHALL accept the publisher's immutable public preview asset through expl
 - **WHEN** a maintainer selects the returned Amazon Pay URL in an intended API feature/testing graph and regenerates its lockfile using the existing Node 14 container workflow
 - **THEN** frozen installation and targeted compatibility checks can use that source package and initialize the existing router without invoking payment handlers
 
+#### Scenario: Automatically published branch preview is tested
+- **WHEN** a maintainer selects a `<branch>_<short-sha>` prerelease, including a URL-encoded branch name
+- **THEN** the dependency check accepts its asset URL while retaining the lockfile and router-loading checks
+
 #### Scenario: Maintainer iterates and selects merged sources
 - **WHEN** a maintainer requests a later feature or merged source revision through the publisher command
 - **THEN** documentation directs them to verify returned provenance/checksums and explicitly update the package URL and lockfile, rather than track a moving source branch
