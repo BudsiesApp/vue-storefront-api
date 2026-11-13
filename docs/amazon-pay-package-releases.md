@@ -1,6 +1,11 @@
 # Amazon Pay package releases
 
-For an unmerged package feature, run `python3 scripts/preview-packages.py
+Push a non-maintained package branch containing the branch preview workflow to
+publish a public `<branch>_<short-sha>` prerelease from the pushed commit. Its
+workflow summary provides the asset URL, manifest and checksums. Update the API
+URL and lockfile for testing; publication does not change or deploy the API.
+
+Alternatively, for an unmerged package feature, run `python3 scripts/preview-packages.py
 --source-ref <branch-or-full-sha>` in the committed, pushed Amazon Pay publisher
 checkout. Verify the returned source/packaging SHAs and manifest/checksum URLs.
 Use its exact URL in a temporary API testing graph, regenerate the lock in the
