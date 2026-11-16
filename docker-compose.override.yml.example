@@ -7,7 +7,7 @@ services:
 
   app-petsies:
     extra_hosts:
-      - "[magento-host]:host-gateway"
+      - "${PETSIES_MAGENTO_DOMAIN}:host-gateway"
     # environment:
       # - CERT_NAME=localdev
       # - HTTPS_METHOD=noredirect
