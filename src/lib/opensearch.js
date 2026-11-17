@@ -16,7 +16,7 @@ function adjustBackendProxyUrl (req, indexName, entityType, config) {
   const params = querystring.parse(queryStart < 0 ? '' : req.url.slice(queryStart + 1))
   const blacklist = settings.useRequestFilter ? settings.requestParamsBlacklist : []
   const entity = config.entities[entityType]
-  const sourceParams = {}
+  const sourceFields = {}
 
   for (const family of ['include', 'exclude']) {
     const singular = `_source_${family}`
@@ -29,8 +29,15 @@ function adjustBackendProxyUrl (req, indexName, entityType, config) {
     }
     delete params[singular]
     delete params[plural]
-    if (fields.length) sourceParams[plural] = fields.join(',')
+    sourceFields[plural] = fields
   }
+
+  // OpenSearch 3 rejects an entry listed in both; excluding it keeps the OpenSearch 2 result.
+  const excludes = sourceFields._source_excludes
+  const includes = sourceFields._source_includes.filter(field => !excludes.includes(field))
+  const sourceParams = {}
+  if (includes.length) sourceParams._source_includes = includes.join(',')
+  if (excludes.length) sourceParams._source_excludes = excludes.join(',')
 
   for (const key of [...blacklist, 'request', 'request_format', 'response_format', 'x-app-version', 'x-instance-id', 'type', 'source', 'source_content_type']) {
     delete params[key]
