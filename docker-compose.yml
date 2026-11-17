@@ -2,7 +2,7 @@ version: '3.0'
 services:
   os1:
     container_name: opensearch-vsf-api
-    image: opensearchproject/opensearch:2.15.0
+    image: opensearchproject/opensearch:3.9.0
     environment:
       DISABLE_INSTALL_DEMO_CONFIG: 'true'
       DISABLE_SECURITY_PLUGIN: 'true'
@@ -24,7 +24,7 @@ services:
       - '9200:9200'
 
   dashboards:
-    image: opensearchproject/opensearch-dashboards:2.15.0
+    image: opensearchproject/opensearch-dashboards:3.9.0
     environment:
       DISABLE_SECURITY_DASHBOARDS_PLUGIN: 'true'
       OPENSEARCH_HOSTS: '["http://os1:9200"]'
