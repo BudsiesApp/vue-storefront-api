@@ -4622,9 +4622,9 @@ magento1-vsbridge-client@BudsiesApp/magento1-vsbridge-client#01f865d690094aa62cc
     request "^2.72.0"
     winston "^2.2.0"
 
-"magento2-rest-client@github:GorbunovStudio/magento2-rest-client#af25ad2ed7c59fbbdf211aa5bf34d0d38e2a1c1b":
+"magento2-rest-client@github:GorbunovStudio/magento2-rest-client#66b3e6c005217089d59555ee7bf2f5734a04431a":
   version "0.0.14"
-  resolved "https://codeload.github.com/GorbunovStudio/magento2-rest-client/tar.gz/af25ad2ed7c59fbbdf211aa5bf34d0d38e2a1c1b"
+  resolved "https://codeload.github.com/GorbunovStudio/magento2-rest-client/tar.gz/66b3e6c005217089d59555ee7bf2f5734a04431a"
   dependencies:
     humps "^1.1.0"
     oauth-1.0a "^1.0.1"
