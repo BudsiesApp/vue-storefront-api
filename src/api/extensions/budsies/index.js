@@ -99,6 +99,35 @@ module.exports = ({ config, db }) => {
     }
   });
 
+  budsiesApi.get('/social-profiles', async (req, res) => {
+    const query = {
+      index: adjustIndexName(config.opensearch.index, 'social_profile'),
+      size: 50,
+      allow_partial_search_results: false,
+      _source: [
+        'id',
+        'network',
+        'is_enabled',
+        'profile_url',
+        'subscribers_count',
+        'display_subscribers',
+        'position'
+      ],
+      body: { query: { match_all: {} } }
+    };
+
+    try {
+      const response = await opensearch.search(query);
+      apiStatus(res, response.body.hits.hits.map(hit => hit._source));
+    } catch (error) {
+      console.error('Social profile search failed', {
+        errorType: error.name,
+        statusCode: error.statusCode
+      });
+      apiStatus(res, 'Unable to load social profiles', 500);
+    }
+  });
+
   budsiesApi.post('/dongler-book-requests', (req, res) => {
     const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
 
