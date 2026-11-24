@@ -226,12 +226,16 @@ function processSingleOrder (orderData, config, job, done, customerToken = null,
 
             if (job) job.progress(currentStep++, TOTAL_STEPS);
 
-            api.cart.order(customerToken, cartId, {
-              'paymentMethod': {
-                'method': orderData.addressInformation.payment_method_code,
-                'additional_data': orderData.addressInformation.payment_method_additional
-              }
-            }, isAdminRequest).then(result => {
+            const paymentMethod = {
+              'method': orderData.addressInformation.payment_method_code,
+              'additional_data': orderData.addressInformation.payment_method_additional
+            };
+
+            if (orderData.addressInformation.paymentExtraFields !== undefined) {
+              paymentMethod['extension_attributes'] = orderData.addressInformation.paymentExtraFields;
+            }
+
+            api.cart.order(customerToken, cartId, { 'paymentMethod': paymentMethod }, isAdminRequest).then(result => {
               logger.info(THREAD_ID, result)
               if (job) job.progress(currentStep++, TOTAL_STEPS);
 
