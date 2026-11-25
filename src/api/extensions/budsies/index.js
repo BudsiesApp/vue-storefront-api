@@ -1,6 +1,7 @@
 import BridgeRequestsCache from '../../../helpers/bridgeRequestsCache';
 import { apiStatus, getToken } from '../../../lib/util';
 import { Router } from 'express';
+import pick from 'lodash/pick';
 import { multiStoreConfig } from '../../../platform/magento1/util';
 import { getClient, adjustIndexName } from '../../../lib/opensearch';
 import PlatformFactory from '../../../platform/factory';
@@ -537,6 +538,37 @@ module.exports = ({ config, db }) => {
     });
 
     client.budsies.sendNewsletterSubscriptionsRequest().then((result) => {
+      apiStatus(res, result, 200);
+    }).catch(err => {
+      apiStatus(res, err, err.code);
+    });
+  });
+
+  budsiesApi.post('/marketing-subscription-requests', (req, res) => {
+    const orderId = Number(req.body.orderId);
+
+    if (!Number.isInteger(orderId) || orderId <= 0) {
+      apiStatus(res, 'The field orderId must be a positive integer', 400);
+      return;
+    }
+
+    const client = Magento2Client(multiStoreConfig(config.magento2.api, req));
+
+    client.addMethods('budsies', (restClient) => {
+      let module = {};
+
+      module.sendMarketingSubscriptionRequest = function () {
+        const bodyParams = pick(req.body, ['email', 'emailConsent', 'smsConsent', 'phone']);
+
+        let url = `/orders/${orderId}/marketing-subscription-requests`;
+
+        return restClient.post(url, bodyParams);
+      }
+
+      return module;
+    });
+
+    client.budsies.sendMarketingSubscriptionRequest().then((result) => {
       apiStatus(res, result, 200);
     }).catch(err => {
       apiStatus(res, err, err.code);
