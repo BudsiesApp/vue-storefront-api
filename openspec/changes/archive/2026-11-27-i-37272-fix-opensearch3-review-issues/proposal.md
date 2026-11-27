@@ -6,8 +6,8 @@ OpenSearch 3 rejects identical source include/exclude entries and warns about em
 
 ## What Changes
 
-- Normalize URL-mapping source filters after merging configured includes, giving exact excludes precedence and omitting empty source filters.
-- Preserve empty `_source` results when catalog excludes remove every explicitly included field.
+- Normalize URL-mapping source filters after merging configured includes, giving exact excludes precedence and omitting empty source filters. Preserve the existing HTTP 200/null outcome when the caller excludes a field needed to verify the URL.
+- Preserve exclusion of all document source fields when catalog excludes remove every explicitly included field; keep the existing API-generated `sgn` signature behavior.
 - Return actual error responses for failed Storyblok and url-rewrite lookups; keep successful missing-record responses distinct. Make missing url-rewrite request paths return 400.
 - Return a readable URL-mapping error result instead of serializing an `Error` to an empty object.
 - **BREAKING**: Remove `/api/ext/opensearch-stock` and its registration/documentation. Keep Magento-backed `/api/stock` unchanged.
