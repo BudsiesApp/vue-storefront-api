@@ -15,9 +15,18 @@ module.exports = ({ config }) => {
 
   initStoryblokClients(config)
 
+  const lookupFailed = (res, error) => {
+    console.error(error)
+    apiStatus(res, 'Storyblok lookup error', 500)
+  }
+
   api.get('/story/', async (req, res) => {
-    const story = await getStory(db, config.storyblok.storiesIndex, 'home')
-    apiStatus(res, story)
+    try {
+      const story = await getStory(db, config.storyblok.storiesIndex, 'home')
+      apiStatus(res, story)
+    } catch (error) {
+      lookupFailed(res, error)
+    }
   })
 
   api.get('/story/:story*', async (req, res) => {
@@ -25,13 +34,21 @@ module.exports = ({ config }) => {
     if (config.storeViews[path]) {
       path += '/home'
     }
-    const story = await getStory(db, config.storyblok.storiesIndex, path)
-    apiStatus(res, story)
+    try {
+      const story = await getStory(db, config.storyblok.storiesIndex, path)
+      apiStatus(res, story)
+    } catch (error) {
+      lookupFailed(res, error)
+    }
   })
 
   api.get('/check-exist/', async (req, res) => {
-    const response = await checkStoryExist(db, config.storyblok.storiesIndex, 'home')
-    apiStatus(res, { exist: !!response })
+    try {
+      const response = await checkStoryExist(db, config.storyblok.storiesIndex, 'home')
+      apiStatus(res, { exist: !!response })
+    } catch (error) {
+      lookupFailed(res, error)
+    }
   })
 
   api.get('/check-exist/:story*', async (req, res) => {
@@ -41,8 +58,12 @@ module.exports = ({ config }) => {
       path += '/home'
     }
 
-    const response = await checkStoryExist(db, config.storyblok.storiesIndex, path)
-    apiStatus(res, { exist: !!response });
+    try {
+      const response = await checkStoryExist(db, config.storyblok.storiesIndex, path)
+      apiStatus(res, { exist: !!response });
+    } catch (error) {
+      lookupFailed(res, error)
+    }
   })
 
   api.get('/validate-editor', async (req, res) => {

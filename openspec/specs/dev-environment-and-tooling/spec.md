@@ -37,15 +37,23 @@ The repository MUST remove package scripts db, mage2vs, restore, restore_it, res
 - **THEN** the project/network names match the actual project identifier, GraphQL paths exist, and reindex instructions use logical per-store bases and entity aliases instead of typed mappings or removed import scripts
 
 ### Requirement: Deliberate naming checkpoint and audit
-Per the user checkpoint, the private search module SHALL be `src/lib/opensearch.js` with OpenSearch-named client identifiers, and the stock extension SHALL be renamed from `elastic-stock` to `opensearch-stock` (directory, `registeredExtensions` entries and `/api/ext/opensearch-stock` path, with no alias for the old path). The implementation MUST have no internal Elasticsearch support paths or compatibility accessor. Final `rg -i elastic` results SHALL be classified by file and reason: dependency-boundary exports/input names, historical changelog/sample data, and OpenSpec history are allowed; active old configuration, packages, backend branches, operational docs and deleted tooling are not.
+The private search module SHALL remain `src/lib/opensearch.js` with OpenSearch-named client identifiers. The obsolete index-backed stock extension SHALL be absent from source, registeredExtensions in default configuration and the local configuration template, and supported-endpoint documentation. No compatibility route SHALL replace it. The implementation MUST have no internal Elasticsearch support paths or compatibility accessor. Remaining `elastic` name matches SHALL be limited to dependency-boundary exports/input names, historical changelog/sample data and OpenSpec history, not active old configuration, packages, backend branches, operational docs or deleted tooling.
 
 #### Scenario: Compatibility names remain deliberate
-- **WHEN** the final source audit runs
-- **THEN** private imports use lib/opensearch, the stock extension is registered and served as opensearch-stock, and every other remaining match has a recorded external-contract or inert-history/data reason
+- **WHEN** active source and configuration are inspected
+- **THEN** private imports use lib/opensearch, no index-backed stock extension is registered or documented as supported, and remaining legacy names have an external-contract or inert-history/data reason
+
+#### Scenario: Retired stock routes are absent
+- **WHEN** a client requests `/api/ext/opensearch-stock/check/<sku>`, `/api/ext/opensearch-stock/check?sku=<sku>` or `/api/ext/opensearch-stock/list?skus=<skus>`
+- **THEN** each returns HTTP 404 without an alias or replacement implementation
+
+#### Scenario: Live stock remains Magento-backed
+- **WHEN** a client requests `/api/stock/check/<sku>` or `/api/stock/list?skus=<skus>`
+- **THEN** the API retains the previous Magento-backed response behavior and does not substitute indexed stock
 
 ### Requirement: Focused tests and supervisor runtime acceptance
-The implementation SHALL retain existing boost tests, recheck discovered tests for old imports/config/removed helpers, and add only the focused src/lib/test/unit/opensearch.spec.ts, src/api/url/test/unit/map.spec.ts and src/api/extensions/vsf-storyblok-extension/test/unit/syncTarget.spec.ts suites using existing Jest discovery for alias/proxy parameter normalization, numeric totals, URL msearch entity derivation and Storyblok sync-target phase coordination with CLI exit codes. Tests MUST mock the client and relevant processors/store utilities and verify imports do not open engine or Redis connections. If URL route isolation requires heavy mocking, the implementer SHALL report that limitation and cover only its pure-function portion. Other runtime paths SHALL be covered by the supervisor matrix rather than additional regression suites. Validation MUST include eslint without --fix on src and scripts, TypeScript build, schema copying and yarn test:unit under Node 14; unavailable implementer checks SHALL be reported explicitly. Runtime acceptance SHALL be performed by the supervisor against Petsies after the user's Magento prefix change/reindex, including the full REST/extension/tax/GraphQL/Storyblok matrix in tasks.md, excluding the unsupported promo phase from successful sync claims.
+The API SHALL retain the existing boost and Storyblok sync-target tests and focused coverage for alias/proxy parameter normalization, numeric totals and URL msearch entity derivation. Regression coverage SHALL additionally verify exact source-filter overlap, fully excluded catalog projections, empty URL-mapping filters, and failure-versus-miss HTTP behavior for Storyblok and url-rewrite. Tests MUST mock external clients and relevant processors/store utilities so importing test targets does not open engine or Redis connections. Local static validation SHALL include eslint without --fix on src and scripts, TypeScript build, schema copying and yarn test:unit under the supported Node 14 runtime. Engine-backed validation SHALL use OpenSearch 3.9.0 and distinguish observed engine responses/logs from mocked unit results.
 
 #### Scenario: Reproducible checks
-- **WHEN** implementation is ready for review
-- **THEN** the report distinguishes Node 14 static/unit results from supervisor runtime results and includes the remaining-name audit rather than claiming unperformed checks passed
+- **WHEN** the maintained API checks and focused regressions run
+- **THEN** they exercise source-filter and lookup error contracts without requiring live external clients for unit tests, and engine-specific claims are supported by engine-backed checks rather than mocks alone

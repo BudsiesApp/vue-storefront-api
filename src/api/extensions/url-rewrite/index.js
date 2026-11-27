@@ -21,18 +21,25 @@ module.exports = ({ config }) => {
     let requestPath = req.query.requestPath;
 
     if (!requestPath) {
-      throw new Error('The requestPath query param is required');
-    }
-
-    const redirect = await getUrlRewriteByRequestPath(db, config, requestPath);
-
-    if (redirect) {
-      apiStatus(res, redirect, 200);
+      apiStatus(res, 'The requestPath query param is required', 400);
 
       return;
     }
 
-    apiStatus(res, 'Not Found', 404);
+    try {
+      const redirect = await getUrlRewriteByRequestPath(db, config, requestPath);
+
+      if (redirect) {
+        apiStatus(res, redirect, 200);
+
+        return;
+      }
+
+      apiStatus(res, 'Not Found', 404);
+    } catch (error) {
+      console.error(error);
+      apiStatus(res, 'URL rewrite search error', 500);
+    }
   })
 
   return api;

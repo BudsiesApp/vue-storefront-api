@@ -65,6 +65,18 @@ describe('OpenSearch runtime helpers', () => {
         })
       })
 
+      it('excludes every field when all includes are also excluded', () => {
+        const config = fixture({}, { product: { includeFields: ['id', 'name'], excludeFields: [] } })
+        expect(forward('_source_exclude=id,name', config, method)).toEqual({
+          _source_excludes: '*',
+          track_total_hits: 'true'
+        })
+      })
+
+      it('keeps source unrestricted when no includes were requested', () => {
+        expect(forward('', fixture({}, { product: { includeFields: [], excludeFields: [] } }), method)).toEqual({ track_total_hits: 'true' })
+      })
+
       it('drops included entries that are also excluded', () => {
         const config = fixture({}, { product: { includeFields: ['id', 'configurable_options', 'configurable_children.*_accessory'], excludeFields: ['sgn'] } })
         expect(forward('_source_exclude=configurable_options,configurable_children.*_accessory,description', config, method)).toEqual({

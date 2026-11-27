@@ -72,13 +72,25 @@ describe('URL alias mapping', () => {
     expect(res.json).toHaveBeenCalledWith({ ...item, _type: 'category' })
   })
 
+  it('drops included fields that the caller also excludes', async () => {
+    await run([result([hit()]), result(), result()], { includeFields: ['name'], excludeFields: ['id'] })
+    expect(msearch.mock.calls[0][0].body[1]._source).toEqual({ includes: ['name'], excludes: ['id'] })
+  })
+
+  it('omits empty source arrays and an empty source filter', async () => {
+    await run([result([hit()]), result(), result()], { includeFields: null, excludeFields: [] })
+    expect(msearch.mock.calls[0][0].body[1]).not.toHaveProperty('_source')
+    await run([result([hit()]), result(), result()], { includeFields: ['id'], excludeFields: ['id'] })
+    expect(msearch.mock.calls[1][0].body[1]).toHaveProperty('_source', { excludes: ['id'] })
+  })
+
   it('chooses the first configured exact match and preserves product identity after processing', async () => {
     const item = hit()
     const { req, res } = await run([result([item]), result([hit()]), result([hit()])])
     expect(getAdapter).toHaveBeenCalledWith('product', 'base_3', req, res)
     expect(processHits).toHaveBeenCalledWith([item], null)
     expect(res.json).toHaveBeenCalledWith({ ...item, processed: true, _type: 'product' })
-    expect(msearch.mock.calls[0][0].body[1]._source).toEqual({})
+    expect(msearch.mock.calls[0][0].body[1]).not.toHaveProperty('_source')
   })
 
   it('continues after mismatches and derives CMS identity from position', async () => {
@@ -97,7 +109,7 @@ describe('URL alias mapping', () => {
     const { res } = await run([result([hit()]), { error: { type: 'index_not_found_exception' } }, result()])
     expect(res.status).toHaveBeenCalledWith(500)
     expect(processHits).not.toHaveBeenCalled()
-    expect(res.json.mock.calls[0][0]).toBeInstanceOf(Error)
+    expect(res.json).toHaveBeenCalledWith('OpenSearch search error')
     log.mockRestore()
   })
 

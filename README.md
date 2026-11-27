@@ -55,7 +55,7 @@ curl -H 'Content-Type: application/json' -d '{"query":{"match_all":{}}}' \
 
 GET accepts JSON in `request`; `request_format=search-query` translates the existing query-builder format. Full responses expose numeric `hits.total`; compact responses expose numeric `total`. Exact totals are forced. Singular and plural query source filters are normalized to plural engine parameters, merging configured filters first unless overwrite is enabled. Body `_source` is preserved. Unsafe paths/entities return HTTP 400, inaccessible bases HTTP 500, and missing aliases use the existing engine-error envelope without fallback.
 
-URL mapping retains `_type` for storefront dispatch, derived from the configured search order. Stock extension requests use `/api/ext/opensearch-stock`; there is no alias for the former endpoint. Magento-backed `/api/stock` remains available.
+URL mapping retains `_type` for storefront dispatch, derived from the configured search order.
 
 [GraphQL documentation](doc/2.%20graphQl%20support.md) covers the unchanged `/graphql` and `/graphiql` routes. The architecture PNG and compressed XML in `doc/` are historical sketches, not current deployment instructions. Product/category data shapes are described in [product](src/models/catalog-product.md) and [category](src/models/catalog-category.md) models.
 

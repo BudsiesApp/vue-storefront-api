@@ -120,44 +120,37 @@ export const cacheInvalidate = async (config, tag) => {
 }
 
 export const getStory = async (db, index, path) => {
-  try {
-    const response = await db.search(queryByPath(index, path))
-    const hits = getHits(response)
-    const story = getHitsAsStory(hits)
-    return story
-  } catch (error) {
+  const response = await db.search(queryByPath(index, path))
+  const hits = getHits(response)
+  if (hits.hits.length === 0) {
     return {
       story: false
     }
   }
+  return getHitsAsStory(hits)
 }
 
 export const checkStoryExist = async (db, index, path) => {
-  try {
-    const query = {
-      index: index,
-      _source: ['id'],
-      body: {
-        query: {
-          constant_score: {
-            filter: {
-              term: {
-                'full_slug.keyword': path
-              }
+  const query = {
+    index: index,
+    _source: ['id'],
+    body: {
+      query: {
+        constant_score: {
+          filter: {
+            term: {
+              'full_slug.keyword': path
             }
           }
         }
       }
     }
-
-    const response = await db.search(query)
-    const hits = getHits(response)
-    const story = getHitsAsStory(hits)
-
-    return !!story;
-  } catch (error) {
-    return false;
   }
+
+  const response = await db.search(query)
+  const hits = getHits(response)
+
+  return hits.hits.length > 0
 }
 
 export const getStoriesMatchedToId = async (db, index, id) => {

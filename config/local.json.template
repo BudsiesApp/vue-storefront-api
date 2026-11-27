@@ -178,7 +178,6 @@
   },
   "platform": "magento2",
   "registeredExtensions": [
-    "opensearch-stock",
     "budsies",
     "vsf-storyblok-extension",
     "braintree",

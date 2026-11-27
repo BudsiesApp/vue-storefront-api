@@ -25,7 +25,7 @@ The application SHALL use `opensearch` at root and in all store search overrides
 
 #### Scenario: Store override
 - **WHEN** a selected store view has `opensearch.index='vue_storefront_catalog_3'`
-- **THEN** URL, stock, GraphQL and tax store matching use that base and the proxy permits it only when listed in root `indices`
+- **THEN** URL, GraphQL and tax store matching use that base and the proxy permits it only when listed in root `indices`
 
 ### Requirement: Query-builder compatibility boundary
 REST and GraphQL query-builder call sites SHALL supply a call-local settings object preserving other settings and exposing `elasticsearch: config.opensearch`. They MUST retain the dependency unchanged, including its public exports/types and accepted `cutoff_frequency`, without restoring global Elasticsearch config or forking the library.
@@ -35,7 +35,7 @@ REST and GraphQL query-builder call sites SHALL supply a call-local settings obj
 - **THEN** configured scoring/searchable attributes are available under the dependency's expected input name while all application settings remain under `opensearch`
 
 ### Requirement: Complete internal reader migration
-Attribute metadata, stock, URL rewrite, both rush-upgrade searches, default campaigns, statistics, currencies, currency rates and both Magento 1 and Magento 2 tax readers MUST issue typeless searches through the alias helper. Existing global versus selected-store base selection SHALL be preserved. Tax readers MUST pass built query objects from `bodybuilder().build()`, retain logical-base tax/store matching and existing price behavior. Currencies SHALL omit `_uid` sorting, map `_id` to code and sort the output in JavaScript ascending by code. Hit existence checks SHALL use hits-array length rather than total; internal readers needing only hits SHALL not add exact-count tracking.
+Attribute metadata, URL rewrite, both rush-upgrade searches, default campaigns, statistics, currencies, currency rates and both Magento 1 and Magento 2 tax readers MUST issue typeless searches through the alias helper. Existing global versus selected-store base selection SHALL be preserved. Tax readers MUST pass built query objects from `bodybuilder().build()`, retain logical-base tax/store matching and existing price behavior. Currencies SHALL omit `_uid` sorting, map `_id` to code and sort the output in JavaScript ascending by code. Hit existence checks SHALL use hits-array length rather than total; internal readers needing only hits SHALL not add exact-count tracking. Stock SHALL continue to use the Magento-backed `/api/stock` contract, not an index-backed extension.
 
 #### Scenario: Currency order
 - **WHEN** currency hits arrive in arbitrary engine order
@@ -67,3 +67,31 @@ Storyblok scripts, webhook behavior and its independent stories index SHALL rema
 #### Scenario: All-target sync with a failing datasource phase
 - **WHEN** `sync --target=all` runs and the datasource phase fails while the stories rebuild is still running
 - **THEN** the stories rebuild completes and the cache is invalidated before the command reports the datasource error and exits non-zero
+
+### Requirement: Route lookup APIs distinguish failures from missing records
+
+Storyblok story and existence reads SHALL return their existing successful missing-record results only after a successful search with no hits. Engine failures and failures while decoding a found story SHALL propagate to an HTTP 500 API response, not `{story:false}` or `{exist:false}`. Both home and path variants SHALL follow this rule. URL-rewrite lookup SHALL return HTTP 400 when requestPath is absent, HTTP 404 when a successful search finds no rewrite, its existing HTTP 200 result when a rewrite exists, and HTTP 500 when the search fails. Every handled request SHALL complete with a response rather than an unhandled async rejection.
+
+#### Scenario: Story lookup fails
+- **WHEN** the stories index search fails for a story or existence lookup, including the home variants
+- **THEN** the API responds with HTTP 500 and an error envelope instead of a successful missing-record result
+
+#### Scenario: Story is genuinely absent
+- **WHEN** the search succeeds with no story hits
+- **THEN** the story endpoint keeps its HTTP 200 `{story:false}` result and the existence endpoint keeps its HTTP 200 `{exist:false}` result
+
+#### Scenario: Found story cannot be decoded
+- **WHEN** a found story contains invalid JSON content
+- **THEN** the story lookup returns HTTP 500 rather than treating the story as absent
+
+#### Scenario: Rewrite request has no path
+- **WHEN** `/api/ext/url-rewrite/redirect` is requested without requestPath
+- **THEN** it returns an HTTP 400 API error envelope without searching the engine
+
+#### Scenario: Rewrite engine fails
+- **WHEN** the rewrite search rejects
+- **THEN** the endpoint completes with an HTTP 500 API error envelope rather than leaving the request pending
+
+#### Scenario: Rewrite success and miss keep their meanings
+- **WHEN** a rewrite search succeeds with a matching rewrite or with no hits
+- **THEN** the API returns the existing rewrite payload with HTTP 200 or the existing HTTP 404 no-rewrite response respectively
