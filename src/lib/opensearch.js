@@ -34,10 +34,16 @@ function adjustBackendProxyUrl (req, indexName, entityType, config) {
 
   // OpenSearch 3 rejects an entry listed in both; excluding it keeps the OpenSearch 2 result.
   const excludes = sourceFields._source_excludes
-  const includes = sourceFields._source_includes.filter(field => !excludes.includes(field))
+  const requestedIncludes = sourceFields._source_includes
+  const includes = requestedIncludes.filter(field => !excludes.includes(field))
   const sourceParams = {}
   if (includes.length) sourceParams._source_includes = includes.join(',')
-  if (excludes.length) sourceParams._source_excludes = excludes.join(',')
+  if (requestedIncludes.length && !includes.length) {
+    // Every include was excluded: an empty projection, not an unrestricted one.
+    sourceParams._source_excludes = '*'
+  } else if (excludes.length) {
+    sourceParams._source_excludes = excludes.join(',')
+  }
 
   for (const key of [...blacklist, 'request', 'request_format', 'response_format', 'x-app-version', 'x-instance-id', 'type', 'source', 'source_content_type']) {
     delete params[key]

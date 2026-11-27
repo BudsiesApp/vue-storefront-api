@@ -15,10 +15,15 @@ const map = ({ config }) => {
     const indexName = getCurrentStoreView(getCurrentStoreCode(req)).opensearch.index
     const entities = get(config, 'urlModule.map.searchedEntities', [])
     const fields = get(config, 'urlModule.map.searchedFields', [])
+    const excludes = excludeFields || []
+    const includes = includeFields
+      ? includeFields.concat(get(config, 'urlModule.map.includeFields', [])).filter(field => !excludes.includes(field))
+      : []
     const source = {
-      ...(includeFields ? { includes: includeFields.concat(get(config, 'urlModule.map.includeFields', [])) } : {}),
-      ...(excludeFields ? { excludes: excludeFields } : {})
+      ...(includes.length ? { includes } : {}),
+      ...(excludes.length ? { excludes } : {})
     }
+    const sourceFilter = Object.keys(source).length ? { _source: source } : {}
     const body = entities.reduce((body, entity) => body.concat([
       { index: adjustIndexName(indexName, entity) },
       {
@@ -33,7 +38,7 @@ const map = ({ config }) => {
         },
         size: 1,
         track_total_hits: false,
-        _source: source
+        ...sourceFilter
       }
     ]), [])
 
@@ -58,7 +63,7 @@ const map = ({ config }) => {
       return res.json(null)
     } catch (err) {
       console.error(err)
-      return apiStatus(res, new Error('OpenSearch search error'), 500)
+      return apiStatus(res, 'OpenSearch search error', 500)
     }
   })
 

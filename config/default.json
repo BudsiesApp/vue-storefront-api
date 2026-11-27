@@ -164,8 +164,7 @@
     "cms-data",
     "mail-service",
     "example-processor",
-    "example-custom-filter",
-    "opensearch-stock"
+    "example-custom-filter"
   ],
   "extensions": {
     "mailchimp": {
